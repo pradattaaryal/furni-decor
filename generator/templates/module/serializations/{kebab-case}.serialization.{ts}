@@ -1,0 +1,20 @@
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  ResponseDefaultSerialization,
+  ResponsePaginationDefaultSerialization,
+} from 'src/common/doc/serializations/response.default.serialization';
+import { {PascalCase}Entity } from '../entities/{kebab-case}.entity';
+
+export class {PascalCase}Serialization extends ResponseDefaultSerialization {
+  @ApiProperty({
+    type: {PascalCase}Entity,
+  })
+  data: {PascalCase}Entity;
+}
+
+export class {PascalCase}PaginationSerialization extends ResponsePaginationDefaultSerialization {
+  @ApiProperty({
+    type: [{PascalCase}Entity],
+  })
+  data: {PascalCase}Entity;
+}

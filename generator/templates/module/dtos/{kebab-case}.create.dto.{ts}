@@ -1,0 +1,15 @@
+import { faker } from '@faker-js/faker';
+import {
+    ApiProperty,
+    IntersectionType,
+    OmitType,
+    PickType,
+} from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import { I{PascalCase}CreateDto } from '../interfaces/{kebab-case}.create.dto.interface';
+
+
+export class {PascalCase}CreateDto implements I{PascalCase}CreateDto{
+    
+}

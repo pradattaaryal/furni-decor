@@ -1,0 +1,60 @@
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestApplication, NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
+import { AppModule } from './app/app.module';
+ import swaggerInit from './swagger';
+import { json, raw } from 'express';
+
+async function bootstrap() {
+  const app = await NestFactory.create<NestApplication>(AppModule, {
+     // rawBody: true,
+     // logger: false, // disables all logs
+  });
+
+  // app.use(
+  //   '/backend/api/stripe/webhook',
+  //   raw({
+  //     type: 'application/json',
+  //     verify: (req, res, buf) => {
+  //       (req as any).rawBody = buf;
+  //     },
+  //   }),
+  // );
+
+  // Other JSON endpoints use the normal JSON parser
+  app.use(json());
+
+
+
+
+  await swaggerInit(app);
+  app.use(helmet());
+  const configService = app.get(ConfigService);
+  const allowHeaders: string[] = configService.get<string[]>(
+    'request.cors.allowHeader',
+    [],
+  );
+  const allowMethod: string[] = configService.get<string[]>(
+    'request.cors.allowMethod',
+    [],
+  );
+  // app.getHttpAdapter().getInstance().set('trust proxy', true);
+  app.enableCors({
+    allowedHeaders: allowHeaders,
+    methods: allowMethod,
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+  const port: number = configService.get<number>('app.http.port', 3001);
+  const host: string = configService.get<string>('app.http.host', 'localhost');
+  app.enableShutdownHooks();
+  await app.listen(port, host);
+}
+bootstrap();

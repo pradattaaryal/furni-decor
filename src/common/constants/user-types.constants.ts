@@ -1,0 +1,18 @@
+//If existing roles are changed make sure to tell frontend team.
+export enum USER_ROLES {
+  ADMIN = 'ADMIN',
+  PUBLIC_USER = 'PUBLIC_USER',
+  BRANCH_MANAGER = 'BRANCH_MANAGER',
+  EVENT_ORGANIZER = 'EVENT_ORGANIZER',
+  PARTNER = 'PARTNER',
+  UNASSIGNED = 'UNASSIGNED',
+  HELP_DESK = 'HELP_DESK',
+  VOLUNTEER = 'VOLUNTEER',
+}
+
+export enum USER_TYPES {
+  ADMIN = 'ADMIN',
+  PUBLIC_USER = 'PUBLIC_USER',
+  SYSTEM_USER = 'SYSTEM_USER',
+  PARTNER = 'PARTNER',
+}

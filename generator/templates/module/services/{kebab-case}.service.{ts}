@@ -1,0 +1,113 @@
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
+import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
+import {
+  IFindAllOptions,
+  IFindOneOptions,
+  IPaginateFindOption,
+  IPaginateQueryBuilderOption,
+} from 'src/common/database/interfaces/findOption.interface';
+import {
+  IUpdateOptions,
+  IUpdateRawOptions,
+} from 'src/common/database/interfaces/updateOption.interface';
+import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
+import { DeepPartial, ILike, Not, UpdateResult, SelectQueryBuilder } from 'typeorm';
+import { {PascalCase}Entity } from '../entities/{kebab-case}.entity';
+import { {PascalCase}Repository } from '../repositories/{kebab-case}.repository';
+import { {PascalCase}CreateDto } from '../dtos/{kebab-case}.create.dto';
+import { I{PascalCase}UpdateDto } from '../interfaces/{kebab-case}.update.dto.interface';
+
+@Injectable()
+export class {PascalCase}Service {
+  constructor(private readonly _{camelCase}Repo: {PascalCase}Repository) {}
+
+  async create(
+    createDto: {PascalCase}CreateDto,
+    options?: ICreateOptions,
+  ): Promise<{PascalCase}Entity> {
+    const data = await this._{camelCase}Repo._create(createDto, options);
+    return data;
+  }
+
+  async getById(
+    id: number,
+    options?: IFindOneOptions<{PascalCase}Entity>,
+  ): Promise<{PascalCase}Entity | null> {
+    const data = await this._{camelCase}Repo._findOneById(id, options);
+    return data;
+  }
+
+  async getOne(
+    options: IFindOneOptions<{PascalCase}Entity>,
+  ): Promise<{PascalCase}Entity | null> {
+    const data = await this._{camelCase}Repo._findOne(options);
+    return data;
+  }
+
+  async getOneOrFail(
+    options: IFindOneOptions<{PascalCase}Entity>,
+  ): Promise<{PascalCase}Entity> {
+    const data = await this.getOne(options);
+    if (!data) {
+      throw new NotFoundException('Cannot find {PascalCase}');
+    }
+    return data;
+  }
+
+  async getAll(
+    options?: IFindAllOptions<{PascalCase}Entity>,
+  ): Promise<{PascalCase}Entity[]> {
+    return await this._{camelCase}Repo._findAll(options);
+  }
+
+  getQueryBuilder(
+    name: string
+  ): SelectQueryBuilder<{PascalCase}Entity> {
+    return this._{camelCase}Repo.getRepo().createQueryBuilder(name);
+  }
+
+  async paginatedGet(options?: IPaginateFindOption<{PascalCase}Entity>): Promise<{
+    data: {PascalCase}Entity[];
+    _pagination: IPaginationMeta;
+  }> {
+    return await this._{camelCase}Repo._paginateFind(options);
+  }
+
+  async paginatedQueryBuilderFind(
+    options: IPaginateQueryBuilderOption,
+  ): Promise<{
+    data: {PascalCase}Entity[];
+    _pagination: IPaginationMeta;
+  }> {
+    return await this._{camelCase}Repo._paginatedQueryBuilder(options);
+  }
+
+  async softDelete(
+    _{camelCase}Repo: {PascalCase}Entity,
+    options?: IUpdateOptions<{PascalCase}Entity>,
+  ): Promise<{PascalCase}Entity> {
+    return await this._{camelCase}Repo._softDelete(_{camelCase}Repo, options);
+  }
+
+  async delete(
+    _{camelCase}Repo: {PascalCase}Entity,
+    options?: IDeleteOptions<{PascalCase}Entity>,
+  ): Promise<{PascalCase}Entity> {
+    return await this._{camelCase}Repo._delete(_{camelCase}Repo, options);
+  }
+
+  async restore(
+    options: IUpdateRawOptions<{PascalCase}Entity>,
+  ): Promise<UpdateResult | null> {
+    return await this._{camelCase}Repo._restoreRaw(options);
+  }
+
+  async update(
+    _{camelCase}Repo: {PascalCase}Entity,
+    updateData: I{PascalCase}UpdateDto,
+    options?: IUpdateOptions<{PascalCase}Entity>,
+  ) {
+    return await this._{camelCase}Repo._update(_{camelCase}Repo, options);
+  }
+}
