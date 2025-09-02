@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common/decorators';
 import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
-
+import { LoggerModule } from './logger/logger.module';
 import configs from './configs';
 import { ENUM_APP_ENVIRONMENT } from './constants/app.constant';
 import { DatabaseModule } from './database/database.module';
@@ -86,6 +86,7 @@ import { ResponseModule } from './response/response.module';
     ErrorModule,
     HelperModule,
     DebuggerModule,
+    LoggerModule,
   ],
 })
 export class CommonModule {}

@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ENUM_APP_ENVIRONMENT } from '../constants/app.constant';
-//import { SentryService } from '../sentry/sentry.service';
+import { LOGGER_CLIENT_CONNECTION } from 'src/common/logger/logger.constant';
+import pino from 'pino';
 
 @Injectable()
 export class DebuggerService {
   env: ENUM_APP_ENVIRONMENT;
   constructor(
     private readonly configService: ConfigService,
-   // private readonly sentryService: SentryService,
+   @Inject(LOGGER_CLIENT_CONNECTION) private readonly loggerService: pino.Logger,
   ) {
     this.env = this.configService.get<ENUM_APP_ENVIRONMENT>(
       'app.env',
@@ -24,16 +25,15 @@ export class DebuggerService {
 
   info(data: any) {
     console.log('🚀 ~ DebuggerService ~ info ~ data:', data);
-    //this.sentryService.captureMessage(data, 'info');
+    this.loggerService.info(data);
   }
 
   warn(data: any) {
     console.log('🚀 ~ DebuggerService ~ warn ~ data:', data);
-   // this.sentryService.captureMessage(data, 'warning');
+    this.loggerService.warn(data);
   }
 
   error(error: any | Error) {
-    console.log('🚀 ~ DebuggerService ~ error ~ error:', error);
-    //this.sentryService.captureException(error);
+    this.loggerService.error(error);
   }
 }
