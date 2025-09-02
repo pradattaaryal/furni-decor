@@ -1,0 +1,1 @@
+export const REDIS_CLIENT_CONNECTION = 'REDIS_CLIENT';

@@ -23,21 +23,17 @@ import { ResponseModule } from './response/response.module';
           .default(ENUM_APP_ENVIRONMENT.DEVELOPMENT)
           .required(),
         // APP_EMAIL: Joi.string().email().required(),
-
         // HTTP_HOST: Joi.string().required(),
         // HTTP_PORT: Joi.number().required(),
-
         // DATABASE_TYPE: Joi.string().required(),
         // DATABASE_HOST: Joi.string().required(),
         // DATABASE_PORT: Joi.number().required(),
         // DATABASE_USERNAME: Joi.string().required(),
         // DATABASE_PASSWORD: Joi.string().required(),
         // DATABASE_NAME: Joi.string().required(),
-
         // IMG_MAX_FILE_SIZE: Joi.string().required(),
         // IMG_MAX_FILE: Joi.number().required(),
         // MAX_FILE_COUNT: Joi.number().required(),
-
         // MAX_REQUEST_HIT: Joi.number().required(),
         // MAX_REQUEST_HIT_EXPIRATION_TIME_IN_MILLI_SECONDS: Joi.number().required(),
         // PASSWORD_MAX_REQUEST_LIMIT: Joi.number().required(),
@@ -57,9 +53,7 @@ import { ResponseModule } from './response/response.module';
         // MAIL_USERNAME: Joi.string().required(),
         // MAIL_PASSWORD: Joi.string().required(),
         // ADMIN_EMAIL: Joi.string().email().required(),
-
         // FRONT_END_BASE_URL: Joi.string().required(),
-
         // GOOGLE_CLIENT_ID: Joi.string().required(),
         // GOOGLE_CLIENT_SECRET: Joi.string().required(),
         // GOOGLE_CALL_BACK_URL: Joi.string().required(),

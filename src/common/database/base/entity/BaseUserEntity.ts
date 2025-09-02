@@ -24,6 +24,9 @@ export class BaseUserEntity
   @ApiProperty()
   @Column({ name: 'role', type: 'varchar', length: 220, nullable: false })
   role: string;
+ 
+  @Column({ type: 'timestamptz', name: 'password_changed_at' })
+  password_changed_at: Date;
 
   @BeforeInsert()
   async hashPasswordBeforeInsertOrUpdate() {
