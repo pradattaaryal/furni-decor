@@ -1,21 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsOptional, IsString, Length } from 'class-validator';
 import { UserRole } from '../constant/user-type.constant'; // Define enum: ADMIN | CUSTOMER | SELLER
+import { CustomIsEmail, CustomIsEnum, CustomIsOptional, CustomIsString, CustomMaxLength, CustomMinLength } from 'src/common/request/validators/custom-validator';
+import { IUserCreateDto } from '../interfaces/user.create.dto.interface';
 
-export class UserCreateDto {
+export class UserCreateDto implements IUserCreateDto{
   @ApiProperty({
     example: 'john.doe@example.com',
     description: 'Unique email for the user',
   })
-  @IsEmail({}, { message: 'Email must be valid' })
+  @CustomIsEmail({}, { message: 'Email must be valid' })
   email: string;
-
+  
   @ApiProperty({
     example: 'StrongP@ssw0rd',
     description: 'Password for user account',
   })
-  @IsString()
-  @Length(6, 50, { message: 'Password must be between 6 and 50 characters' })
+  @CustomIsString({ message: 'Password must be a string' })
+  @CustomMaxLength(12, { message: 'Password is too long' })
+  @CustomMinLength(6, { message: 'Password is too long' })
   password: string;
 
   @ApiProperty({
@@ -23,8 +26,8 @@ export class UserCreateDto {
     description: 'First name of the user',
     required: false,
   })
-  @IsOptional()
-  @IsString()
+  @CustomIsOptional()
+  @CustomIsString()
   firstName?: string;
 
   @ApiProperty({
@@ -33,8 +36,15 @@ export class UserCreateDto {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @CustomIsString()
   lastName?: string;
- 
-role: string;
+
+//  @CustomIsEnum(UserRole, { message: 'Role must be a valid UserRole' })
+//   @ApiProperty({
+//     example: UserRole.CUSTOMER,
+//     description: 'Role assigned to the user',
+//     enum: UserRole,
+//     default: UserRole.CUSTOMER,
+//   })
+//   role: string;
 }

@@ -22,7 +22,7 @@ export class JwtKeysService {
   // Get the Access Token private key
   getAccessTokenPrivateKey(): string {
     const key = this.configService
-      .get<string>('database.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY')
+      .get<string>('auth.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY')
       ?.trim();
 
     if (!key) {

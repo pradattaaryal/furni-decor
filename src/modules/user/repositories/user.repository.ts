@@ -12,4 +12,12 @@ export class UserRepository extends BaseRepository<UserEntity> {
   ) {
     super(_userRepo);
   }
+
+  async findOneWithPasswordByEmail(email: string): Promise<UserEntity | null> {
+    const qb = this._getQueryBuilder('user');
+    return await qb
+      .where('user.email = :email', { email })
+      .addSelect('user.password')
+      .getOne();
+  }
 }

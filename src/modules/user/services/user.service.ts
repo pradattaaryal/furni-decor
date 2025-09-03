@@ -38,15 +38,15 @@ export class UserService {
     if (repo) {
       where['id'] = Not(repo.id);
     }
-    const existingBranch: UserEntity | null = await this._userRepo._findOne(
+    const existingUser: UserEntity | null = await this._userRepo._findOne(
       {
         options: { where: where },
         withDeleted: true,
         entityManager: options?.entityManager,
       },
     );
-    if (existingBranch) {
-      throw new BadRequestException('Branch already exists by that email');
+    if (existingUser) {
+      throw new BadRequestException('User already exists by that email');
     }
   }
 

@@ -1,4 +1,5 @@
 import { registerAs } from '@nestjs/config';
+import { seconds } from '../helper/constants/helper.function.constant';
 
 export default registerAs('auth', () => {
   return {
@@ -10,6 +11,7 @@ export default registerAs('auth', () => {
     FACEBOOK_CALLBACK_URL: process.env.FACEBOOK_CALLBACK_URL,
     AUTH_JWT_ACCESS_TOKEN_SECRET_KEY:process.env.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY,
     AUTH_JWT_REFRESH_TOKEN_SECRET_KEY:process.env.AUTH_JWT_REFRESH_TOKEN_SECRET_KEY,
+    ACCESS_TOKEN_EPIRATION_TIME:seconds( process.env.AUTH_JWT_ACCESS_TOKEN_EXPIRED || '8h'),
 
   };
 });
