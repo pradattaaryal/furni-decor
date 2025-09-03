@@ -22,10 +22,10 @@ export class BaseUserEntity
   password: string;
 
   @ApiProperty()
-  @Column({ name: 'role', type: 'varchar', length: 220, nullable: false })
+  @Column({ name: 'role', type: 'varchar', length: 220, nullable: true })
   role: string;
  
-  @Column({ type: 'timestamptz', name: 'password_changed_at' })
+  @Column({ type: 'timestamptz', name: 'password_changed_at',nullable: true })
   password_changed_at: Date;
 
   @BeforeInsert()

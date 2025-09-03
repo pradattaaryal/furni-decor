@@ -26,8 +26,4 @@ export class UserEntity extends BaseUserEntity {
   // @JoinColumn({ name: 'image_id' })
   // image: ImageEntity | null;
 
-  @ApiProperty({ example: new Date().toISOString() })
-  @Expose({ groups: ALL_GROUP })
-  @Column({ name: 'password_changed_at', type: 'timestamp', nullable: true })
-  passwordChangedAt: Date | null;
 }
