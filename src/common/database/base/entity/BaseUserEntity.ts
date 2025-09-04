@@ -18,13 +18,12 @@ export class BaseUserEntity
   email: string;
 
   @ApiProperty()
-  @Exclude()
-  @Column({ type: 'text', nullable: false, select: false })
+  @Column({ type: 'text', nullable: false })
   password: string;
   
   @ApiProperty({ description: 'Indicates if the user is verified', default: false })
   @Column({ type: 'boolean', default: false })
-  verified: boolean; // ✅ new field
+  verified: boolean;  
 
   @ApiProperty()
   @Column({ name: 'role', type: 'enum', enum: UserRole, default:UserRole.CUSTOMER  })
@@ -33,10 +32,5 @@ export class BaseUserEntity
   @Column({ type: 'timestamptz', name: 'password_changed_at',nullable: true })
   password_changed_at: Date;
 
-  @BeforeInsert()
-  async hashPasswordBeforeInsertOrUpdate() {
-    if (this.password) {
-      this.password = await bcrypt.hash(this.password, 10);
-    }
-  }
+   
 }

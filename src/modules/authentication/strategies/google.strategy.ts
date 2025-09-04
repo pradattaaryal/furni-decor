@@ -25,7 +25,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const options: StrategyOptions = {
       clientID: config.GOOGLE_CLIENT_ID,
       clientSecret: config.GOOGLE_CLIENT_SECRET,
-      callbackURL: config.GOOGLE_CALLBACK_URL || '/auth/google/callback',
+      callbackURL: config.GOOGLE_CALLBACK_URL || '/backend/api/admin/auth/google/callback',
       scope: ['profile', 'email'],
     };
 

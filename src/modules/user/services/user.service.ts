@@ -5,6 +5,7 @@ import { UserCreateDto } from '../dto/user.create.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
 import { Not } from 'typeorm';
+import { IFindOneOptions } from 'src/common/database/interfaces/findOption.interface';
 
 @Injectable()
 export class UserService {
@@ -49,6 +50,12 @@ export class UserService {
       throw new BadRequestException('User already exists by that email');
     }
   }
-
+ async getById(
+    id: number,
+    options?: IFindOneOptions<UserEntity>,
+  ): Promise<UserEntity | null> {
+    const data = await this._userRepo._findOneById(id, options);
+    return data;
+  }
    
 }

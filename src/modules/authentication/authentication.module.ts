@@ -9,8 +9,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtKeysService } from 'src/modules/authentication/services/jwt-token.service';
 import { ConfigService } from '@nestjs/config';
-import { AuthController } from './controllers/auth.controller';
-
+import { GoogleStrategy } from './strategies/google.strategy';
+ 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -26,7 +26,7 @@ import { AuthController } from './controllers/auth.controller';
     OtpModule,
   ],
   controllers: [],
-  providers: [AuthenticationService, JwtStrategy, LocalStrategy, JwtKeysService],
+  providers: [AuthenticationService, JwtStrategy, LocalStrategy, JwtKeysService,GoogleStrategy],
   exports: [AuthenticationService],
 })
 export class AuthenticationModule {}
