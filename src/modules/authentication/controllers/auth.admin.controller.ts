@@ -3,61 +3,39 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  InternalServerErrorException,
   Post,
   Request,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
- import { UserCreateDto } from 'src/modules/user/dto/user.create.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { IResponse } from 'src/common/response/interfaces/response.interface';
+import { UserCreateDto } from 'src/modules/user/dto/user.create.dto';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { LoginDto } from '../dto/login.dto';
 import { OtpVerificationDto } from '../dto/otp-verification.dto';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { AuthenticationService } from '../services/authentication.service';
-import { IResponse } from 'src/common/response/interfaces/response.interface';
-import { LoginDto } from '../dto/login.dto';
-import { AuthGuard } from '@nestjs/passport';
- 
+import { Throttle } from '@nestjs/throttler';
+import { ApiDocs } from 'src/common/doc/common-docs';
+import { ForgotPasswordDto, ResetPasswordDto } from '../dto/forgot-password.dto';
+
 @ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthenticationService) {}
 
-  @Post('/register')
-  @ApiOperation({ summary: 'Register a new user' })
-  async register(
-    @Body() registerDto: UserCreateDto,
-  ): Promise<
-    IResponse<{
-      user: object;
-      otp: string;
-      otpExpiresAt: Date;
-      message: string;
-    }>
-  > {
-    const result = await this.authService.register(registerDto);
-
-    // Remove password before sending response
-    const { password, ...rest } = result.user as UserEntity;
-
-    return {
-      data: {
-        user: rest,
-        otp: result.otp,
-        otpExpiresAt: result.otpExpiresAt,
-        message: 'User registered successfully. Please verify your OTP.',
-      },
-    };
-  }
-
   @Post('/verify-otp')
   @ApiOperation({ summary: 'Verify OTP and activate user' })
   async verifyOtp(
-    @Body() body: OtpVerificationDto,
+    @Body() verificationDto: OtpVerificationDto,
   ): Promise<IResponse<{ accessToken: string; message: string }>> {
-    const tokens = await this.authService.verifyOtp(body.email, body.otp);
+    const tokens = await this.authService.verifyOtp(
+      verificationDto.email,
+      verificationDto.otp,
+    );
     return {
       data: {
         accessToken: tokens.accessToken,
@@ -83,6 +61,29 @@ export class AuthController {
     };
   }
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('forgot-password')
+  @ApiDocs({
+    operation: 'Forgot password ',
+    jwtAccessToken: false,
+  })
+  async forgotPassword(
+    @Body() body: ForgotPasswordDto,
+  ): Promise<void> {
+    return this.authService.forgotPassword(body.email);
+  }
+   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('reset-password')
+  @ApiDocs({
+    operation: 'Password reset',
+    jwtAccessToken: false,
+  })
+  async resetPassword(
+    @Body() body: ResetPasswordDto,
+  ): Promise<void> {
+    return this.authService.resetPassword(body.token, body.password);
+  }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {
@@ -91,22 +92,25 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleCallback(@Request() req: any): Promise<IResponse<{tokens: object; user: object; message: string }>>  {
+  async googleCallback(
+    @Request() req: any,
+  ): Promise<IResponse<{ tokens: object; user: object; message: string }>> {
     const profile = req.user as {
       providerId: string;
       email?: string;
       displayName?: string;
     };
     const result = await this.authService.handleSocialLogin({
-       providerId: profile.providerId,
+      providerId: profile.providerId,
       email: profile.email,
       displayName: profile.displayName,
-      
     });
-    return {data: {
+    return {
+      data: {
         tokens: result.tokens,
         user: result.user,
         message: 'Login successful',
-      },};
+      },
+    };
   }
 }

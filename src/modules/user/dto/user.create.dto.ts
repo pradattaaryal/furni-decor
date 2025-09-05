@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsOptional, IsString, Length } from 'class-validator';
-import { UserRole } from '../constant/user-type.constant'; // Define enum: ADMIN | CUSTOMER | SELLER
-import { CustomIsEmail, CustomIsEnum, CustomIsNotEmpty, CustomIsOptional, CustomIsString, CustomMaxLength, CustomMinLength } from 'src/common/request/validators/custom-validator';
+import { CustomIsEmail, CustomIsNotEmpty, CustomIsOptional, CustomIsString, CustomMatches, CustomMaxLength, CustomMinLength } from 'src/common/request/validators/custom-validator';
 import { IUserCreateDto } from '../interfaces/user.create.dto.interface';
 
 export class UserCreateDto implements IUserCreateDto{
@@ -10,6 +8,8 @@ export class UserCreateDto implements IUserCreateDto{
     description: 'Unique email for the user',
   })
   @CustomIsEmail({}, { message: 'Email must be valid' })
+  @CustomIsNotEmpty({ message: 'Email must not be empty' })
+  @CustomIsString({ message: 'Email must be a string' })
   email: string;
   
   @ApiProperty({
@@ -17,8 +17,15 @@ export class UserCreateDto implements IUserCreateDto{
     description: 'Password for user account',
   })
   @CustomIsString({ message: 'Password must be a string' })
-  @CustomMaxLength(12, { message: 'Password is too long' })
+  @CustomMaxLength(50, { message: 'Password is too long' })
   @CustomMinLength(6, { message: 'Password is too short' })
+  @CustomMatches(
+     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/,
+     {
+       message:
+         'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)',
+     },
+   ) 
   password: string;
 
   @ApiProperty({
@@ -26,9 +33,9 @@ export class UserCreateDto implements IUserCreateDto{
     description: 'First name of the user',
     required: false,
   })
-  @CustomIsOptional()
-  @CustomIsString()
-  firstName?: string;
+  @CustomIsNotEmpty({ message: 'First Name must not be a Empty' })
+  @CustomIsString({ message: 'First Name must be a string' })
+   firstName?: string;
 
   @ApiProperty({
     example: 'Doe',
@@ -39,12 +46,4 @@ export class UserCreateDto implements IUserCreateDto{
   @CustomIsString({ message: 'Last Name must be a string' })
   lastName?: string;
 
-//  @CustomIsEnum(UserRole, { message: 'Role must be a valid UserRole' })
-//   @ApiProperty({
-//     example: UserRole.CUSTOMER,
-//     description: 'Role assigned to the user',
-//     enum: UserRole,
-//     default: UserRole.CUSTOMER,
-//   })
-//   role: string;
 }

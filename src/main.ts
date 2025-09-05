@@ -1,6 +1,6 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestApplication, NestFactory } from '@nestjs/core';
+import { NestApplication, NestFactory, Reflector } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
  import swaggerInit from './swagger';
@@ -27,7 +27,7 @@ async function bootstrap() {
 
 
 
-
+app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await swaggerInit(app);
   app.use(helmet());
   const configService = app.get(ConfigService);

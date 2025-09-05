@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { BigIntTransformerPipe } from 'src/utils/bigIntTransformer';
 import {
   BaseEntity,
@@ -22,20 +22,20 @@ export class DatabaseBaseEntity extends BaseEntity {
   @Generated()
   @Index({ where: '"deleted_at" IS NULL' })
   @PrimaryColumn({
-    type: 'bigint',
-    transformer: new BigIntTransformerPipe(),
+    type: 'int',
+    
   })
   id: number;
 
-  @Expose({ groups: ADMIN_ONLY_GROUP })
+  @Exclude( ) 
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 
-  @Expose({ groups: ADMIN_ONLY_GROUP })
+  @Exclude( ) 
   @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
   updatedAt: Date;
 
-  @Expose({ groups: DELETE_AT_FIELD_GROUP })
+   @Exclude( ) 
   @DeleteDateColumn({ type: 'timestamptz', name: 'deleted_at' })
   deletedAt: Date;
 }

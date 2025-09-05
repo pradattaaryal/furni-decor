@@ -17,6 +17,7 @@ export class BaseUserEntity
   @Column({ type: String, length: 100, unique: true, nullable: false })
   email: string;
 
+ @Exclude( ) 
   @ApiProperty()
   @Column({ type: 'text', nullable: false })
   password: string;
