@@ -3,6 +3,8 @@ import { NestApplication } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ENUM_APP_ENVIRONMENT } from './common/constants/app.constant';
 import { AdminRouterModule } from './router/routes/admin.route.module';
+import { CustomerRouterModule } from './router/routes/customer.route.module';
+import { MarketingRouterModule } from './router/routes/marketing.route.module';
  
 
 export default async function (app: NestApplication) {
@@ -44,97 +46,67 @@ export default async function (app: NestApplication) {
       },
     });
 
-    // // for public user
-    // const publicUserDocumentBuild = new DocumentBuilder()
-    //   .setTitle('Furni Decor Public User API')
-    //   .setDescription('Rest APIs for Furni Decor Public User')
-    //   .setVersion('1')
-    //   .addBearerAuth(
-    //     { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-    //     'accessToken',
-    //   )
-    //   .build();
+    // for public user
+    const customerDocumentBuild = new DocumentBuilder()
+      .setTitle('Furni Decor Public User API')
+      .setDescription('Rest APIs for Furni Decor Public User')
+      .setVersion('1')
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'accessToken',
+      )
+      .build();
 
-    // const publicUserDocument = SwaggerModule.createDocument(
-    //   app,
-    //   publicUserDocumentBuild,
-    //   {
-    //     deepScanRoutes: true,
-         
-    //   },
-    // );
+    const CustomerDocument = SwaggerModule.createDocument(
+      app,
+      customerDocumentBuild,
+      {
+        deepScanRoutes: true,
+        include: [CustomerRouterModule],
+      },
+    );
 
-    // SwaggerModule.setup('/backend/public-user-docs', app, publicUserDocument, {
-    //   explorer: true,
-    //   customSiteTitle: 'Furni Decor Public User',
-    //   swaggerOptions: {
-    //     docExpansion: 'none',
-    //     filter: true,
-    //     showRequestDuration: true,
-    //     persistAuthorization: true,
-    //   },
-    // });
+    SwaggerModule.setup('/backend/public-user-docs', app, CustomerDocument, {
+      explorer: true,
+      customSiteTitle: 'Furni Decor Public User',
+      swaggerOptions: {
+        docExpansion: 'none',
+        filter: true,
+        showRequestDuration: true,
+        persistAuthorization: true,
+      },
+    });
 
-    // // for system user
-    // const systemUserDocumentBuild = new DocumentBuilder()
-    //   .setTitle('Furni Decor System User API')
-    //   .setDescription('Rest APIs for Furni Decor System User')
-    //   .setVersion('1')
-    //   .addBearerAuth(
-    //     { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-    //     'accessToken',
-    //   )
-    //   .build();
+  
+    // for marketing user
+    const partnerDocumentBuild = new DocumentBuilder()
+      .setTitle('Furni Decor Marketing User API')
+      .setDescription('Rest APIs for Furni Decor Partner User')
+      .setVersion('1')
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'accessToken',
+      )
+      .build();
 
-    // const systemUserDocument = SwaggerModule.createDocument(
-    //   app,
-    //   systemUserDocumentBuild,
-    //   {
-    //     deepScanRoutes: true,
-        
-    //   },
-    // );
+    const partnerDocument = SwaggerModule.createDocument(
+      app,
+      partnerDocumentBuild,
+      {
+        deepScanRoutes: true,
+        include: [MarketingRouterModule],
+      },
+    );
 
-    // SwaggerModule.setup('/backend/system-user-docs', app, systemUserDocument, {
-    //   explorer: true,
-    //   customSiteTitle: 'Furni Decor System User',
-    //   swaggerOptions: {
-    //     docExpansion: 'none',
-    //     filter: true,
-    //     showRequestDuration: true,
-    //     persistAuthorization: true,
-    //   },
-    // });
-
-    // // for partner user
-    // const partnerDocumentBuild = new DocumentBuilder()
-    //   .setTitle('Furni Decor Partners User API')
-    //   .setDescription('Rest APIs for Furni Decor Partner User')
-    //   .setVersion('1')
-    //   .addBearerAuth(
-    //     { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-    //     'accessToken',
-    //   )
-    //   .build();
-
-    // const partnerDocument = SwaggerModule.createDocument(
-    //   app,
-    //   partnerDocumentBuild,
-    //   {
-    //     deepScanRoutes: true,
-       
-    //   },
-    // );
-
-    // SwaggerModule.setup('/backend/partners-docs', app, partnerDocument, {
-    //   explorer: true,
-    //   customSiteTitle: 'Furni Decor Partner User',
-    //   swaggerOptions: {
-    //     docExpansion: 'none',
-    //     filter: true,
-    //     showRequestDuration: true,
-    //     persistAuthorization: true,
-    //   },
-    // });
+    SwaggerModule.setup('/backend/marketing-docs', app, partnerDocument, {
+      explorer: true,
+      customSiteTitle: 'Furni Decor Partner User',
+      swaggerOptions: {
+        docExpansion: 'none',
+        filter: true,
+        showRequestDuration: true,
+        persistAuthorization: true,
+      },
+    });
   }
 }

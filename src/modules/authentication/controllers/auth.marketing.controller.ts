@@ -11,6 +11,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IResponse } from 'src/common/response/interfaces/response.interface';
+import { UserCreateDto } from 'src/modules/user/dto/user.create.dto';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { LoginDto } from '../dto/login.dto';
 import { OtpVerificationDto } from '../dto/otp-verification.dto';
@@ -23,7 +24,7 @@ import { ForgotPasswordDto, ResetPasswordDto } from '../dto/forgot-password.dto'
 @ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
-export class AuthAdminController {
+export class AuthMarketingController {
   constructor(private readonly authService: AuthenticationService) {}
 
   @Post('/verify-otp')

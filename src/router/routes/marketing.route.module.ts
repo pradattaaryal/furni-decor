@@ -3,7 +3,7 @@ import { AuthenticationModule } from 'src/modules/authentication/authentication.
 import { UserModule } from 'src/modules/user/user.module';
 import { OtpModule } from 'src/modules/otp/otp.module';
 import { UserController } from 'src/modules/user/controllers/user.controller';
-import { AuthAdminController } from 'src/modules/authentication/controllers/auth.admin.controller';
+import { AuthMarketingController } from 'src/modules/authentication/controllers/auth.marketing.controller';
  
 @Module({
   imports: [
@@ -11,6 +11,6 @@ import { AuthAdminController } from 'src/modules/authentication/controllers/auth
     AuthenticationModule,
     OtpModule, 
   ],
-  controllers: [UserController,AuthAdminController],
+  controllers: [UserController,AuthMarketingController],
 })
-export class AdminRouterModule {}
+export class MarketingRouterModule {}

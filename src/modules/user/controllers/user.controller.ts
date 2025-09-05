@@ -9,14 +9,14 @@ import { UserService } from '../services/user.service';
 @SerializeOptions({
   groups: ADMIN_ONLY_GROUP,
 })
-@ApiTags('Users')
-@Controller('User')
-export class UserAdminController {
+@ApiTags('users')
+@Controller('user')
+export class UserController {
   constructor(
     private readonly _UserService: UserService,
    ) {}
 
-    @Post('/register')
+    @Post('/create')
     @ApiOperation({ summary: 'Register a new user' })
     async register(@Body() registerDto: UserCreateDto): Promise<
       IResponse<{
