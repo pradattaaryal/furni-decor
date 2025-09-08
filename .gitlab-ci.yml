@@ -10,4 +10,4 @@ build:
 deploy:
   stage: deploy
   script:
-    - cd /home/react/furnidecor && bash deploy.sh --backend --backend-tag $CI_COMMIT_SHORT_SHA
+    - cd /home/gitlab-runner/furnidecor && bash deploy.sh --backend --backend-tag $CI_COMMIT_SHORT_SHA
