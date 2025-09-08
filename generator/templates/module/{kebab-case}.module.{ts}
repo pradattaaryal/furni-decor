@@ -1,0 +1,11 @@
+import { Module } from '@nestjs/common';
+import { {PascalCase}Service } from './services/{kebab-case}.service';
+import { {PascalCase}RepositoryModule } from './repositories/{kebab-case}.repository.module';
+
+
+@Module({
+  providers: [{PascalCase}Service],
+  exports: [{PascalCase}Service],
+  imports: [{PascalCase}RepositoryModule],
+})
+export class {PascalCase}Module {}

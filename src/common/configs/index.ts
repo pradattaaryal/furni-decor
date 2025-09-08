@@ -1,0 +1,7 @@
+import AppConfig from './app.config';
+import HelperConfig from './helper.config';
+import RequestConfig from './request.config';
+import DataBaseConfig from './database.config';
+import MailConfig from './mail.config';
+ import AuthConfig from './auth.config';
+export default [DataBaseConfig, AppConfig, HelperConfig, RequestConfig, MailConfig, AuthConfig];

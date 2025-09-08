@@ -1,0 +1,54 @@
+version: '3.9'
+
+networks:
+  prod_net:
+    name: furni-decor-network
+
+volumes:
+  furni-decor-pg-data:
+    name: furni-decor-pg-data
+  furni-decor-redis-data:
+    name: furni-decor-redis-data
+
+services:  
+  furni-decor-postgres:
+    container_name: furni-decor-postgres
+    image: 'postgres:16-bookworm'
+    environment:
+      POSTGRES_USER: '${DATABASE_USERNAME}'
+      POSTGRES_PASSWORD: '${DATABASE_PASSWORD}'
+      POSTGRES_DB: '${DATABASE_NAME}'
+    ports:
+      - '5439:5432'
+    restart: '${DOCKER_RESTART_POLICY:-unless-stopped}'
+    stop_grace_period: '3s'
+    volumes:
+      - furni-decor-pg-data:/var/lib/postgresql/data
+      - ../data/postgres/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - prod_net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}']
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  furni-decor-redis:
+    container_name: furni-decor-redis
+    image: 'redis/redis-stack:latest'
+    environment:
+      REDIS_ARGS: '--save 60 1 --appendonly yes'
+    ports:
+      - '6379:6379'
+      - '8001:8001'
+    restart: '${DOCKER_RESTART_POLICY:-unless-stopped}'
+    volumes:
+      - furni-decor-redis-data:/data
+    networks:
+      - prod_net
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      retries: 5
+      timeout: 10s
