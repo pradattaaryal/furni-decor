@@ -28,7 +28,6 @@
     "db:trigger:init": "npx nestjs-command trigger:init",
     "db:remove-trigger:init": "npx nestjs-command remove-trigger:init",
     "db:seed-production:init": "node dist/cli.js seed:init",
-    "prepare": "husky",
     "spell-check": "cspell \"src/**/*.ts\"",
     "generate:module": "node ./generator/generator.mjs"
   },
