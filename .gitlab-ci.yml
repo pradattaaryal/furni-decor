@@ -1,6 +1,12 @@
 workflow:
    rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - when: never
+
+stages:
+  - build
+  - deploy
 
 build:
   stage: build
