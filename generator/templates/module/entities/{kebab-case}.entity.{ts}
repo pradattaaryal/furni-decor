@@ -1,0 +1,25 @@
+import { Expose } from 'class-transformer';
+import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
+import { ALL_GROUP } from 'src/common/database/constant/serialization-group.constant';
+import { Column, Entity, Index } from 'typeorm';
+import { I{PascalCase}Entity } from '../interfaces/{kebab-case}.entity.interface';
+
+export const {upper_snake_case}_DATABASE_TABLE_NAME = '{snake_case}';
+@Entity({ name: {upper_snake_case}_DATABASE_TABLE_NAME })
+export class {PascalCase}Entity extends DatabaseBaseEntity implements I{PascalCase}Entity {
+  // ======================
+  // Columns===============
+  // ======================
+
+  // ======================
+  // Computed columns======
+  // ======================
+  
+  // ======================
+  // Relations=============
+  // ======================
+
+  // ======================
+  // Hooks=================
+  // ======================
+}
