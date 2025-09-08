@@ -17,7 +17,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN npm install -g pnpm@9.12.2 && pnpm install --prod --fronzen-lockfile
+RUN npm install -g pnpm@9.12.2 && pnpm install --prod --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
 
