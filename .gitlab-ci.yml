@@ -16,4 +16,4 @@ build:
 deploy:
   stage: deploy
   script:
-    - cd /home/gitlab-runner/furnidecor && bash deploy.sh --backend --backend-tag "$CI_COMMIT_SHORT_SHA"
+    - echo "sha commit:$CI_COMMIT_SHORT_SHA"
