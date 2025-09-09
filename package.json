@@ -32,7 +32,7 @@
     "generate:module": "node ./generator/generator.mjs"
   },
   "dependencies": {
-    "@faker-js/faker": "^10.0.0",
+    "@faker-js/faker": "^8.4.1",
     "@getbrevo/brevo": "^3.0.1",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/bull": "^11.0.3",
