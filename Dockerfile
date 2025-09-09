@@ -23,4 +23,4 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3001
 
-CMD npx typeorm --dataSource=dist/database/data-source.js migration:run && npx nestjs-command seed:init && npx nestjs-command trigger:init && node dist/main.js
+CMD npx typeorm --dataSource=dist/database/data-source.js migration:run && node dist/main.js
