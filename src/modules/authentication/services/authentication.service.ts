@@ -12,13 +12,11 @@ import { UserCreateDto } from 'src/modules/user/dto/user.create.dto';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { UserRepository } from 'src/modules/user/repositories/user.repository';
 import { UserService } from 'src/modules/user/services/user.service';
-import { DataSource } from 'typeorm';
-import { OAuthProvider } from '../constant/login-provider';
-import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 
 export type AccessTokenPayload = { sub: number; roles: UserRole };
-export type  TokenPayloadForCredentialReset = { sub: number; email: string };
+export type TokenPayloadForCredentialReset = { sub: number; email: string };
 
 @Injectable()
 export class AuthenticationService {
@@ -29,227 +27,107 @@ export class AuthenticationService {
     private readonly otpService: OtpService,
   ) {}
 
+  /** ================= AUTH HELPERS ================== */
+
+  private async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+  }
+
+  private async comparePassword(raw: string, hashed: string): Promise<boolean> {
+    return bcrypt.compare(raw, hashed);
+  }
+
+  private async verifyUser(user: UserEntity): Promise<UserEntity> {
+    if (user.verified) return user;
+
+    user.verified = true;
+    return this.userRepository._update(user);
+  }
+
+  private sanitizeUser(user: UserEntity): Omit<UserEntity, 'password'> {
+  const { password, ...rest } = user as any;
+  return rest;
+}
+
+
+  /** ================= TOKEN HANDLERS ================== */
+
+  async generateAccessToken(user: { id: number; role: UserRole }) {
+    const payload: AccessTokenPayload = { sub: user.id, roles: user.role };
+    return { accessToken: this.jwtService.sign(payload) };
+  }
+
+  async generateTokenForCredentialReset(user: { id: number; email: string }) {
+    const payload: TokenPayloadForCredentialReset = {
+      sub: user.id,
+      email: user.email,
+    };
+    return { resetToken: this.jwtService.sign(payload, { expiresIn: '15m' }) };
+  }
+
+  async decodeConfirmationToken(
+    token: string,
+  ): Promise<{ userId: number; email: string }> {
+    try {
+      const payload =
+        await this.jwtService.verifyAsync<TokenPayloadForCredentialReset>(
+          token,
+        );
+      return { userId: payload.sub, email: payload.email };
+    } catch {
+      throw new UnauthorizedException('Invalid or expired reset token');
+    }
+  }
+
+  /** ================= USER VALIDATION ================== */
+
   async validateUser(
     email: string,
     password: string,
   ): Promise<Omit<UserEntity, 'password'>> {
-    const user = await this.userRepository._findOne({
+    const user = await this.findUserByEmail(email);
+    if (!user || !(await this.comparePassword(password, user.password))) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    if (!user.verified) {
+      throw new UnauthorizedException('Account not verified');
+    }
+    return this.sanitizeUser(user);
+  }
+
+  async findUserByEmail(email: string): Promise<UserEntity | null> {
+    return this.userRepository._findOne({
       options: { where: { email }, withDeleted: false } as any,
     });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-
-    const isMatch = await bcrypt.compare(password, (user as any).password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
-
-    if (!user.verified) throw new UnauthorizedException('Account not verified');
-
-    const { password: _password, ...rest } = user as any;
-    return rest;
   }
 
-  async generateAccessToken(user: { id: number; role: UserRole }) {
-    const payload: AccessTokenPayload = { sub: user.id, roles: user.role };
-    const token = this.jwtService.sign(payload);
-    return { accessToken: token };
-  }
-
-
-
-  async forgotPassword(email: string): Promise<void> {
-    const user = await this.findUserByEmail(email);
-    if (!user) {
-      throw new NotFoundException(`No user found for email: ${email}`);
-    }
-    await this.sendResetPasswordLink(user.id, email);
-  }
-
-
-
-
- 
-
-async resetPassword(token: string, password: string,options?: IUpdateOptions<UserEntity>,): Promise<void> {
- 
-  const { userId, email } = await this.decodeConfirmationToken(token);
-
-  const user =await this.findUserByEmail(email);
-  if (!user) {
-    throw new NotFoundException(`No user found for email: ${email}`);
-  }
-
-   const hashedPassword = bcrypt.hashSync(password, 10);  
-    user.password = hashedPassword;
-  await this.userRepository._update(user,options);
-
-
-}
-
-
-
-
-
-
-
-async decodeConfirmationToken(token: string): Promise<{ userId: number; email: string }> {
-  try {
-    const payload = await this.jwtService.verifyAsync<TokenPayloadForCredentialReset>(token, {
-    });
-
-    return { userId: payload.sub, email: payload.email };
-  } catch (err) {
-    throw new UnauthorizedException('Invalid or expired reset token');
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- async generateTokenForCredentialReset(user: { id: number; email: string }) {
-    const payload: TokenPayloadForCredentialReset = { sub: user.id, email: user.email };
-    const token = this.jwtService.sign(payload);
-    return { ResetToken: token };
-}
-
-
-  public async sendResetPasswordLink(userId: number, email: string): Promise<void> {
-    // 1. Sign JWT token with short expiry
- 
-  const token = await this.generateTokenForCredentialReset({
-      id: userId,
-      email:email,
-    });
-
-    // 2. Build reset link
-    const url =  token 
-
-    const text = `Hi,\nTo reset your password, click here: ${url}\n\nThis link is valid for 15 minutes.`;
-
-    // 3. Send mail here
-   
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  /** ================= LOGIN FLOWS ================== */
 
   async login(data: { email: string; password: string }) {
-    const email = data.email;
-    const password = data.password;
-    const user = await this.findUserByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-    console.log(password, user.password);
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
-
-    if (!user.verified) throw new UnauthorizedException('Account not verified');
+    const user = await this.validateUser(data.email, data.password);
 
     const token = await this.generateAccessToken({
       id: user.id,
       role: user.role as UserRole,
     });
-    const { password: _, ...safeUser } = user;
-    return {
-      token: token,
-      user: safeUser,
-    };
+
+    return { token, user };
   }
 
-  async findUserByEmail(email: string): Promise<UserEntity | false> {
-    const user = await this.userRepository._findOne({
-      options: { where: { email }, withDeleted: false } as any,
-    });
-    return user || false;
-  }
-
-  async verifyOtp(email: string, otp: string) {
-    const user = await this.userRepository._findOne({
-      options: { where: { email } },
-    });
-    if (!user) throw new BadRequestException('User not found');
-
-    const ok = await this.otpService.verifyOtpForUser(user.id, otp);
-    if (!ok) throw new UnauthorizedException('Invalid or expired OTP');
-
-    // Reuse extracted method
-    await this.verifyUser(user);
-
-    return this.generateAccessToken({
-      id: user.id,
-      role: user.role as UserRole,
-    });
-  }
-
-  async getForgetPassword(data: ForgotPasswordDto): Promise<string> {
-    const existingUser = await this.findUserByEmail(data.email);
-
-    if (!existingUser) {
-      throw new BadRequestException('Invalid Email');
-    }
-    // console.log(`Sending password reset email to: ${existingUser.email}`);
-
-    // await this.sendForgotPasswordVerification(existingUser);
-    return 'Check your email to reset password';
-  }
-
-  private async verifyUser(user: UserEntity): Promise<UserEntity> {
-    if (user.verified) return user; // already verified, skip update
-
-    user.verified = true;
-    return this.userRepository._update(user);
-  }
   async handleSocialLogin(input: {
     providerId: string;
     email?: string;
     displayName?: string;
   }) {
-    let user: UserEntity | null = null;
-
-    if (input.email) {
-      const userExist = await this.findUserByEmail(input.email);
-      if (userExist) {
-        user = userExist;
-      }
-    }
+    let user = input.email ? await this.findUserByEmail(input.email) : null;
 
     if (!user) {
-      // Generate random password
-      const randomPassword = bcrypt.hashSync(
+      const randomPassword = await this.hashPassword(
         `${input.providerId}:${Date.now()}`,
-        10,
       );
+      const [firstName, ...rest] = input.displayName?.split(' ') || [''];
+      const lastName = rest.length ? rest.join(' ') : 'lastname';
 
-      let firstName = '';
-      let lastName = '';
-      if (input.displayName) {
-        const nameParts = input.displayName.trim().split(' ');
-        firstName = nameParts.shift() || ''; // first element
-        lastName = nameParts.length ? nameParts.join(' ') : 'lastname'; // rest as lastName or empty
-      }
-
-      // Create the user
       user = await this.userService.create({
         firstName,
         lastName,
@@ -265,14 +143,73 @@ async decodeConfirmationToken(token: string): Promise<{ userId: number; email: s
         'Unable to authenticate via social provider',
       );
     }
+
     await this.verifyUser(user);
 
     const tokens = await this.generateAccessToken({
       id: user.id,
       role: user.role as UserRole,
     });
-    const { password, ...safeUser } = user as any;
 
-    return { tokens, user: safeUser };
+    return { tokens, user: this.sanitizeUser(user) };
+  }
+
+  /** ================= PASSWORD FLOWS ================== */
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException(`No user found for email: ${email}`);
+    }
+    await this.sendResetPasswordLink(user.id, user.email);
+  }
+
+  async resetPassword(
+    token: string,
+    newPassword: string,
+    options?: IUpdateOptions<UserEntity>,
+  ): Promise<void> {
+    const { email } = await this.decodeConfirmationToken(token);
+    const user = await this.findUserByEmail(email);
+
+    if (!user) throw new NotFoundException(`No user found for email: ${email}`);
+
+    user.password = await this.hashPassword(newPassword);
+    await this.userRepository._update(user, options);
+  }
+
+  async sendResetPasswordLink(userId: number, email: string): Promise<void> {
+    const { resetToken } = await this.generateTokenForCredentialReset({
+      id: userId,
+      email,
+    });
+
+    const url = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    const text = `Hi,\nTo reset your password, click here: ${url}\n\nThis link is valid for 15 minutes.`;
+
+    // TODO: Integrate email service (e.g., MailerService)
+    console.log(`Sending reset password email to ${email}: ${text}`);
+  }
+
+  async getForgetPassword(data: ForgotPasswordDto): Promise<string> {
+    const user = await this.findUserByEmail(data.email);
+    if (!user) throw new BadRequestException('Invalid email');
+
+    await this.sendResetPasswordLink(user.id, user.email);
+    return 'Check your email to reset password';
+  }
+
+  /** ================= OTP VERIFICATION ================== */
+
+  async verifyOtp(email: string, otp: string) {
+    const user = await this.findUserByEmail(email);
+    if (!user) throw new BadRequestException('User not found');
+
+    const isValid = await this.otpService.verifyOtpForUser(user.id, otp);
+    if (!isValid) throw new UnauthorizedException('Invalid or expired OTP');
+
+    await this.verifyUser(user);
+
+    return this.generateAccessToken({ id: user.id, role: user.role as UserRole});
   }
 }

@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpCode,
   Post,
   Request,
   UseGuards,
@@ -45,6 +46,7 @@ export class AuthAdminController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Login with credentials' })
   async login(
     @Body() body: LoginDto,
