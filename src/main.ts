@@ -4,7 +4,6 @@ import { NestApplication, NestFactory, Reflector } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
  import swaggerInit from './swagger';
-import { json, raw } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
@@ -23,7 +22,7 @@ async function bootstrap() {
   // );
 
   // Other JSON endpoints use the normal JSON parser
-  app.use(json());
+//  app.use(json());
 
 
 
