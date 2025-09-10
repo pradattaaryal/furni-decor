@@ -88,19 +88,11 @@ export class UserService {
   async registerEmployee(
     registerDto: MarketingUserCreateDto,
   ): Promise<{ user: UserEntity }> {
-<<<<<<< HEAD
-          if (!registerDto.password || registerDto.password.length < 6) {
-            throw new BadRequestException(
-              'Password must be at least 6 characters long',
-            );
-          }
-=======
     if (!registerDto.password || registerDto.password.length < 6) {
       throw new BadRequestException(
         'Password must be at least 6 characters long',
       );
     }
->>>>>>> f80857a (create employee)
 
     // Prevent duplicate email
     await this.throwErrorIfExistingUserByEmailFound(registerDto.email);

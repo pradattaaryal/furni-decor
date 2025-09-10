@@ -2,18 +2,17 @@ import { Module } from '@nestjs/common';
 import { CategoryService } from './services/category.service';
 import { CategoryRepositoryModule } from './repositories/category.repository.module';
 import { CategoryAdminController } from './controllers/category.admin.controller';
-import { CategorySeederService } from './providers/category.seeder';
-import { CategoryIdValidation, CategoryNameValidation } from './validations';
-
+ import { CategoryEntity } from './entities/category.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+ 
 @Module({
   providers: [
     CategoryService,
-    CategorySeederService,
-    CategoryIdValidation,
-    CategoryNameValidation,
+    
   ],
+
   exports: [CategoryService],
-  controllers: [CategoryAdminController],
-  imports: [CategoryRepositoryModule],
+  controllers: [],
+  imports: [CategoryRepositoryModule,TypeOrmModule.forFeature([CategoryEntity])],
 })
 export class CategoryModule {}
