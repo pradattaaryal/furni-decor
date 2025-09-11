@@ -1,5 +1,7 @@
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   Index,
@@ -10,6 +12,8 @@ import {
 import { ICategoryEntity } from '../interfaces/category.entity.interface';
 
 export const CATEGORY_DATABASE_TABLE_NAME = 'categories';
+
+import slugify from 'slugify';
 
 @Entity({ name: CATEGORY_DATABASE_TABLE_NAME })
 @Index(['name', 'parent_id'])
@@ -26,6 +30,12 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
   @Column({ type: 'int', nullable: true })
   parent_id: number | null;
 
+ @Column({ type: 'varchar', length: 255, unique: true })
+  slug: string;
+
+  
+  @Column({ type: 'text', nullable: true })
+  description?: string | null; // ✅ new field
   // ======================
   // Relations=============
   // ======================
@@ -41,4 +51,12 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
    
   @OneToMany(() => CategoryEntity, (category) => category.parent)
   children?: CategoryEntity[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug(): void {
+    if (this.name) {
+      this.slug = slugify(this.name, { lower: true, strict: true });
+    }
+  }
 }

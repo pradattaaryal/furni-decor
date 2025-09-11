@@ -26,8 +26,7 @@ export class CategoryService {
     createDto: CategoryCreateDto,
     options?: ICreateOptions,
   ): Promise<CategoryEntity> {
-    console.log(createDto);
-    const data = await this._categoryRepo._create(createDto, options);
+     const data = await this._categoryRepo._create(createDto, options);
     return data;
   }
 
@@ -36,8 +35,7 @@ export class CategoryService {
     options?: IFindOneOptions<CategoryEntity>,
   ): Promise<CategoryEntity | null> {
     const data = await this._categoryRepo._findOneById(id, options);
-    console.log(data);
-    return data;
+     return data;
   }
 
 

@@ -27,4 +27,12 @@ export class CategoryCreateDto implements ICategoryCreateDto {
   @CustomIsNumber()
    @Transform(({ value }: { value: any }) => value ? parseInt(value) : undefined)
   parent_id?: number;
+
+
+
+  @CustomIsOptional()
+  @CustomIsString()
+  @CustomMaxLength(1000)
+  @Transform(({ value }: { value: string }) => value?.trim())
+  description?: string;
 }
