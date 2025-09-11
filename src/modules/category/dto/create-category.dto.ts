@@ -1,26 +1,20 @@
 import { faker } from '@faker-js/faker';
 import {
-  ApiProperty,
-  IntersectionType,
-  OmitType,
-  PickType,
+  ApiProperty
 } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, MaxLength, MinLength, IsOptional, IsInt } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { CustomIsNotEmpty, CustomIsNumber, CustomIsOptional, CustomIsString, CustomMaxLength, CustomMinLength } from 'src/common/request/validators/custom-validator';
 import { ICategoryCreateDto } from '../interfaces/category.create.dto.interface';
-import { IsCategoryIdValid, IsCategoryNameUnique } from '../validations';
-
+ 
 export class CategoryCreateDto implements ICategoryCreateDto {
   @ApiProperty({
     example: faker.commerce.department(),
     description: 'Category name',
   })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(2)
-  @MaxLength(255)
-  @IsCategoryNameUnique()
+  @CustomIsNotEmpty()
+  @CustomIsString()
+  @CustomMinLength(2)
+  @CustomMaxLength(255)
   @Transform(({ value }: { value: string }) => value.trim().toLowerCase())
   name: string;
 
@@ -29,9 +23,16 @@ export class CategoryCreateDto implements ICategoryCreateDto {
     description: 'Parent category ID',
     required: false,
   })
-  @IsOptional()
-  @IsInt()
-  @IsCategoryIdValid()
-  @Transform(({ value }: { value: any }) => value ? parseInt(value) : undefined)
+  @CustomIsOptional()
+  @CustomIsNumber()
+   @Transform(({ value }: { value: any }) => value ? parseInt(value) : undefined)
   parent_id?: number;
+
+
+
+  @CustomIsOptional()
+  @CustomIsString()
+  @CustomMaxLength(1000)
+  @Transform(({ value }: { value: string }) => value?.trim())
+  description?: string;
 }
