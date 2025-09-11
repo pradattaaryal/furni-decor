@@ -6,14 +6,17 @@ import { UserController } from 'src/modules/user/controllers/user.controller';
 import { AuthAdminController } from 'src/modules/authentication/controllers/auth.admin.controller';
 import { CategoryModule } from 'src/modules/category/category.module';
 import { CategoryAdminController } from 'src/modules/category/controllers/category.admin.controller';
+import { ProductsModule } from 'src/modules/products/products.module';
+import { ProductAdminController } from 'src/modules/products/controllers/product.admin.controller';
  
 @Module({
   imports: [
     UserModule,
     AuthenticationModule,
     OtpModule, 
-    CategoryModule
+    CategoryModule,
+    ProductsModule
   ],
-  controllers: [UserController,AuthAdminController,CategoryAdminController],
+  controllers: [UserController,AuthAdminController,CategoryAdminController,ProductAdminController],
 })
 export class AdminRouterModule {}
