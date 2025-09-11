@@ -52,6 +52,10 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
   @OneToMany(() => CategoryEntity, (category) => category.parent)
   children?: CategoryEntity[];
 
+  // Products relationship - using forward reference to avoid circular dependency
+  @OneToMany('ProductEntity', 'category')
+  products?: any[];
+
   @BeforeInsert()
   @BeforeUpdate()
   generateSlug(): void {

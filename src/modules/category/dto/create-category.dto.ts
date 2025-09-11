@@ -29,7 +29,11 @@ export class CategoryCreateDto implements ICategoryCreateDto {
   parent_id?: number;
 
 
-
+  @ApiProperty({
+    example: 'faker.product.description()',
+    description: 'category description',
+    required: false,
+  })
   @CustomIsOptional()
   @CustomIsString()
   @CustomMaxLength(1000)
