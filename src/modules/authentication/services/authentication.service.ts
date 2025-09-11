@@ -188,8 +188,7 @@ export class AuthenticationService {
     const text = `Hi,\nTo reset your password, click here: ${url}\n\nThis link is valid for 15 minutes.`;
 
     // TODO: Integrate email service (e.g., MailerService)
-    console.log(`Sending reset password email to ${email}: ${text}`);
-  }
+   }
 
   async getForgetPassword(data: ForgotPasswordDto): Promise<string> {
     const user = await this.findUserByEmail(data.email);

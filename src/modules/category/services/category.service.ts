@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import {
@@ -12,11 +12,11 @@ import {
   IUpdateRawOptions,
 } from 'src/common/database/interfaces/updateOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
-import { DeepPartial, ILike, Not, UpdateResult, SelectQueryBuilder } from 'typeorm';
-import { CategoryEntity } from '../entities/category.entity';
-import { CategoryRepository } from '../repositories/category.repository';
+import { SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { CategoryCreateDto } from '../dto/create-category.dto';
+import { CategoryEntity } from '../entities/category.entity';
 import { ICategoryUpdateDto } from '../interfaces/category.update.dto.interface';
+import { CategoryRepository } from '../repositories/category.repository';
 
 @Injectable()
 export class CategoryService {
@@ -26,7 +26,7 @@ export class CategoryService {
     createDto: CategoryCreateDto,
     options?: ICreateOptions,
   ): Promise<CategoryEntity> {
-    const data = await this._categoryRepo._create(createDto, options);
+     const data = await this._categoryRepo._create(createDto, options);
     return data;
   }
 
@@ -35,8 +35,12 @@ export class CategoryService {
     options?: IFindOneOptions<CategoryEntity>,
   ): Promise<CategoryEntity | null> {
     const data = await this._categoryRepo._findOneById(id, options);
-    return data;
+     return data;
   }
+
+
+
+   
 
   async getOne(
     options: IFindOneOptions<CategoryEntity>,

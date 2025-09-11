@@ -1,17 +1,19 @@
-import { Expose } from 'class-transformer';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
-import { ALL_GROUP } from 'src/common/database/constant/serialization-group.constant';
 import {
-  Entity,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
+  Entity,
+  Index,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
-  Index,
 } from 'typeorm';
 import { ICategoryEntity } from '../interfaces/category.entity.interface';
 
 export const CATEGORY_DATABASE_TABLE_NAME = 'categories';
+
+import slugify from 'slugify';
 
 @Entity({ name: CATEGORY_DATABASE_TABLE_NAME })
 @Index(['name', 'parent_id'])
@@ -20,19 +22,25 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
   // Columns===============
   // ======================
 
-  @Expose({ groups: ALL_GROUP })
+   
   @Column({ type: 'varchar', length: 255, unique: true })
   name: string;
 
-  @Expose({ groups: ALL_GROUP })
+   
   @Column({ type: 'int', nullable: true })
   parent_id: number | null;
 
+ @Column({ type: 'varchar', length: 255, unique: true })
+  slug: string;
+
+  
+  @Column({ type: 'text', nullable: true })
+  description?: string | null; // ✅ new field
   // ======================
   // Relations=============
   // ======================
 
-  @Expose({ groups: ALL_GROUP })
+   
   @ManyToOne(() => CategoryEntity, (category) => category.children, {
     nullable: true,
     onDelete: 'SET NULL',
@@ -40,7 +48,15 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
   @JoinColumn({ name: 'parent_id' })
   parent?: CategoryEntity | null;
 
-  @Expose({ groups: ALL_GROUP })
+   
   @OneToMany(() => CategoryEntity, (category) => category.parent)
   children?: CategoryEntity[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug(): void {
+    if (this.name) {
+      this.slug = slugify(this.name, { lower: true, strict: true });
+    }
+  }
 }
