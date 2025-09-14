@@ -9,6 +9,7 @@ import {
   Query,
   HttpStatus,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
@@ -20,6 +21,7 @@ import { IdParamDto } from 'src/common/dto/id-param.dto';
 import { IResponse, IResponsePaging } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { ResponseMessage } from 'src/common/response/decorators/responseMessage.decorator';
+import { CategoryService } from 'src/modules/category/services/category.service';
 
 @ApiTags('Products')
 @Controller({
@@ -27,16 +29,16 @@ import { ResponseMessage } from 'src/common/response/decorators/responseMessage.
   path: '/products',
 })
 export class ProductAdminController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService, private readonly categoryService : CategoryService) {}
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Product' })
   async create(@Body() body: ProductCreateDto): Promise<IResponse<{ product: ProductEntity; message: string }>> {
-    // Validate category_id
-    const category = await this.productService.getOne({ options: { where: { id: body.categoryId } } });
-    if (!category) {
-      throw new BadRequestException(`${body.categoryId} is not a valid Category Id!`);
-    }
+     
+    const category = await this.categoryService.getById(body.categoryId, {
+      options: { relations: ['children', 'parent'] },
+    });
+    if (!category) throw new NotFoundException('Cannot find Category');   
 
     const product = await this.productService.create(body);
     return {
@@ -52,7 +54,10 @@ export class ProductAdminController {
   async list(@Query() paginateQueryDto: PaginateQueryDto): Promise<IResponsePaging<ProductEntity>> {
     return this.productService.paginatedGet({
       ...paginateQueryDto,
-      relations: { category: true },
+      relations: { category: {
+        parent: true,
+        children: true,
+      }, },
       searchableColumns: ['name', 'description'],
       sortableColumns: ['id', 'name', 'createdAt'],
       defaultSortColumn: 'createdAt',
