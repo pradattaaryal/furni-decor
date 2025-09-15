@@ -24,7 +24,7 @@ import { ProductVariantEntity } from '../entities/product-variant.entity';
 import { ProductVariantService } from '../services/product-variant.service';
 
 @ApiTags('ProductVarient')
-@Controller('categories')
+@Controller('ProductVarient')
 @ApiBearerAuth('accessToken')
 export class ProductVarientAdminController {
   constructor(private readonly productVariantService: ProductVariantService) {}

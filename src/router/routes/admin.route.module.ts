@@ -9,7 +9,7 @@ import { CategoryAdminController } from 'src/modules/category/controllers/catego
 import { ProductsModule } from 'src/modules/products/products.module';
 import { ProductAdminController } from 'src/modules/products/controllers/product.admin.controller';
 import { ProductVariantsModule } from 'src/modules/product-variants/product-variants.module';
-import { ProductVarientAdminController } from 'src/modules/product-variants/controllers/product-varients.admin.controller';
+import { ProductVarientAdminController } from 'src/modules/product-variants/controllers/product-variant.admin.controller';
   
 @Module({
   imports: [
