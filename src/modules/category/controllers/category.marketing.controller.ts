@@ -25,7 +25,7 @@ import { IdParamDto } from 'src/common/dto/id-param.dto';
 @ApiTags('Category')
 @Controller('categories')
 @ApiBearerAuth('accessToken')
-export class CategoryAdminController {
+export class CategoryMarketingController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post('/create')

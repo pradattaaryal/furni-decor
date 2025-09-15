@@ -3,9 +3,10 @@ import { AuthenticationModule } from 'src/modules/authentication/authentication.
 import { UserModule } from 'src/modules/user/user.module';
 import { OtpModule } from 'src/modules/otp/otp.module';
   import { AuthCustomerController } from 'src/modules/authentication/controllers/auth.customer.controller';
-import { PublicUserController } from 'src/modules/user/controllers/user.publicuser.controller';
-import { PublucUserProductController } from 'src/modules/products/controllers/product.publicuser.controller';
+import { PublicUserController } from 'src/modules/user/controllers/user.controller';
+import { PublicUserProductController } from 'src/modules/products/controllers/product.publicuser.controller';
 import { ProductsModule } from 'src/modules/products/products.module';
+import { CategoryModule } from 'src/modules/category/category.module';
  
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { ProductsModule } from 'src/modules/products/products.module';
     AuthenticationModule,
     OtpModule, 
     ProductsModule,
+    CategoryModule
   ],
-  controllers: [PublicUserController,AuthCustomerController,PublucUserProductController],
+  controllers: [PublicUserController,AuthCustomerController,PublicUserProductController],
 })
-export class CustomerRouterModule {}
+export class  UserRouterModule {}

@@ -35,7 +35,7 @@ import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serializati
   version: '1',
   path: '/products',
 })
-export class PublucUserProductController {
+export class PublicUserProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
