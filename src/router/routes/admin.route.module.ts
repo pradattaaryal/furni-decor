@@ -8,6 +8,8 @@ import { CategoryModule } from 'src/modules/category/category.module';
 import { CategoryAdminController } from 'src/modules/category/controllers/category.admin.controller';
 import { ProductsModule } from 'src/modules/products/products.module';
 import { ProductAdminController } from 'src/modules/products/controllers/product.admin.controller';
+import { ProductVariantsModule } from 'src/modules/product-variants/product-variants.module';
+import { ProductVariantAdminController } from 'src/modules/product-variants/controllers/product-variant.admin.controller';
  
 @Module({
   imports: [
@@ -15,8 +17,9 @@ import { ProductAdminController } from 'src/modules/products/controllers/product
     AuthenticationModule,
     OtpModule, 
     CategoryModule,
-    ProductsModule
+    ProductsModule,
+    ProductVariantsModule,
   ],
-  controllers: [UserController,AuthAdminController,CategoryAdminController,ProductAdminController],
+  controllers: [UserController,AuthAdminController,CategoryAdminController,ProductAdminController,ProductVariantAdminController],
 })
 export class AdminRouterModule {}

@@ -8,11 +8,12 @@ import { UserCreateDto } from '../dto/user.create.dto';
 import { MarketingUserCreateDto } from '../dto/marketing.create.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { OtpService } from 'src/modules/otp/otp.service';
-import { Not } from 'typeorm';
-import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
+import { Not, UpdateResult } from 'typeorm';
+import { IUpdateOptions, IUpdateRawOptions } from 'src/common/database/interfaces/updateOption.interface';
 import { IFindOneOptions } from 'src/common/database/interfaces/findOption.interface';
 import * as bcrypt from 'bcryptjs';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
+import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 
 @Injectable()
 export class UserService {
@@ -161,4 +162,24 @@ export class UserService {
 
     return user;
   }
+  
+    async softDelete(
+      user: UserEntity,
+      options?: IUpdateOptions<UserEntity>,
+    ): Promise<UserEntity> {
+      return await this.userRepo._softDelete(user, options);
+    }
+  
+    async delete(
+      user: UserEntity,
+      options?: IDeleteOptions<UserEntity>,
+    ): Promise<UserEntity> {
+      return await this.userRepo._delete(user, options);
+    }
+  
+    async restore(
+      options: IUpdateRawOptions<UserEntity>,
+    ): Promise<UpdateResult | null> {
+      return await this.userRepo._restoreRaw(options);
+    }
 }
