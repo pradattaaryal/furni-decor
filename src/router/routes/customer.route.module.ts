@@ -2,15 +2,18 @@ import { Module } from '@nestjs/common';
 import { AuthenticationModule } from 'src/modules/authentication/authentication.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { OtpModule } from 'src/modules/otp/otp.module';
-import { UserController } from 'src/modules/user/controllers/user.controller';
- import { AuthCustomerController } from 'src/modules/authentication/controllers/auth.customer.controller';
+  import { AuthCustomerController } from 'src/modules/authentication/controllers/auth.customer.controller';
+import { PublicUserController } from 'src/modules/user/controllers/user.publicuser.controller';
+import { PublucUserProductController } from 'src/modules/products/controllers/product.publicuser.controller';
+import { ProductsModule } from 'src/modules/products/products.module';
  
 @Module({
   imports: [
     UserModule,
     AuthenticationModule,
     OtpModule, 
+    ProductsModule,
   ],
-  controllers: [UserController,AuthCustomerController],
+  controllers: [PublicUserController,AuthCustomerController,PublucUserProductController],
 })
 export class CustomerRouterModule {}

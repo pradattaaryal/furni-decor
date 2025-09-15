@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { AuthenticationModule } from 'src/modules/authentication/authentication.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { OtpModule } from 'src/modules/otp/otp.module';
-import { UserController } from 'src/modules/user/controllers/user.controller';
+import { AdminUserController } from 'src/modules/user/controllers/user.admin.controller';
 import { AuthAdminController } from 'src/modules/authentication/controllers/auth.admin.controller';
 import { CategoryModule } from 'src/modules/category/category.module';
 import { CategoryAdminController } from 'src/modules/category/controllers/category.admin.controller';
 import { ProductsModule } from 'src/modules/products/products.module';
 import { ProductAdminController } from 'src/modules/products/controllers/product.admin.controller';
 import { ProductVariantsModule } from 'src/modules/product-variants/product-variants.module';
-import { ProductVariantAdminController } from 'src/modules/product-variants/controllers/product-variant.admin.controller';
- 
+import { ProductVarientAdminController } from 'src/modules/product-variants/controllers/product-varients.admin.controller';
+  
 @Module({
   imports: [
     UserModule,
@@ -20,6 +20,6 @@ import { ProductVariantAdminController } from 'src/modules/product-variants/cont
     ProductsModule,
     ProductVariantsModule,
   ],
-  controllers: [UserController,AuthAdminController,CategoryAdminController,ProductAdminController,ProductVariantAdminController],
+  controllers: [AdminUserController,AuthAdminController,CategoryAdminController,ProductAdminController,ProductVarientAdminController],
 })
 export class AdminRouterModule {}

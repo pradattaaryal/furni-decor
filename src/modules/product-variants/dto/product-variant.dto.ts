@@ -2,13 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   CustomIsNotEmpty,
-  CustomIsNumber,
-  CustomIsOptional,
   CustomIsString,
+  CustomIsNumber,
 } from 'src/common/request/validators/custom-validator';
-import { IProductVariantCreateDto } from '../interfaces/product-variant.create.dto.interface';
 
-export class ProductVariantCreateDto implements IProductVariantCreateDto {
+export class ProductVariantDto {
+  @ApiProperty({ example: 1, description: 'Variant ID' })
+  id: number;
+
   @ApiProperty({
     example: {
       height: '80cm',
@@ -22,31 +23,21 @@ export class ProductVariantCreateDto implements IProductVariantCreateDto {
   @CustomIsNotEmpty()
   dimensions: Record<string, any>;
 
-  @ApiProperty({ example: 'red', description: 'Variant color' })
+  @ApiProperty({ example: 'Blue', description: 'Variant color' })
   @CustomIsNotEmpty()
   @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
   color: string;
 
   @ApiProperty({ example: 100.5, description: 'Price of variant' })
-  @CustomIsOptional()
   @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseFloat(value))
-  price?: number;
+  price: number;
 
   @ApiProperty({ example: 50, description: 'Available stock count' })
-  @CustomIsOptional()
   @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseInt(value))
-  count?: number;
-
-  @ApiProperty({ example: 1, description: 'Related product id' })
-  @CustomIsNotEmpty()
-  @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseInt(value))
-  productId: number;
+  count: number;
 
   @ApiProperty({ example: 12, description: 'Image ID for variant' })
-  @CustomIsOptional()
   @CustomIsNumber()
-  imageId?: number;
+  imageId: number;
 }

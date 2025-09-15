@@ -1,6 +1,20 @@
+
 export interface IProductUpdateDto {
   name?: string;
   description?: string;
+
+  // ================= Additional Product Specifications Start =================
+  modelNumber?: string;
+  secondaryMaterial?: string;
+  configuration?: string;
+  upholsteryMaterial?: string;
+  upholsteryColor?: string;
+  fillingMaterial?: string;
+  finishType?: string;
+  adjustableHeadrest?: boolean;
+  maxLoad?: string;
+  // ================= Additional Product Specifications End =================
+
   categoryId?: number;
   salesPackage?: string;
   originOfManufacture?: string;

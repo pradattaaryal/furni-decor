@@ -13,10 +13,7 @@ export class OtpEntity extends DatabaseBaseEntity  {
 
   @Column()
   UserEntity_id: number;
-
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'UserEntity_id' })
-  UserEntity: UserEntity;
+ 
 
   @Column({
     type: 'varchar',
@@ -29,4 +26,12 @@ export class OtpEntity extends DatabaseBaseEntity  {
     nullable: false,
   })
   expires_at: Date;
+
+//////////////Relation////////////////////
+
+@ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+@JoinColumn({ name: 'UserEntity_id' })
+UserEntity: UserEntity;
+
+
  }

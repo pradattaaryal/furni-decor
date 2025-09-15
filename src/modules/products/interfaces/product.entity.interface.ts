@@ -1,9 +1,24 @@
+import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
+import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
 
-export interface IProductEntity {
+export interface IProductEntity extends DatabaseBaseEntity {
   name: string;
   description: string;
   categoryId: number;
+
+  // ================= Additional Product Specifications Start =================
+  modelNumber?: string;
+  secondaryMaterial?: string;
+  configuration?: string;
+  upholsteryMaterial?: string;
+  upholsteryColor?: string;
+  fillingMaterial?: string;
+  finishType?: string;
+  adjustableHeadrest?: boolean;
+  maxLoad?: string;
+  // ================= Additional Product Specifications End =================
+
   salesPackage?: string;
   originOfManufacture?: string;
   discountValue?: number;
@@ -14,5 +29,8 @@ export interface IProductEntity {
   coveredInWarranty?: string;
   notCoveredInWarranty?: string;
   domesticWarranty?: string;
+
+  // Relations
   category?: CategoryEntity;
+  variants?: ProductVariantEntity[];
 }

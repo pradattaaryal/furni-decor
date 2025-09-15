@@ -169,6 +169,7 @@ export abstract class BaseRepository<T extends DatabaseBaseEntity> {
     if (relations) {
       find.relations = relations;
     }
+    
     find.where = {};
     find.where['id'] = id;
     if (options?.entityManager) {
