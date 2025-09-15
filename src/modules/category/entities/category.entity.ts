@@ -14,6 +14,7 @@ import { ICategoryEntity } from '../interfaces/category.entity.interface';
 export const CATEGORY_DATABASE_TABLE_NAME = 'categories';
 
 import slugify from 'slugify';
+import { ProductEntity } from 'src/modules/products/entities/product.entity';
 
 @Entity({ name: CATEGORY_DATABASE_TABLE_NAME })
 @Index(['name', 'parent_id'])
@@ -53,9 +54,14 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
   children?: CategoryEntity[];
 
   // Products relationship - using forward reference to avoid circular dependency
-  @OneToMany('ProductEntity', 'category')
-  products?: any[];
+  // @OneToMany('ProductEntity', 'category')
+  // products?: any[];
 
+   @OneToMany(() => ProductEntity, (product) => product.category)
+  products: ProductEntity[];
+  // ======================
+  // Hooks =================
+  // ======================
   @BeforeInsert()
   @BeforeUpdate()
   generateSlug(): void {
