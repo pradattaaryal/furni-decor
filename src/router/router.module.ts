@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { RouterModule as NestJsRouterModule } from '@nestjs/core';
 import { AdminRouterModule } from './routes/admin.route.module';
-import { CustomerRouterModule } from './routes/customer.route.module';
+import {  UserRouterModule } from './routes/user.route.module';
 import { MarketingRouterModule } from './routes/marketing.route.module';
 
 @Module({
   imports: [
     AdminRouterModule,
-    CustomerRouterModule,
+     UserRouterModule,
     MarketingRouterModule,
     NestJsRouterModule.register([
       {
@@ -16,7 +16,7 @@ import { MarketingRouterModule } from './routes/marketing.route.module';
       },
       {
         path: 'backend/api/customer',
-        module: CustomerRouterModule,
+        module:  UserRouterModule,
       },
       {
         path: 'backend/api/marketing',

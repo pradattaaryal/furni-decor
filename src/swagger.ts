@@ -3,7 +3,7 @@ import { NestApplication } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ENUM_APP_ENVIRONMENT } from './common/constants/app.constant';
 import { AdminRouterModule } from './router/routes/admin.route.module';
-import { CustomerRouterModule } from './router/routes/customer.route.module';
+import {  UserRouterModule } from './router/routes/user.route.module';
 import { MarketingRouterModule } from './router/routes/marketing.route.module';
  
 
@@ -62,7 +62,7 @@ export default async function (app: NestApplication) {
       customerDocumentBuild,
       {
         deepScanRoutes: true,
-        include: [CustomerRouterModule],
+        include: [ UserRouterModule],
       },
     );
 
