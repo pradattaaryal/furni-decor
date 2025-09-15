@@ -14,11 +14,12 @@ import {
   ADMIN_ONLY_GROUP,
   ALL_GROUP,
   DELETE_AT_FIELD_GROUP,
+  SYSTEM_USER_ONLY_GROUP,
 } from '../../constant/serialization-group.constant';
 @Index(['id', 'createdAt']) //Composite index
 export class DatabaseBaseEntity extends BaseEntity {
   @ApiProperty()
-  @Expose({ groups: ALL_GROUP })
+  @Expose({ groups: ADMIN_ONLY_GROUP })
   @Generated()
   @Index({ where: '"deleted_at" IS NULL' })
   @PrimaryColumn({

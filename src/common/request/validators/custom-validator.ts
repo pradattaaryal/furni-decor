@@ -608,11 +608,12 @@ export function CustomIsStartBeforeEnd(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          const object = args.object as { startDate: Date; endDate: Date };
-          const { startDate, endDate } = object;
+          const object = args.object as { discountStartDate: Date; discountEndDate: Date };
+          const { discountStartDate, discountEndDate } = object;
+        
 
-          if (startDate && endDate) {
-            return startDate < endDate;
+          if (discountStartDate && discountEndDate) {
+            return discountStartDate < discountEndDate;
           }
 
           return false;
