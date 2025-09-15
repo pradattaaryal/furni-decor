@@ -13,7 +13,7 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 })
 @ApiTags('users')
 @Controller('user')
-export class UserController {
+export class AdminUserController {
   constructor(private readonly _UserService: UserService) {}
 
   @Post('/create')

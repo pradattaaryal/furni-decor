@@ -8,24 +8,49 @@ import { ProductVariantEntity } from 'src/modules/product-variants/entities/prod
 @Entity({ name: 'products' })
 export class ProductEntity
   extends DatabaseBaseEntity
-  implements IProductEntity
-{
-  @ApiProperty({ example: 'Modern Sofa Set' })
+  implements IProductEntity {
   @Column({ name: 'name', type: 'varchar', length: 100 })
   name: string;
 
-  @OneToMany(() => ProductVariantEntity, (variant) => variant.product)
-  variants: ProductVariantEntity[];
 
-  @ApiProperty({ example: 'Comfortable 3-seater sofa with premium fabric' })
   @Column({ name: 'description', type: 'varchar', length: 200 })
   description: string;
 
-  @ApiProperty({ example: 1 })
   @Column({ name: 'category_id' })
   categoryId: number;
 
-  @ApiProperty({ example: 'Premium packaging with assembly guide' })
+
+  // ================= Additional Product Specifications Start =================
+
+  @Column({ name: 'model_number', type: 'varchar', length: 100, nullable: true })
+  modelNumber?: string;
+
+  @Column({ name: 'secondary_material', type: 'varchar', length: 100, nullable: true })
+  secondaryMaterial?: string;
+
+  @Column({ name: 'configuration', type: 'varchar', length: 100, nullable: true })
+  configuration?: string;
+
+  @Column({ name: 'upholstery_material', type: 'varchar', length: 100, nullable: true })
+  upholsteryMaterial?: string;
+
+  @Column({ name: 'upholstery_color', type: 'varchar', length: 50, nullable: true })
+  upholsteryColor?: string;
+
+  @Column({ name: 'filling_material', type: 'varchar', length: 100, nullable: true })
+  fillingMaterial?: string;
+
+  @Column({ name: 'finish_type', type: 'varchar', length: 50, nullable: true })
+  finishType?: string;
+
+  @Column({ name: 'adjustable_headrest', type: 'boolean', nullable: true })
+  adjustableHeadrest?: boolean;
+
+  @Column({ name: 'max_load', type: 'varchar', length: 50, nullable: true })
+  maxLoad?: string;
+
+  // ================= Additional Product Specifications End =================
+
   @Column({
     name: 'sales_package',
     type: 'varchar',
@@ -34,7 +59,6 @@ export class ProductEntity
   })
   salesPackage?: string;
 
-  @ApiProperty({ example: 'Italy' })
   @Column({
     name: 'origin_of_manufacture',
     type: 'varchar',
@@ -43,7 +67,6 @@ export class ProductEntity
   })
   originOfManufacture?: string;
 
-  @ApiProperty({ example: 150.0 })
   @Column({
     name: 'discount_value',
     type: 'decimal',
@@ -53,39 +76,35 @@ export class ProductEntity
   })
   discountValue?: number;
 
-  @ApiProperty({ example: '2024-01-01T00:00:00Z' })
   @Column({ name: 'discount_start_date', type: 'timestamp', nullable: true })
   discountStartDate?: Date;
 
-  @ApiProperty({ example: '2024-12-31T23:59:59Z' })
   @Column({ name: 'discount_end_date', type: 'timestamp', nullable: true })
   discountEndDate?: Date;
 
-  @ApiProperty({ example: '2 years manufacturer warranty' })
   @Column({ name: 'warranty_summary', type: 'text', nullable: true })
   warrantySummary?: string;
 
-  @ApiProperty({ example: 'On-site service' })
   @Column({ name: 'warranty_service_type', type: 'text', nullable: true })
   warrantyServiceType?: string;
 
-  @ApiProperty({ example: 'Manufacturing defects, material quality issues' })
   @Column({ name: 'covered_in_warranty', type: 'text', nullable: true })
   coveredInWarranty?: string;
 
-  @ApiProperty({ example: 'Normal wear and tear, accidental damage' })
   @Column({ name: 'not_covered_in_warranty', type: 'text', nullable: true })
   notCoveredInWarranty?: string;
 
-  @ApiProperty({ example: '2 years domestic warranty' })
   @Column({ name: 'domestic_warranty', type: 'text', nullable: true })
   domesticWarranty?: string;
 
-  // product.entity.ts
-  // ✅ Proper relation
   @ManyToOne(() => CategoryEntity, (category) => category.products, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
+
+
+  @OneToMany(() => ProductVariantEntity, (variant) => variant.product)
+  variants: ProductVariantEntity[];
+
 }

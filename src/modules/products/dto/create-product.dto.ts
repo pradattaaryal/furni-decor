@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { faker } from '@faker-js/faker';
 import {
   CustomIsNotEmpty,
@@ -9,8 +9,13 @@ import {
   CustomIsOptional,
   CustomIsNumber,
   CustomMin,
+  CustomIsArray,
+  CustomValidateNested,
+  CustomIsFutureDate,
+  CustomIsStartBeforeEnd,
 } from 'src/common/request/validators/custom-validator';
 import { IProductCreateDto } from '../interfaces/product.create.dto.interface';
+import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
 
 export class ProductCreateDto implements IProductCreateDto {
   @ApiProperty({
@@ -34,6 +39,135 @@ export class ProductCreateDto implements IProductCreateDto {
   @CustomMaxLength(200)
   @Transform(({ value }: { value: string }) => value.trim())
   description: string;
+
+
+
+  @ApiProperty({
+    example: [
+      {
+        dimensions: {
+          height: "80cm",
+          width: "120cm",
+          depth: "75cm",
+          seatHeight: "45cm",
+          weight: "25kg"
+        },
+        color: "Blue"
+      },
+      {
+        dimensions: {
+          height: "85cm",
+          width: "140cm",
+          depth: "80cm",
+          seatHeight: "46cm",
+          weight: "28kg"
+        },
+        color: "Gray"
+      }
+    ],
+    description: 'Product variants',
+    type: [ProductVariantDto],
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsArray()
+  @CustomValidateNested({ each: true })
+  @Type(() => ProductVariantDto)
+  variants?: ProductVariantDto[];
+
+  // ================= Additional Product Specifications Start =================
+
+  @ApiProperty({
+    example: 'XYZ123',
+    description: 'Model number',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  modelNumber?: string;
+
+  @ApiProperty({
+    example: 'Wood, Metal',
+    description: 'Secondary material of the product',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  secondaryMaterial?: string;
+
+  @ApiProperty({
+    example: '2-seater, L-shape',
+    description: 'Configuration details of the product',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  configuration?: string;
+
+  @ApiProperty({
+    example: 'Leather',
+    description: 'Upholstery material',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  upholsteryMaterial?: string;
+
+  @ApiProperty({
+    example: 'Brown',
+    description: 'Upholstery color',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  upholsteryColor?: string;
+
+  @ApiProperty({
+    example: 'Foam',
+    description: 'Filling material',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  fillingMaterial?: string;
+
+  @ApiProperty({
+    example: 'Matte',
+    description: 'Finish type of the product',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  finishType?: string;
+
+  @ApiProperty({
+    example: true,
+    description: 'Whether the product has adjustable headrest',
+    required: false,
+  })
+  @CustomIsOptional()
+  adjustableHeadrest?: boolean;
+
+  @ApiProperty({
+    example: '120kg',
+    description: 'Maximum load capacity',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  maxLoad?: string;
+
+  // ================= Additional Product Specifications End =================
+
+
 
   @ApiProperty({
     example: 1,
@@ -94,6 +228,9 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
+  @CustomIsStartBeforeEnd({
+    message: 'Discount end date must be after the start date',
+  })
   discountEndDate?: Date;
 
   @ApiProperty({

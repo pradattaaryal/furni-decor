@@ -5,20 +5,48 @@ import { ProductEntity } from '../entities/product.entity';
 import { ProductCreateDto } from '../dto/create-product.dto';
 import { IProductUpdateDto } from '../interfaces/product.update.dto.interface';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
-import { IFindAllOptions, IFindOneOptions, IPaginateFindOption, IPaginateQueryBuilderOption } from 'src/common/database/interfaces/findOption.interface';
-import { IUpdateOptions, IUpdateRawOptions } from 'src/common/database/interfaces/updateOption.interface';
+import {
+  IFindAllOptions,
+  IFindOneOptions,
+  IPaginateFindOption,
+  IPaginateQueryBuilderOption,
+} from 'src/common/database/interfaces/findOption.interface';
+import {
+  IUpdateOptions,
+  IUpdateRawOptions,
+} from 'src/common/database/interfaces/updateOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
+import { ProductVariantService } from 'src/modules/product-variants/services/product-variant.service';
+import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/create-product-variant.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly _productRepo: ProductRepository) {}
+  constructor(
+    private readonly _productRepo: ProductRepository,
+    private readonly _variantService: ProductVariantService,
+  ) {}
 
   async create(
     createDto: ProductCreateDto,
     options?: ICreateOptions,
   ): Promise<ProductEntity> {
-    return await this._productRepo._create(createDto, options);
+    const { variants, ...productData } = createDto;
+
+    const product = await this._productRepo._create(productData, options);
+
+    if (variants && variants.length > 0) {
+      for (const variantData of variants) {
+        const variantDto = new ProductVariantCreateDto();
+        variantDto.dimensions = variantData.dimensions;
+        variantDto.color = variantData.color;
+        variantDto.productId = product.id;
+
+        await this._variantService.create(variantDto);
+      }
+    }
+
+    return product;
   }
 
   async getById(
@@ -26,6 +54,23 @@ export class ProductService {
     options?: IFindOneOptions<ProductEntity>,
   ): Promise<ProductEntity | null> {
     return await this._productRepo._findOneById(id, options);
+  }
+
+  async fetchProduct(id: number): Promise<ProductEntity | null> {
+    return this._productRepo._findOneById(id, {
+      options: {
+        select: {
+          variants: { id: true, color: true, dimensions: true, price: true},
+        },
+        relations: {
+          variants: true,
+          category: {
+            parent: true,
+            children: true,
+          },
+        },
+      },
+    });
   }
 
   async getOne(
@@ -50,9 +95,7 @@ export class ProductService {
     return await this._productRepo._findAll(options);
   }
 
-  getQueryBuilder(
-    name: string
-  ): SelectQueryBuilder<ProductEntity> {
+  getQueryBuilder(name: string): SelectQueryBuilder<ProductEntity> {
     return this._productRepo.getRepo().createQueryBuilder(name);
   }
 
@@ -99,21 +142,5 @@ export class ProductService {
   ) {
     Object.assign(product, updateData);
     return await this._productRepo._update(product, options);
-  }
-
-  async fetchProductByName(name: string): Promise<ProductEntity[]> {
-    return this._productRepo.fetchProductByName(name);
-  }
-
-  async fetchProduct(id: number): Promise<ProductEntity | null> {
-    return this._productRepo.fetchProduct(id);
-  }
-
-  async updateProduct(id: number, data: Partial<ProductEntity>): Promise<ProductEntity | null> {
-    return this._productRepo.updateProduct(id, data);
-  }
-
-  async getProductsByCategory(categoryId: number): Promise<ProductEntity[]> {
-    return this._productRepo.getProductsByCategory(categoryId);
   }
 }
