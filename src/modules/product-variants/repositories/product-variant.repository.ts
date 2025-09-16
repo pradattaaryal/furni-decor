@@ -16,4 +16,4 @@ export class ProductVariantRepository extends BaseRepository<ProductVariantEntit
   getRepo(): Repository<ProductVariantEntity> {
     return this.repository;
   }
-} 
+}

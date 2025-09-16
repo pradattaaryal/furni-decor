@@ -4,7 +4,7 @@ import {
   ResponsePaginationDefaultSerialization,
 } from 'src/common/doc/serializations/response.default.serialization';
 import { UserEntity } from '../entities/user.entity';
- 
+
 export class EventSerialization extends ResponseDefaultSerialization {
   @ApiProperty({
     type: UserEntity,

@@ -17,21 +17,27 @@ export class BaseUserEntity
   @Column({ type: String, length: 100, unique: true, nullable: false })
   email: string;
 
- @Exclude( ) 
+  @Exclude()
   @ApiProperty()
   @Column({ type: 'text', nullable: false })
   password: string;
-  
-  @ApiProperty({ description: 'Indicates if the user is verified', default: false })
+
+  @ApiProperty({
+    description: 'Indicates if the user is verified',
+    default: false,
+  })
   @Column({ type: 'boolean', default: false })
-  verified: boolean;  
+  verified: boolean;
 
   @ApiProperty()
-  @Column({ name: 'role', type: 'enum', enum: UserRole, default:UserRole.CUSTOMER  })
+  @Column({
+    name: 'role',
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.CUSTOMER,
+  })
   role: string;
- 
-  @Column({ type: 'timestamptz', name: 'password_changed_at',nullable: true })
-  password_changed_at: Date;
 
-   
+  @Column({ type: 'timestamptz', name: 'password_changed_at', nullable: true })
+  password_changed_at: Date;
 }

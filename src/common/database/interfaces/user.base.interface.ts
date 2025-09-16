@@ -3,5 +3,4 @@ export interface IBaseUserEntity {
   password: string;
   role: string;
   password_changed_at: Date;
-
 }

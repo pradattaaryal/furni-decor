@@ -45,10 +45,9 @@ export class AuthenticationService {
   }
 
   private sanitizeUser(user: UserEntity): Omit<UserEntity, 'password'> {
-  const { password, ...rest } = user as any;
-  return rest;
-}
-
+    const { password, ...rest } = user as any;
+    return rest;
+  }
 
   /** ================= TOKEN HANDLERS ================== */
 
@@ -87,7 +86,7 @@ export class AuthenticationService {
   ): Promise<Omit<UserEntity, 'password'>> {
     const user = await this.findUserByEmail(email);
     if (!user || !(await this.comparePassword(password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Email not found');
     }
     if (!user.verified) {
       throw new UnauthorizedException('Account not verified');
@@ -188,7 +187,7 @@ export class AuthenticationService {
     const text = `Hi,\nTo reset your password, click here: ${url}\n\nThis link is valid for 15 minutes.`;
 
     // TODO: Integrate email service (e.g., MailerService)
-   }
+  }
 
   async getForgetPassword(data: ForgotPasswordDto): Promise<string> {
     const user = await this.findUserByEmail(data.email);
@@ -209,6 +208,9 @@ export class AuthenticationService {
 
     await this.verifyUser(user);
 
-    return this.generateAccessToken({ id: user.id, role: user.role as UserRole});
+    return this.generateAccessToken({
+      id: user.id,
+      role: user.role as UserRole,
+    });
   }
 }

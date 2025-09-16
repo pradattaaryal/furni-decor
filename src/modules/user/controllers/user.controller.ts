@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, NotFoundException, Param, Patch, Post, SerializeOptions } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  SerializeOptions,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ADMIN_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
 import { IResponse } from 'src/common/response/interfaces/response.interface';
@@ -37,5 +46,4 @@ export class PublicUserController {
       },
     };
   }
-
 }

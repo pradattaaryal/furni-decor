@@ -10,16 +10,22 @@ import { ProductsModule } from 'src/modules/products/products.module';
 import { ProductAdminController } from 'src/modules/products/controllers/product.admin.controller';
 import { ProductVariantsModule } from 'src/modules/product-variants/product-variants.module';
 import { ProductVarientAdminController } from 'src/modules/product-variants/controllers/product-variant.admin.controller';
-  
+
 @Module({
   imports: [
     UserModule,
     AuthenticationModule,
-    OtpModule, 
+    OtpModule,
     CategoryModule,
     ProductsModule,
     ProductVariantsModule,
   ],
-  controllers: [AdminUserController,AuthAdminController,CategoryAdminController,ProductAdminController,ProductVarientAdminController],
+  controllers: [
+    AdminUserController,
+    AuthAdminController,
+    CategoryAdminController,
+    ProductAdminController,
+    ProductVarientAdminController,
+  ],
 })
 export class AdminRouterModule {}

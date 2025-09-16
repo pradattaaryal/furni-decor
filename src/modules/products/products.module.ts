@@ -5,7 +5,7 @@ import { ProductRepositoryModule } from './repositories/product.repository.modul
 import { ProductService } from './services/product.service';
 
 @Module({
-  imports: [ProductRepositoryModule,CategoryModule,ProductVariantsModule],
+  imports: [ProductRepositoryModule, CategoryModule, ProductVariantsModule],
   controllers: [],
   providers: [ProductService],
   exports: [ProductService],

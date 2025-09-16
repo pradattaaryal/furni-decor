@@ -24,19 +24,18 @@ export class DatabaseBaseEntity extends BaseEntity {
   @Index({ where: '"deleted_at" IS NULL' })
   @PrimaryColumn({
     type: 'int',
-    
   })
   id: number;
 
-  @Exclude( ) 
+  @Exclude()
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 
-  @Exclude( ) 
+  @Exclude()
   @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
   updatedAt: Date;
 
-   @Exclude( ) 
+  @Exclude()
   @DeleteDateColumn({ type: 'timestamptz', name: 'deleted_at' })
   deletedAt: Date;
 }

@@ -15,9 +15,9 @@ export type SocialProfile = {
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
-    @Inject(authConfig.KEY) private readonly config: ConfigType<typeof authConfig>,
+    @Inject(authConfig.KEY)
+    private readonly config: ConfigType<typeof authConfig>,
   ) {
-   
     if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_CLIENT_SECRET) {
       throw new Error('Google OAuth config is missing');
     }
@@ -25,7 +25,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const options: StrategyOptions = {
       clientID: config.GOOGLE_CLIENT_ID,
       clientSecret: config.GOOGLE_CLIENT_SECRET,
-      callbackURL: config.GOOGLE_CALLBACK_URL || '/backend/api/admin/auth/google/callback',
+      callbackURL:
+        config.GOOGLE_CALLBACK_URL || '/backend/api/admin/auth/google/callback',
       scope: ['profile', 'email'],
     };
 
@@ -37,7 +38,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     refreshToken: string,
     profile: any,
   ): Promise<SocialProfile> {
-    if (!profile) throw new UnauthorizedException('No profile returned from Google');
+    if (!profile)
+      throw new UnauthorizedException('No profile returned from Google');
 
     const email = profile.emails?.[0]?.value;
     const avatar = profile.photos?.[0]?.value;

@@ -8,7 +8,7 @@ import {
 //import { IAuthenticatedUser } from 'src/common/interfaces/authenticated.user.interface';
 
 export default interface IRequest extends Request {
- // __user: IAuthenticatedUser;
+  // __user: IAuthenticatedUser;
   user?: { id: number; userType: string; passwordChangedAt: Date | null };
   __skipRequestBodyLog?: boolean;
   __skipHttpLog?: boolean;

@@ -3,12 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { NestApplication, NestFactory, Reflector } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
- import swaggerInit from './swagger';
+import swaggerInit from './swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
-     // rawBody: true,
-     // logger: false, // disables all logs
+    // rawBody: true,
+    // logger: false, // disables all logs
   });
 
   // app.use(
@@ -22,11 +22,9 @@ async function bootstrap() {
   // );
 
   // Other JSON endpoints use the normal JSON parser
-//  app.use(json());
+  //  app.use(json());
 
-
-
-app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await swaggerInit(app);
   app.use(helmet());
   const configService = app.get(ConfigService);

@@ -4,7 +4,9 @@ import { ErrorFilter } from './filters/error.filter';
 //import { SentryModule } from '../sentry/sentry.module';
 
 @Module({
-  imports: [/*SentryModule*/],
+  imports: [
+    /*SentryModule*/
+  ],
   providers: [
     {
       provide: APP_FILTER,

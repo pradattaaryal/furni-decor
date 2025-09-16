@@ -8,4 +8,4 @@ import { ProductVariantService } from './services/product-variant.service';
   exports: [ProductVariantService],
   controllers: [],
 })
-export class ProductVariantsModule {} 
+export class ProductVariantsModule {}
