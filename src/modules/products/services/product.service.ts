@@ -60,7 +60,7 @@ export class ProductService {
     return this._productRepo._findOneById(id, {
       options: {
         select: {
-          variants: { id: true, color: true, dimensions: true, price: true},
+          variants: { id: true, color: true, dimensions: true, price: true },
         },
         relations: {
           variants: true,

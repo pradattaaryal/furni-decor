@@ -1,24 +1,15 @@
 import { BullModule } from '@nestjs/bull';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
- 
+
 import { MAIL_JOB } from './mail-queue/constants/mail-queue.constant';
 import { MailQueueService } from './mail-queue/mail-queue.service';
 import { RedisModule } from '../redis/redis.module';
- 
 
 @Global()
 @Module({
-  providers: [
- 
-    MailQueueService,
- 
-  ],
-  exports: [
- 
-    MailQueueService,
- 
-  ],
+  providers: [MailQueueService],
+  exports: [MailQueueService],
   imports: [
     ConfigModule,
     RedisModule,
@@ -33,13 +24,9 @@ import { RedisModule } from '../redis/redis.module';
       }),
       inject: [ConfigService],
     }),
-    BullModule.registerQueue(
- 
-      {
-        name: MAIL_JOB,
-      },
-      
-    ),
+    BullModule.registerQueue({
+      name: MAIL_JOB,
+    }),
   ],
 })
 export class BullQueueModule {}

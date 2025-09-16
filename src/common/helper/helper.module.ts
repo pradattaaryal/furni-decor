@@ -7,13 +7,13 @@ import { TSQueryHelperService } from './services/helper.tsquery.service';
 @Global()
 @Module({
   providers: [
-  //  HelperFileService,
+    //  HelperFileService,
     HelperDateService,
     HelperNumberService,
     TSQueryHelperService,
   ],
   exports: [
-  //  HelperFileService,
+    //  HelperFileService,
     HelperDateService,
     HelperNumberService,
     TSQueryHelperService,

@@ -4,4 +4,4 @@ import { IProductVariantUpdateDto } from '../interfaces/product-variant.update.d
 
 export class ProductVariantUpdateDto
   extends PartialType(ProductVariantCreateDto)
-  implements IProductVariantUpdateDto {} 
+  implements IProductVariantUpdateDto {}

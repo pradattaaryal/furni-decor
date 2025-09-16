@@ -1,11 +1,5 @@
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { Expose } from 'class-transformer';
 import { ALL_GROUP } from 'src/common/database/constant/serialization-group.constant';
@@ -31,10 +25,10 @@ export class ProductVariantEntity extends DatabaseBaseEntity {
     nullable: true,
     transformer: {
       to: (value: number) => value,
-      from: (value: string): number => ( parseFloat(value) ),
+      from: (value: string): number => parseFloat(value),
     },
   })
-  price: number  ;
+  price: number;
 
   @Column({ name: 'image_id', type: 'int', nullable: true })
   imageId: number | null;

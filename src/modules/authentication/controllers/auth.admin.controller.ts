@@ -19,7 +19,10 @@ import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { AuthenticationService } from '../services/authentication.service';
 import { Throttle } from '@nestjs/throttler';
 import { ApiDocs } from 'src/common/doc/common-docs';
-import { ForgotPasswordDto, ResetPasswordDto } from '../dto/forgot-password.dto';
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from '../dto/forgot-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -68,20 +71,16 @@ export class AuthAdminController {
     operation: 'Forgot password ',
     jwtAccessToken: false,
   })
-  async forgotPassword(
-    @Body() body: ForgotPasswordDto,
-  ): Promise<void> {
+  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<void> {
     return this.authService.forgotPassword(body.email);
   }
-   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('reset-password')
   @ApiDocs({
     operation: 'Password reset',
     jwtAccessToken: false,
   })
-  async resetPassword(
-    @Body() body: ResetPasswordDto,
-  ): Promise<void> {
+  async resetPassword(@Body() body: ResetPasswordDto): Promise<void> {
     return this.authService.resetPassword(body.token, body.password);
   }
 

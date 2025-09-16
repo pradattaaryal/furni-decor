@@ -8,4 +8,4 @@ import { ProductVariantRepository } from './product-variant.repository';
   providers: [ProductVariantRepository],
   exports: [ProductVariantRepository],
 })
-export class ProductVariantRepositoryModule {} 
+export class ProductVariantRepositoryModule {}

@@ -35,10 +35,13 @@ export class CategoryRepository extends BaseRepository<CategoryEntity> {
     });
   }
 
-  async updateCategory(id: number, data: Partial<CategoryEntity>): Promise<CategoryEntity | null> {
+  async updateCategory(
+    id: number,
+    data: Partial<CategoryEntity>,
+  ): Promise<CategoryEntity | null> {
     const result = await this._findOneById(id);
     if (!result) return null;
-    
+
     const updatedResult = await this._update({
       ...result,
       ...data,

@@ -14,7 +14,10 @@ import {
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
-import { IResponse, IResponsePaging } from 'src/common/response/interfaces/response.interface';
+import {
+  IResponse,
+  IResponsePaging,
+} from 'src/common/response/interfaces/response.interface';
 import { CategoryCreateDto } from '../dto/create-category.dto';
 import { CategoryUpdateDto } from '../dto/update-category.dto';
 import { CategoryEntity } from '../entities/category.entity';
@@ -28,10 +31,11 @@ import { IdParamDto } from 'src/common/dto/id-param.dto';
 export class CategoryAdminController {
   constructor(private readonly categoryService: CategoryService) {}
 
- 
   @Get('/list')
   @ApiDocs({ operation: 'List Categories' })
-  async list(@Query() paginateQueryDto: PaginateQueryDto): Promise<IResponsePaging<CategoryEntity>> {
+  async list(
+    @Query() paginateQueryDto: PaginateQueryDto,
+  ): Promise<IResponsePaging<CategoryEntity>> {
     return this.categoryService.paginatedGet({
       ...paginateQueryDto,
       searchableColumns: ['name'],
@@ -48,7 +52,9 @@ export class CategoryAdminController {
   @Get(':id')
   @ApiDocs({ operation: 'Get Category' })
   @RequestParamGuard(IdParamDto)
-  async getById(@Param('id') id: number): Promise<IResponse<{ category: object; message: string }>> {
+  async getById(
+    @Param('id') id: number,
+  ): Promise<IResponse<{ category: object; message: string }>> {
     const category = await this.categoryService.getById(id, {
       options: { relations: ['children', 'parent'] },
     });
@@ -60,9 +66,4 @@ export class CategoryAdminController {
       },
     };
   }
-
- 
-
- 
- 
 }

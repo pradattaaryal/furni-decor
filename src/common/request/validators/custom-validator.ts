@@ -608,9 +608,11 @@ export function CustomIsStartBeforeEnd(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          const object = args.object as { discountStartDate: Date; discountEndDate: Date };
+          const object = args.object as {
+            discountStartDate: Date;
+            discountEndDate: Date;
+          };
           const { discountStartDate, discountEndDate } = object;
-        
 
           if (discountStartDate && discountEndDate) {
             return discountStartDate < discountEndDate;
@@ -782,6 +784,3 @@ export const IsCityIdPresent = (
     });
   };
 };
-
- 
- 

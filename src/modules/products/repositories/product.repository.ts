@@ -32,7 +32,10 @@ export class ProductRepository extends BaseRepository<ProductEntity> {
       .getOne();
   }
 
-  async updateProduct(id: number, data: Partial<ProductEntity>): Promise<ProductEntity | null> {
+  async updateProduct(
+    id: number,
+    data: Partial<ProductEntity>,
+  ): Promise<ProductEntity | null> {
     await this.repository.update(id, data);
     return await this.fetchProduct(id);
   }

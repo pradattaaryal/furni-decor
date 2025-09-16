@@ -57,21 +57,21 @@ export class MarketingUserCreateDto implements IUserCreateDto {
   @CustomIsString({ message: 'Last Name must be a string' })
   lastName?: string;
 
-//   @ApiProperty({
-//     example: UserRole.MARKETING,
-//     description: 'Role of the user',
-//     required: false,
-//     default: UserRole.MARKETING, // Swagger UI shows this as default
-//     enum: UserRole,
-//   })
-//   role: UserRole = UserRole.MARKETING;
+  //   @ApiProperty({
+  //     example: UserRole.MARKETING,
+  //     description: 'Role of the user',
+  //     required: false,
+  //     default: UserRole.MARKETING, // Swagger UI shows this as default
+  //     enum: UserRole,
+  //   })
+  //   role: UserRole = UserRole.MARKETING;
 
-//   @ApiProperty({
-//     example: true,
-//     description: 'Whether the user is verified',
-//     required: false,
-//     default: true,
-//   })
-//   @CustomIsBoolean({ message: 'Verified must be a boolean' })
-//   verified: boolean = true; // default applied
+  //   @ApiProperty({
+  //     example: true,
+  //     description: 'Whether the user is verified',
+  //     required: false,
+  //     default: true,
+  //   })
+  //   @CustomIsBoolean({ message: 'Verified must be a boolean' })
+  //   verified: boolean = true; // default applied
 }

@@ -9,7 +9,7 @@ export type JwtPayload = {
   sub: number;
   roles: UserRole;
   [key: string]: any;
-}
+};
 
 export type AuthenticatedRequest = Request & { user: JwtPayload };
 

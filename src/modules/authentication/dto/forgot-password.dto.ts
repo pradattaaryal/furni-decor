@@ -15,7 +15,14 @@ import {
   CustomMaxLength,
   CustomMinLength,
 } from 'src/common/request/validators/custom-validator';
-import { IChangeNewPassword, IForgotPassword, IForgotPasswordSet, IResetPasswordDto, IVerifyOtp, IVerifyToken } from '../interfaces/forgot-passowrd.dto.interface';
+import {
+  IChangeNewPassword,
+  IForgotPassword,
+  IForgotPasswordSet,
+  IResetPasswordDto,
+  IVerifyOtp,
+  IVerifyToken,
+} from '../interfaces/forgot-passowrd.dto.interface';
 
 export class ForgotPasswordDto implements IForgotPassword {
   @ApiProperty({
@@ -113,8 +120,6 @@ export class ChangePasswordDto {
   password: string;
 }
 
-
-
 export class ResetPasswordDto implements IResetPasswordDto {
   @ApiProperty({
     required: false,
@@ -131,7 +136,6 @@ export class ResetPasswordDto implements IResetPasswordDto {
   @CustomIsString()
   password: string;
 }
-
 
 export class VerifyTokenDto implements IVerifyToken {
   @ApiProperty({

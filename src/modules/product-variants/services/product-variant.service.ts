@@ -11,7 +11,10 @@ import {
   IPaginateFindOption,
   IPaginateQueryBuilderOption,
 } from 'src/common/database/interfaces/findOption.interface';
-import { IUpdateOptions, IUpdateRawOptions } from 'src/common/database/interfaces/updateOption.interface';
+import {
+  IUpdateOptions,
+  IUpdateRawOptions,
+} from 'src/common/database/interfaces/updateOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 
@@ -19,19 +22,29 @@ import { IPaginationMeta } from 'src/common/response/interfaces/response.interfa
 export class ProductVariantService {
   constructor(private readonly _variantRepo: ProductVariantRepository) {}
 
-  async create(createDto: ProductVariantCreateDto, options?: ICreateOptions): Promise<ProductVariantEntity> {
+  async create(
+    createDto: ProductVariantCreateDto,
+    options?: ICreateOptions,
+  ): Promise<ProductVariantEntity> {
     return await this._variantRepo._create(createDto, options);
   }
 
-  async getById(id: number, options?: IFindOneOptions<ProductVariantEntity>): Promise<ProductVariantEntity | null> {
+  async getById(
+    id: number,
+    options?: IFindOneOptions<ProductVariantEntity>,
+  ): Promise<ProductVariantEntity | null> {
     return await this._variantRepo._findOneById(id, options);
   }
 
-  async getOne(options: IFindOneOptions<ProductVariantEntity>): Promise<ProductVariantEntity | null> {
+  async getOne(
+    options: IFindOneOptions<ProductVariantEntity>,
+  ): Promise<ProductVariantEntity | null> {
     return await this._variantRepo._findOne(options);
   }
 
-  async getAll(options?: IFindAllOptions<ProductVariantEntity>): Promise<ProductVariantEntity[]> {
+  async getAll(
+    options?: IFindAllOptions<ProductVariantEntity>,
+  ): Promise<ProductVariantEntity[]> {
     return await this._variantRepo._findAll(options);
   }
 
@@ -39,28 +52,44 @@ export class ProductVariantService {
     return this._variantRepo.getRepo().createQueryBuilder(name);
   }
 
-  async paginatedGet(options?: IPaginateFindOption<ProductVariantEntity>): Promise<{ data: ProductVariantEntity[]; _pagination: IPaginationMeta }> {
+  async paginatedGet(
+    options?: IPaginateFindOption<ProductVariantEntity>,
+  ): Promise<{ data: ProductVariantEntity[]; _pagination: IPaginationMeta }> {
     return await this._variantRepo._paginateFind(options);
   }
 
-  async paginatedQueryBuilderFind(options: IPaginateQueryBuilderOption): Promise<{ data: ProductVariantEntity[]; _pagination: IPaginationMeta }> {
+  async paginatedQueryBuilderFind(
+    options: IPaginateQueryBuilderOption,
+  ): Promise<{ data: ProductVariantEntity[]; _pagination: IPaginationMeta }> {
     return await this._variantRepo._paginatedQueryBuilder(options);
   }
 
-  async softDelete(variant: ProductVariantEntity, options?: IUpdateOptions<ProductVariantEntity>): Promise<ProductVariantEntity> {
+  async softDelete(
+    variant: ProductVariantEntity,
+    options?: IUpdateOptions<ProductVariantEntity>,
+  ): Promise<ProductVariantEntity> {
     return await this._variantRepo._softDelete(variant, options);
   }
 
-  async delete(variant: ProductVariantEntity, options?: IDeleteOptions<ProductVariantEntity>): Promise<ProductVariantEntity> {
+  async delete(
+    variant: ProductVariantEntity,
+    options?: IDeleteOptions<ProductVariantEntity>,
+  ): Promise<ProductVariantEntity> {
     return await this._variantRepo._delete(variant, options);
   }
 
-  async restore(options: IUpdateRawOptions<ProductVariantEntity>): Promise<UpdateResult | null> {
+  async restore(
+    options: IUpdateRawOptions<ProductVariantEntity>,
+  ): Promise<UpdateResult | null> {
     return await this._variantRepo._restoreRaw(options);
   }
 
-  async update(variant: ProductVariantEntity, updateData: IProductVariantUpdateDto, options?: IUpdateOptions<ProductVariantEntity>) {
+  async update(
+    variant: ProductVariantEntity,
+    updateData: IProductVariantUpdateDto,
+    options?: IUpdateOptions<ProductVariantEntity>,
+  ) {
     Object.assign(variant, updateData);
     return await this._variantRepo._update(variant, options);
   }
-} 
+}

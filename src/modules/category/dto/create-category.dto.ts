@@ -1,11 +1,16 @@
 import { faker } from '@faker-js/faker';
-import {
-  ApiProperty
-} from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { CustomIsNotEmpty, CustomIsNumber, CustomIsOptional, CustomIsString, CustomMaxLength, CustomMinLength } from 'src/common/request/validators/custom-validator';
+import {
+  CustomIsNotEmpty,
+  CustomIsNumber,
+  CustomIsOptional,
+  CustomIsString,
+  CustomMaxLength,
+  CustomMinLength,
+} from 'src/common/request/validators/custom-validator';
 import { ICategoryCreateDto } from '../interfaces/category.create.dto.interface';
- 
+
 export class CategoryCreateDto implements ICategoryCreateDto {
   @ApiProperty({
     example: faker.commerce.department(),
@@ -25,9 +30,10 @@ export class CategoryCreateDto implements ICategoryCreateDto {
   })
   @CustomIsOptional()
   @CustomIsNumber()
-   @Transform(({ value }: { value: any }) => value ? parseInt(value) : undefined)
+  @Transform(({ value }: { value: any }) =>
+    value ? parseInt(value) : undefined,
+  )
   parent_id?: number;
-
 
   @ApiProperty({
     example: 'faker.product.description()',

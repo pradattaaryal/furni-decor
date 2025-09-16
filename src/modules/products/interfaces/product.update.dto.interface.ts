@@ -1,4 +1,3 @@
-
 export interface IProductUpdateDto {
   name?: string;
   description?: string;

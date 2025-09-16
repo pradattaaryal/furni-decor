@@ -1,18 +1,15 @@
- 
-
-
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
-    CustomIsNotEmpty,
-    CustomIsNumber,
-    CustomIsOptional,
-    CustomIsStartBeforeEnd,
-    CustomIsString,
-    CustomMaxLength,
-    CustomMin,
-    CustomMinLength
+  CustomIsNotEmpty,
+  CustomIsNumber,
+  CustomIsOptional,
+  CustomIsStartBeforeEnd,
+  CustomIsString,
+  CustomMaxLength,
+  CustomMin,
+  CustomMinLength,
 } from 'src/common/request/validators/custom-validator';
 import { IProductUpdateDto } from '../interfaces/product.update.dto.interface';
 
@@ -38,7 +35,6 @@ export class ProductUpdateDto implements IProductUpdateDto {
   @CustomMaxLength(200)
   @Transform(({ value }: { value: string }) => value.trim())
   description: string;
-
 
   // ================= Additional Product Specifications Start =================
 
@@ -132,8 +128,6 @@ export class ProductUpdateDto implements IProductUpdateDto {
 
   // ================= Additional Product Specifications End =================
 
-
-
   @ApiProperty({
     example: 1,
     description: 'Category ID',
@@ -167,14 +161,16 @@ export class ProductUpdateDto implements IProductUpdateDto {
   originOfManufacture?: string;
 
   @ApiProperty({
-    example: 150.00,
+    example: 150.0,
     description: 'Discount value',
     required: false,
   })
   @CustomIsOptional()
   @CustomIsNumber()
   @CustomMin(0)
-  @Transform(({ value }: { value: any }) => value ? parseFloat(value) : undefined)
+  @Transform(({ value }: { value: any }) =>
+    value ? parseFloat(value) : undefined,
+  )
   discountValue?: number;
 
   @ApiProperty({
