@@ -21,12 +21,18 @@ import * as bcrypt from 'bcryptjs';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
+import { ImageService } from 'src/modules/image/services/image.service';
+import { IUserCreateDto } from '../interfaces/user.create.dto.interface';
+import { IPrepareUserCreateData } from '../interfaces/user.prepare-create.interface';
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
+
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly otpService: OtpService,
+    private readonly imageService: ImageService,
   ) {}
   async create(
     createDto: UserCreateDto,
@@ -44,8 +50,9 @@ export class UserService {
       options,
     );
 
-    // Delegate actual creation to repository (business logic is minimal here)
-    const user = await this.userRepo._create(createDto, {
+    const preparedData = await this.prepareCreateUserData(createDto);
+
+    const user = await this.userRepo._create(preparedData, {
       entityManager: options?.entityManager,
     });
 
@@ -57,6 +64,7 @@ export class UserService {
    */
   async register(
     registerDto: UserCreateDto,
+    options?: ICreateOptions,
   ): Promise<{ user: UserEntity; otp: string; otpExpiresAt: Date }> {
     // Validate password
     if (!registerDto.password || registerDto.password.length < 6) {
@@ -72,16 +80,26 @@ export class UserService {
     const hashedPassword = bcrypt.hashSync(registerDto.password, 10);
 
     // Apply defaults for optional fields if not provided
-    const userToCreate: Partial<UserEntity> = {
+    const userToCreate= {
       ...registerDto,
       password: hashedPassword,
     };
 
+    const preparedData = await this.prepareCreateUserData(userToCreate)
+
     // Persist user
-    const user = await this.userRepo._create(userToCreate);
+    const user = await this.userRepo._create(
+      preparedData,
+      {
+        entityManager: options?.entityManager
+      }
+    );
 
     // Generate OTP
-    const newOtp = await this.otpService.createOtpForUser(user.id);
+    const newOtp = await this.otpService.createOtpForUser(
+      user.id,
+      options?.entityManager
+    );
 
     return {
       user,
@@ -95,6 +113,7 @@ export class UserService {
    */
   async registerEmployee(
     registerDto: MarketingUserCreateDto,
+    options?: ICreateOptions,
   ): Promise<{ user: UserEntity }> {
     if (!registerDto.password || registerDto.password.length < 6) {
       throw new BadRequestException(
@@ -109,15 +128,17 @@ export class UserService {
     const hashedPassword = bcrypt.hashSync(registerDto.password, 10);
 
     // Apply defaults
-    const userToCreate: Partial<UserEntity> = {
+    const userToCreate = {
       ...registerDto,
       password: hashedPassword,
       role: 'marketing',
       verified: true,
     };
 
+    const preparedData = await this.prepareCreateUserData(userToCreate);
+
     // Persist user
-    const user = await this.userRepo._create(userToCreate);
+    const user = await this.userRepo._create(preparedData, { entityManager: options?.entityManager });
 
     return { user };
   }
@@ -199,5 +220,22 @@ export class UserService {
         ...(options?.options || {}),
       },
     });
+  }
+
+  async prepareCreateUserData(
+    data: IUserCreateDto
+  ): Promise<IPrepareUserCreateData> {
+    if (data.imageId) {
+      const image = await this.imageService.getById(data.imageId);
+
+      delete data.imageId;
+
+      return {
+        ...data,
+        image
+      }
+    };
+
+    return data;
   }
 }

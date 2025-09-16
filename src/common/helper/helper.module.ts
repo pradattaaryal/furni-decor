@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-//import { HelperFileService } from './services/helper.file.service';
+import { HelperFileService } from './services/helper.file.service';
 import { HelperDateService } from './services/helper.date.service';
 import { HelperNumberService } from './services/helper.number.service';
 import { TSQueryHelperService } from './services/helper.tsquery.service';
@@ -7,13 +7,13 @@ import { TSQueryHelperService } from './services/helper.tsquery.service';
 @Global()
 @Module({
   providers: [
-    //  HelperFileService,
+    HelperFileService,
     HelperDateService,
     HelperNumberService,
     TSQueryHelperService,
   ],
   exports: [
-    //  HelperFileService,
+    HelperFileService,
     HelperDateService,
     HelperNumberService,
     TSQueryHelperService,

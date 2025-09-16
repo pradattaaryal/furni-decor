@@ -42,7 +42,12 @@ export class OtpService {
     }
 
     const user = await this.userRepo._findOne({
-      options: { where: { id: userId } },
+      entityManager: manager,
+      options: {
+        where: {
+          id: userId
+        }
+      },
     });
 
     if (!user) {
@@ -50,7 +55,7 @@ export class OtpService {
     }
 
     // Drop old OTPs to avoid clutter
-    await this.dropOtp(userId);
+    // await this.dropOtp(userId, manager);
 
     const otp = this.generateOtp(6);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
@@ -59,7 +64,7 @@ export class OtpService {
       UserEntity_id: userId,
       otp,
       expires_at: expiresAt,
-    });
+    }, { entityManager: manager} );
 
     return newOtp;
   }
@@ -117,11 +122,26 @@ export class OtpService {
   /**
    * Deletes all OTPs for a given user (housekeeping).
    */
-  async dropOtp(userId: number): Promise<void> {
+  async dropOtp(
+    userId: number,
+    manager?: EntityManager,
+  ): Promise<void> {
     if (!userId || isNaN(userId)) {
       throw new BadRequestException('Invalid userId');
     }
+    const otpToDelete  = await this.otpRepo._findOne({
+      entityManager: manager,
+      options: {
+        where: {
+          UserEntity_id: userId,
+        }
+      }
+    })
 
-    await this.otpRepo._deleteRaw({ where: { UserEntity_id: userId } });
+    if (otpToDelete) {
+      await this.otpRepo._softDelete(otpToDelete, { entityManager: manager });
+    } else {
+      throw new NotFoundException('OTP not found');
+    }
   }
 }
