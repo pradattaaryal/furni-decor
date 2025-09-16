@@ -30,10 +30,7 @@ import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serializati
 import { DataSource, QueryRunner } from 'typeorm';
  
 @ApiTags('Products')
-@Controller({
-  version: '1',
-  path: '/products',
-})
+ 
 export class ProductAdminController {
   constructor(
     private readonly productService: ProductService,
@@ -42,6 +39,7 @@ export class ProductAdminController {
   ) {}
 
   @Post('/create')
+  @ApiDocs({ operation: 'Create Product' })
   async create(
     @Body() body: ProductCreateDto,
   ): Promise<IResponse<{ product: ProductEntity; message: string }>> {
