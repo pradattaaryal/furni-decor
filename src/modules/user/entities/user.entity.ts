@@ -19,7 +19,7 @@ export class UserEntity extends BaseUserEntity {
   @Expose({ groups: ALL_GROUP })
   @Column({ name: 'last_name', type: 'varchar', nullable: false })
   lastName: string | null;
-  
+
   @OneToMany(() => ProductRatingEntity, (rating) => rating.user)
   productRatings: ProductRatingEntity[];
 
@@ -29,5 +29,4 @@ export class UserEntity extends BaseUserEntity {
   // @OneToOne(() => ImageEntity, { nullable: true, onDelete: 'SET NULL' })
   // @JoinColumn({ name: 'image_id' })
   // image: ImageEntity | null;
-
 }

@@ -13,12 +13,20 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
       type: this.configService.get<string>('database.type', { infer: true }),
-      url: this.configService.get<string>('database.url', { infer: true }) || undefined,
+      url:
+        this.configService.get<string>('database.url', { infer: true }) ||
+        undefined,
       host: this.configService.get<string>('database.host', { infer: true }),
       port: this.configService.get<string>('database.port', { infer: true }),
-      username: this.configService.get<string>('database.username', { infer: true }),
-      password: this.configService.get<string>('database.password', { infer: true }),
-      database: this.configService.get<string>('database.name', { infer: true }),
+      username: this.configService.get<string>('database.username', {
+        infer: true,
+      }),
+      password: this.configService.get<string>('database.password', {
+        infer: true,
+      }),
+      database: this.configService.get<string>('database.name', {
+        infer: true,
+      }),
       synchronize: this.configService.get<string>('database.synchronize', {
         infer: true,
       }),

@@ -1,4 +1,4 @@
-export interface IOtpVerificationDto{
-    email:string,
-    otp:string
+export interface IOtpVerificationDto {
+  email: string;
+  otp: string;
 }

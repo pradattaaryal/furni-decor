@@ -1,3 +1,3 @@
-export class IOptEntity{
-    user_id:string
+export class IOptEntity {
+  user_id: string;
 }

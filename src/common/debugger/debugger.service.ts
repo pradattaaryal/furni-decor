@@ -9,7 +9,8 @@ export class DebuggerService {
   env: ENUM_APP_ENVIRONMENT;
   constructor(
     private readonly configService: ConfigService,
-   @Inject(LOGGER_CLIENT_CONNECTION) private readonly loggerService: pino.Logger,
+    @Inject(LOGGER_CLIENT_CONNECTION)
+    private readonly loggerService: pino.Logger,
   ) {
     this.env = this.configService.get<ENUM_APP_ENVIRONMENT>(
       'app.env',

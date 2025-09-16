@@ -26,7 +26,7 @@ export class CategoryService {
     createDto: CategoryCreateDto,
     options?: ICreateOptions,
   ): Promise<CategoryEntity> {
-     const data = await this._categoryRepo._create(createDto, options);
+    const data = await this._categoryRepo._create(createDto, options);
     return data;
   }
 
@@ -35,12 +35,8 @@ export class CategoryService {
     options?: IFindOneOptions<CategoryEntity>,
   ): Promise<CategoryEntity | null> {
     const data = await this._categoryRepo._findOneById(id, options);
-     return data;
+    return data;
   }
-
-
-
-   
 
   async getOne(
     options: IFindOneOptions<CategoryEntity>,
@@ -65,9 +61,7 @@ export class CategoryService {
     return await this._categoryRepo._findAll(options);
   }
 
-  getQueryBuilder(
-    name: string
-  ): SelectQueryBuilder<CategoryEntity> {
+  getQueryBuilder(name: string): SelectQueryBuilder<CategoryEntity> {
     return this._categoryRepo.getRepo().createQueryBuilder(name);
   }
 
@@ -124,7 +118,10 @@ export class CategoryService {
     return this._categoryRepo.fetchCategory(id);
   }
 
-  async updateCategory(id: number, data: Partial<CategoryEntity>): Promise<CategoryEntity | null> {
+  async updateCategory(
+    id: number,
+    data: Partial<CategoryEntity>,
+  ): Promise<CategoryEntity | null> {
     return this._categoryRepo.updateCategory(id, data);
   }
 }

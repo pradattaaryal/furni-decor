@@ -14,9 +14,11 @@ import {
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
-import { IResponse, IResponsePaging } from 'src/common/response/interfaces/response.interface';
- 
- 
+import {
+  IResponse,
+  IResponsePaging,
+} from 'src/common/response/interfaces/response.interface';
+
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
 import { ProductVariantUpdateDto } from '../dto/update-product-variant.dto';
@@ -28,8 +30,6 @@ import { ProductVariantService } from '../services/product-variant.service';
 @ApiBearerAuth('accessToken')
 export class ProductVarientAdminController {
   constructor(private readonly productVariantService: ProductVariantService) {}
- 
- 
 
   @Patch('/update/:id')
   @ApiDocs({ operation: 'Update ProductVarient' })
@@ -41,7 +41,10 @@ export class ProductVarientAdminController {
     const found = await this.productVariantService.getById(id);
     if (!found) throw new NotFoundException('Cannot find ProductVarient');
 
-    const updated = await this.productVariantService.update(found, updateProductVarientData);
+    const updated = await this.productVariantService.update(
+      found,
+      updateProductVarientData,
+    );
     return {
       data: {
         product: updated,
@@ -49,10 +52,4 @@ export class ProductVarientAdminController {
       },
     };
   }
-
- 
-
- 
-
-  
 }

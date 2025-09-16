@@ -18,30 +18,29 @@ import { ProductEntity } from 'src/modules/products/entities/product.entity';
 
 @Entity({ name: CATEGORY_DATABASE_TABLE_NAME })
 @Index(['name', 'parent_id'])
-export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntity {
+export class CategoryEntity
+  extends DatabaseBaseEntity
+  implements ICategoryEntity
+{
   // ======================
   // Columns===============
   // ======================
 
-   
   @Column({ type: 'varchar', length: 255, unique: true })
   name: string;
 
-   
   @Column({ type: 'int', nullable: true })
   parent_id: number | null;
 
- @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true })
   slug: string;
 
-  
   @Column({ type: 'text', nullable: true })
   description?: string | null; // ✅ new field
   // ======================
   // Relations=============
   // ======================
 
-   
   @ManyToOne(() => CategoryEntity, (category) => category.children, {
     nullable: true,
     onDelete: 'SET NULL',
@@ -49,7 +48,6 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
   @JoinColumn({ name: 'parent_id' })
   parent?: CategoryEntity | null;
 
-   
   @OneToMany(() => CategoryEntity, (category) => category.parent)
   children?: CategoryEntity[];
 
@@ -57,7 +55,7 @@ export class CategoryEntity extends DatabaseBaseEntity implements ICategoryEntit
   // @OneToMany('ProductEntity', 'category')
   // products?: any[];
 
-   @OneToMany(() => ProductEntity, (product) => product.category)
+  @OneToMany(() => ProductEntity, (product) => product.category)
   products: ProductEntity[];
   // ======================
   // Hooks =================

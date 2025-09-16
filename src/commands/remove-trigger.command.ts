@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
- 
+
 import { DataSource } from 'typeorm';
 
 @Injectable()

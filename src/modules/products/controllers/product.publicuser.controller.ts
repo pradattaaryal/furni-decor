@@ -40,7 +40,6 @@ export class PublicUserProductController {
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
   ) {}
- 
 
   @Get('/list')
   @ApiDocs({ operation: 'List Products' })
@@ -61,5 +60,4 @@ export class PublicUserProductController {
       defaultSortOrder: 'DESC',
     });
   }
-
 }

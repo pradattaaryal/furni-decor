@@ -9,10 +9,10 @@ import { ProductRatingEntity } from 'src/modules/product-rating/entities/product
 @Entity({ name: 'products' })
 export class ProductEntity
   extends DatabaseBaseEntity
-  implements IProductEntity {
+  implements IProductEntity
+{
   @Column({ name: 'name', type: 'varchar', length: 100 })
   name: string;
-
 
   @Column({ name: 'description', type: 'varchar', length: 200 })
   description: string;
@@ -20,25 +20,54 @@ export class ProductEntity
   @Column({ name: 'category_id' })
   categoryId: number;
 
-
   // ================= Additional Product Specifications Start =================
 
-  @Column({ name: 'model_number', type: 'varchar', length: 100, nullable: true })
+  @Column({
+    name: 'model_number',
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
   modelNumber?: string;
 
-  @Column({ name: 'secondary_material', type: 'varchar', length: 100, nullable: true })
+  @Column({
+    name: 'secondary_material',
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
   secondaryMaterial?: string;
 
-  @Column({ name: 'configuration', type: 'varchar', length: 100, nullable: true })
+  @Column({
+    name: 'configuration',
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
   configuration?: string;
 
-  @Column({ name: 'upholstery_material', type: 'varchar', length: 100, nullable: true })
+  @Column({
+    name: 'upholstery_material',
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
   upholsteryMaterial?: string;
 
-  @Column({ name: 'upholstery_color', type: 'varchar', length: 50, nullable: true })
+  @Column({
+    name: 'upholstery_color',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
   upholsteryColor?: string;
 
-  @Column({ name: 'filling_material', type: 'varchar', length: 100, nullable: true })
+  @Column({
+    name: 'filling_material',
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+  })
   fillingMaterial?: string;
 
   @Column({ name: 'finish_type', type: 'varchar', length: 50, nullable: true })
@@ -104,11 +133,9 @@ export class ProductEntity
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
 
-
   @OneToMany(() => ProductVariantEntity, (variant) => variant.product)
   variants: ProductVariantEntity[];
-  
+
   @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
   ratings: ProductRatingEntity[];
-
 }

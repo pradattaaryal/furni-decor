@@ -86,7 +86,7 @@ export class ProductMarketingController {
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
     const product = await this.productService.fetchProduct(params.id);
-    
+
     return {
       data: {
         product,

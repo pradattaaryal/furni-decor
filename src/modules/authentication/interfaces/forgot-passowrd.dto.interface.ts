@@ -41,7 +41,11 @@ export interface IChangeNewPassword {
 
 /** Optional repository interface for managing tokens/OTPs */
 export interface IResetTokenRepo {
-  createToken(email: string, otpOrToken: string, expiresAt: Date): Promise<void>;
+  createToken(
+    email: string,
+    otpOrToken: string,
+    expiresAt: Date,
+  ): Promise<void>;
   verifyToken(email: string, otpOrToken: string): Promise<boolean>;
   invalidateToken(email: string, otpOrToken: string): Promise<void>;
 }

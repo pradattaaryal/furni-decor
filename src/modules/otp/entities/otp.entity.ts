@@ -1,19 +1,11 @@
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
-import {
-  
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-} from 'typeorm';
- 
-@Entity()
-export class OtpEntity extends DatabaseBaseEntity  {
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
+@Entity()
+export class OtpEntity extends DatabaseBaseEntity {
   @Column()
   UserEntity_id: number;
- 
 
   @Column({
     type: 'varchar',
@@ -27,11 +19,9 @@ export class OtpEntity extends DatabaseBaseEntity  {
   })
   expires_at: Date;
 
-//////////////Relation////////////////////
+  //////////////Relation////////////////////
 
-@ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-@JoinColumn({ name: 'UserEntity_id' })
-UserEntity: UserEntity;
-
-
- }
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'UserEntity_id' })
+  UserEntity: UserEntity;
+}

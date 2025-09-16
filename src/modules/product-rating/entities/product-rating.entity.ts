@@ -14,15 +14,21 @@ import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { IProductRatingEntity } from '../interfaces/product-rating.entity.interface';
-   
+
 @Entity({ name: 'product_ratings' })
-export class ProductRatingEntity extends DatabaseBaseEntity implements IProductRatingEntity {
- 
-  @ManyToOne(() => ProductEntity, (product) => product.ratings, { onDelete: 'CASCADE' })
+export class ProductRatingEntity
+  extends DatabaseBaseEntity
+  implements IProductRatingEntity
+{
+  @ManyToOne(() => ProductEntity, (product) => product.ratings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.productRatings, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, (user) => user.productRatings, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 

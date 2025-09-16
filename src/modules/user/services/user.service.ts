@@ -9,8 +9,14 @@ import { MarketingUserCreateDto } from '../dto/marketing.create.dto';
 import { UserRepository } from '../repositories/user.repository';
 import { OtpService } from 'src/modules/otp/otp.service';
 import { Not, UpdateResult } from 'typeorm';
-import { IUpdateOptions, IUpdateRawOptions } from 'src/common/database/interfaces/updateOption.interface';
-import { IFindOneOptions, IPaginateFindOption } from 'src/common/database/interfaces/findOption.interface';
+import {
+  IUpdateOptions,
+  IUpdateRawOptions,
+} from 'src/common/database/interfaces/updateOption.interface';
+import {
+  IFindOneOptions,
+  IPaginateFindOption,
+} from 'src/common/database/interfaces/findOption.interface';
 import * as bcrypt from 'bcryptjs';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
@@ -106,8 +112,8 @@ export class UserService {
     const userToCreate: Partial<UserEntity> = {
       ...registerDto,
       password: hashedPassword,
-      role:  'marketing',
-      verified:  true,
+      role: 'marketing',
+      verified: true,
     };
 
     // Persist user
@@ -163,36 +169,34 @@ export class UserService {
 
     return user;
   }
-  
-    async softDelete(
-      user: UserEntity,
-      options?: IUpdateOptions<UserEntity>,
-    ): Promise<UserEntity> {
-      return await this.userRepo._softDelete(user, options);
-    }
-  
-    async delete(
-      user: UserEntity,
-      options?: IDeleteOptions<UserEntity>,
-    ): Promise<UserEntity> {
-      return await this.userRepo._delete(user, options);
-    }
-  
-    async restore(
-      options: IUpdateRawOptions<UserEntity>,
-    ): Promise<UpdateResult | null> {
-      return await this.userRepo._restoreRaw(options);
-    }
 
+  async softDelete(
+    user: UserEntity,
+    options?: IUpdateOptions<UserEntity>,
+  ): Promise<UserEntity> {
+    return await this.userRepo._softDelete(user, options);
+  }
 
-     async paginatedUser(
+  async delete(
+    user: UserEntity,
+    options?: IDeleteOptions<UserEntity>,
+  ): Promise<UserEntity> {
+    return await this.userRepo._delete(user, options);
+  }
+
+  async restore(
+    options: IUpdateRawOptions<UserEntity>,
+  ): Promise<UpdateResult | null> {
+    return await this.userRepo._restoreRaw(options);
+  }
+
+  async paginatedUser(
     options?: IPaginateFindOption<UserEntity>,
   ): Promise<{ data: UserEntity[]; _pagination: IPaginationMeta }> {
     return this.userRepo._paginateFind({
       ...options,
       options: {
         ...(options?.options || {}),
-       
       },
     });
   }

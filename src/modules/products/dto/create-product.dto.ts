@@ -40,30 +40,28 @@ export class ProductCreateDto implements IProductCreateDto {
   @Transform(({ value }: { value: string }) => value.trim())
   description: string;
 
-
-
   @ApiProperty({
     example: [
       {
         dimensions: {
-          height: "80cm",
-          width: "120cm",
-          depth: "75cm",
-          seatHeight: "45cm",
-          weight: "25kg"
+          height: '80cm',
+          width: '120cm',
+          depth: '75cm',
+          seatHeight: '45cm',
+          weight: '25kg',
         },
-        color: "Blue"
+        color: 'Blue',
       },
       {
         dimensions: {
-          height: "85cm",
-          width: "140cm",
-          depth: "80cm",
-          seatHeight: "46cm",
-          weight: "28kg"
+          height: '85cm',
+          width: '140cm',
+          depth: '80cm',
+          seatHeight: '46cm',
+          weight: '28kg',
         },
-        color: "Gray"
-      }
+        color: 'Gray',
+      },
     ],
     description: 'Product variants',
     type: [ProductVariantDto],
@@ -167,8 +165,6 @@ export class ProductCreateDto implements IProductCreateDto {
 
   // ================= Additional Product Specifications End =================
 
-
-
   @ApiProperty({
     example: 1,
     description: 'Category ID',
@@ -202,14 +198,16 @@ export class ProductCreateDto implements IProductCreateDto {
   originOfManufacture?: string;
 
   @ApiProperty({
-    example: 150.00,
+    example: 150.0,
     description: 'Discount value',
     required: false,
   })
   @CustomIsOptional()
   @CustomIsNumber()
   @CustomMin(0)
-  @Transform(({ value }: { value: any }) => value ? parseFloat(value) : undefined)
+  @Transform(({ value }: { value: any }) =>
+    value ? parseFloat(value) : undefined,
+  )
   discountValue?: number;
 
   @ApiProperty({

@@ -3,9 +3,8 @@ import { NestApplication } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ENUM_APP_ENVIRONMENT } from './common/constants/app.constant';
 import { AdminRouterModule } from './router/routes/admin.route.module';
-import {  UserRouterModule } from './router/routes/user.route.module';
+import { UserRouterModule } from './router/routes/user.route.module';
 import { MarketingRouterModule } from './router/routes/marketing.route.module';
- 
 
 export default async function (app: NestApplication) {
   const configService = app.get(ConfigService);
@@ -15,7 +14,6 @@ export default async function (app: NestApplication) {
   );
 
   if (env !== ENUM_APP_ENVIRONMENT.PRODUCTION) {
-  
     const adminDocumentBuild = new DocumentBuilder()
       .setTitle('Furni Decor Admin API')
       .setDescription('Rest APIs for Furni Decor Admin')
@@ -62,7 +60,7 @@ export default async function (app: NestApplication) {
       customerDocumentBuild,
       {
         deepScanRoutes: true,
-        include: [ UserRouterModule],
+        include: [UserRouterModule],
       },
     );
 
@@ -77,7 +75,6 @@ export default async function (app: NestApplication) {
       },
     });
 
-  
     // for marketing user
     const partnerDocumentBuild = new DocumentBuilder()
       .setTitle('Furni Decor Marketing User API')
