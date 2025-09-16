@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CustomIsEmail,
   CustomIsNotEmpty,
+  CustomIsNumber,
   CustomIsOptional,
   CustomIsString,
   CustomMatches,
@@ -53,4 +54,13 @@ export class UserCreateDto implements IUserCreateDto {
   @CustomIsNotEmpty({ message: 'Last Name must not be a Empty' })
   @CustomIsString({ message: 'Last Name must be a string' })
   lastName?: string;
+
+  @ApiProperty({
+    example: 123,
+    description: 'uploaded image Id',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsNumber()
+  imageId?: number | undefined;
 }

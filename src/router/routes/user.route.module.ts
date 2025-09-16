@@ -7,6 +7,8 @@ import { PublicUserController } from 'src/modules/user/controllers/user.controll
 import { PublicUserProductController } from 'src/modules/products/controllers/product.publicuser.controller';
 import { ProductsModule } from 'src/modules/products/products.module';
 import { CategoryModule } from 'src/modules/category/category.module';
+import { ImageModule } from 'src/modules/image/image.module';
+import { ImageUserController } from 'src/modules/image/controllers/image.user.controller';
 
 @Module({
   imports: [
@@ -15,11 +17,13 @@ import { CategoryModule } from 'src/modules/category/category.module';
     OtpModule,
     ProductsModule,
     CategoryModule,
+    ImageModule,
   ],
   controllers: [
     PublicUserController,
     AuthCustomerController,
     PublicUserProductController,
+    ImageUserController,
   ],
 })
 export class UserRouterModule {}
