@@ -4,6 +4,7 @@ import { CategoryEntity } from 'src/modules/category/entities/category.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { IProductEntity } from '../interfaces/product.entity.interface';
 import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
+import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
 
 @Entity({ name: 'products' })
 export class ProductEntity
@@ -106,5 +107,8 @@ export class ProductEntity
 
   @OneToMany(() => ProductVariantEntity, (variant) => variant.product)
   variants: ProductVariantEntity[];
+  
+  @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
+  ratings: ProductRatingEntity[];
 
 }

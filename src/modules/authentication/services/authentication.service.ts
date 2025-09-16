@@ -87,7 +87,7 @@ export class AuthenticationService {
   ): Promise<Omit<UserEntity, 'password'>> {
     const user = await this.findUserByEmail(email);
     if (!user || !(await this.comparePassword(password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Email not found');
     }
     if (!user.verified) {
       throw new UnauthorizedException('Account not verified');

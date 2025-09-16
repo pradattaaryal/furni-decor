@@ -10,10 +10,11 @@ import { UserRepository } from '../repositories/user.repository';
 import { OtpService } from 'src/modules/otp/otp.service';
 import { Not, UpdateResult } from 'typeorm';
 import { IUpdateOptions, IUpdateRawOptions } from 'src/common/database/interfaces/updateOption.interface';
-import { IFindOneOptions } from 'src/common/database/interfaces/findOption.interface';
+import { IFindOneOptions, IPaginateFindOption } from 'src/common/database/interfaces/findOption.interface';
 import * as bcrypt from 'bcryptjs';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
+import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 
 @Injectable()
 export class UserService {
@@ -182,4 +183,17 @@ export class UserService {
     ): Promise<UpdateResult | null> {
       return await this.userRepo._restoreRaw(options);
     }
+
+
+     async paginatedUser(
+    options?: IPaginateFindOption<UserEntity>,
+  ): Promise<{ data: UserEntity[]; _pagination: IPaginationMeta }> {
+    return this.userRepo._paginateFind({
+      ...options,
+      options: {
+        ...(options?.options || {}),
+       
+      },
+    });
+  }
 }
