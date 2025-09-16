@@ -79,7 +79,6 @@ export class AdminUserController {
       message: string;
     }>
   > {
-    console.log("Make sure I am inside correct controller");
     const queryRunner: QueryRunner = this._connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

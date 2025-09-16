@@ -113,6 +113,7 @@ export class UserService {
    */
   async registerEmployee(
     registerDto: MarketingUserCreateDto,
+    options?: ICreateOptions,
   ): Promise<{ user: UserEntity }> {
     if (!registerDto.password || registerDto.password.length < 6) {
       throw new BadRequestException(
@@ -127,15 +128,17 @@ export class UserService {
     const hashedPassword = bcrypt.hashSync(registerDto.password, 10);
 
     // Apply defaults
-    const userToCreate: Partial<UserEntity> = {
+    const userToCreate = {
       ...registerDto,
       password: hashedPassword,
       role: 'marketing',
       verified: true,
     };
 
+    const preparedData = await this.prepareCreateUserData(userToCreate);
+
     // Persist user
-    const user = await this.userRepo._create(userToCreate);
+    const user = await this.userRepo._create(preparedData, { entityManager: options?.entityManager });
 
     return { user };
   }
@@ -223,23 +226,16 @@ export class UserService {
     data: IUserCreateDto
   ): Promise<IPrepareUserCreateData> {
     if (data.imageId) {
-      console.log("Inside preparation of create user data")
       const image = await this.imageService.getById(data.imageId);
 
+      delete data.imageId;
+
       return {
-        email: data.email,
-        password: data.password,
-        firstName: data.firstName,
-        lastName: data.lastName,
+        ...data,
         image
       }
     };
 
-    return {
-      email: data.email,
-      password: data.password,
-      firstName: data.firstName,
-      lastName: data.lastName,
-    }
+    return data;
   }
 }
