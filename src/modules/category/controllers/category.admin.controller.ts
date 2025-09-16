@@ -24,14 +24,12 @@ import { CategoryEntity } from '../entities/category.entity';
 import { CategoryService } from '../services/category.service';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
-import { ParentCategoryCreateDto } from '../dto/create-parent-categoey.dto';
 
 @ApiTags('Category')
 @Controller('categories')
 @ApiBearerAuth('accessToken')
 export class CategoryAdminController {
   constructor(private readonly categoryService: CategoryService) {}
-
   @Get('/list')
   @ApiDocs({ operation: 'List Categories' })
   async list(
@@ -49,26 +47,12 @@ export class CategoryAdminController {
       },
     });
   }
-
-  @Post('/create-category')
+  @Post('/create')
   @ApiDocs({ operation: 'Create Category' })
   async create(
-    @Body() body: ParentCategoryCreateDto,
-  ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
-    const category = await this.categoryService.create(body);
-    return {
-      data: {
-        category,
-        message: 'Category created successfully.',
-      },
-    };
-  }
-
-  @Post('/create-Sub-category')
-  @ApiDocs({ operation: 'Create Sub Category' })
-  async createsubcategory(
     @Body() body: CategoryCreateDto,
   ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
+    // Validate parent_id only if it is present (not undefined or null)
     if (body.parent_id !== undefined && body.parent_id !== null) {
       const parentCategory = await this.categoryService.getById(body.parent_id);
       if (!parentCategory) {
