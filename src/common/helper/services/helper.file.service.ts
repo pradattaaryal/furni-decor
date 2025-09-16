@@ -1,9 +1,9 @@
-/*import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import bytes from 'bytes';
 
 import { readFileSync, writeFileSync } from 'fs';
-import { FILE_ASSOCIATION_TYPE } from 'src/modules/file/constants/association-type.enum';
-import { UPLOAD_FOLDER_ENUM } from 'src/modules/file/constants/upload.folder.enum.list';
+import { FILE_ASSOCIATION_TYPE } from 'src/modules/image/constants/association-type.enum';
+import { UPLOAD_FOLDER_ENUM } from 'src/modules/image/constants/upload.folder.enum.list';
 import { read, utils } from 'xlsx';
 import {
   IHelperFileReadExcelOptions,
@@ -62,4 +62,3 @@ export class HelperFileService {
     return false;
   }
 }
-*/

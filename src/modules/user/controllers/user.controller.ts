@@ -14,8 +14,7 @@ import { IResponse } from 'src/common/response/interfaces/response.interface';
 import { UserCreateDto } from '../dto/user.create.dto';
 import { UserEntity } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
-import { MarketingUserCreateDto } from '../dto/marketing.create.dto';
-import { ApiDocs } from 'src/common/doc/common-docs';
+import { DataSource } from 'typeorm';
 
 @SerializeOptions({
   groups: ADMIN_ONLY_GROUP,
@@ -23,7 +22,10 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 @ApiTags('users')
 @Controller('user')
 export class PublicUserController {
-  constructor(private readonly _UserService: UserService) {}
+  constructor(
+    private readonly _UserService: UserService,
+    private _connection: DataSource,
+  ) {}
 
   @Post('/create')
   @ApiOperation({ summary: 'Register a new user' })
@@ -34,16 +36,38 @@ export class PublicUserController {
       message: string;
     }>
   > {
-    const result = await this._UserService.register(registerDto);
+    const queryRunner = this._connection.createQueryRunner()
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    result.user as UserEntity;
+    try {
+      const result = await this._UserService.register(
+        registerDto,
+        {
+          entityManager: queryRunner.manager,
+        }
+      );
 
-    return {
-      data: {
-        otp: result.otp,
+      result.user as UserEntity;
+      await queryRunner.commitTransaction();
+      
+      return {
+        data: {
+          otp: result.otp,
+          message: 'User registered successfully. Please verify your OTP.',
+        },
+      };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release()
+    }
 
-        message: 'User registered successfully. Please verify your OTP.',
-      },
-    };
+    
+
+    
+
+    
   }
 }

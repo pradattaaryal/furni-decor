@@ -3,4 +3,5 @@ export interface IUserCreateDto {
   password: string;
   firstName?: string;
   lastName?: string;
+  imageId?: number;
 }

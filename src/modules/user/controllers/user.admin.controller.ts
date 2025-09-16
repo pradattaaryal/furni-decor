@@ -22,6 +22,7 @@ import { UserService } from '../services/user.service';
 import { MarketingUserCreateDto } from '../dto/marketing.create.dto';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
+import { DataSource, QueryRunner } from 'typeorm';
 
 @SerializeOptions({
   groups: ADMIN_ONLY_GROUP,
@@ -29,7 +30,10 @@ import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 @ApiTags('users')
 @Controller('user')
 export class AdminUserController {
-  constructor(private readonly _userService: UserService) {}
+  constructor(
+    private readonly _userService: UserService,
+    private _connection: DataSource,
+  ) {}
 
   @Get('/list/marketing')
   @ApiOperation({ summary: 'list employee' })
@@ -47,6 +51,8 @@ export class AdminUserController {
       },
     });
   }
+
+
   @Get('/list/user')
   @ApiOperation({ summary: 'list user' })
   async listUser(
@@ -63,26 +69,44 @@ export class AdminUserController {
       },
     });
   }
+
+
   @Post('create')
   @ApiOperation({ summary: 'Register a new user' })
   async register(@Body() registerDto: UserCreateDto): Promise<
     IResponse<{
       otp: string;
-
       message: string;
     }>
   > {
-    const result = await this._userService.register(registerDto);
+    const queryRunner: QueryRunner = this._connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    result.user as UserEntity;
+    try {
+      const data = await this._userService.register(
+        registerDto,
+        {
+          entityManager: queryRunner.manager,
+        }
+      )
+      data.user as UserEntity;
+      await queryRunner.commitTransaction();
+      
+      return {
+        data: {
+          otp: data.otp,
+          message: 'User Registered Successfully. Please verify your OTP'
+        }
+      }
+      
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
 
-    return {
-      data: {
-        otp: result.otp,
-
-        message: 'User registered successfully. Please verify your OTP.',
-      },
-    };
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   @Post('create-employee')
