@@ -1,7 +1,7 @@
  
 import { Module } from '@nestjs/common';
  import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductRatingRepositoryModule } from './repositories/category.repository.module';
+import { ProductRatingRepositoryModule } from './repositories/product-rating.repository.module';
 import { ProductRatingEntity } from './entities/product-rating.entity';
 import { ProductRatingService } from './services/product-rating.service';
 import { ProductsModule } from '../products/products.module';

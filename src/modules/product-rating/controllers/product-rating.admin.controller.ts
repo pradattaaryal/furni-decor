@@ -30,7 +30,7 @@ import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decor
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 
 @ApiTags('Product Rating ')
-@Controller('admin/product-ratings')
+@Controller('product-ratings')
 @ApiBearerAuth('accessToken')
 export class ProductRatingAdminController {
   constructor(private readonly productRatingService: ProductRatingService) {}

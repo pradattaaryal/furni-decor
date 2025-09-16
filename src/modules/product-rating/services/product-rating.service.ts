@@ -18,7 +18,7 @@ import { ProductRatingEntity } from '../entities/product-rating.entity';
 import { IProductRatingCreateDto } from '../interfaces/product-rating.create.dto.interface';
 import { IProductRatingEntity } from '../interfaces/product-rating.entity.interface';
  import { ProductRepository } from 'src/modules/products/repositories/product.repository';
-import { ProductRatingRepository } from '../repositories/category.repository';
+import { ProductRatingRepository } from '../repositories/product-rating.repository';
 import { ProductService } from 'src/modules/products/services/product.service';
 
 @Injectable()
