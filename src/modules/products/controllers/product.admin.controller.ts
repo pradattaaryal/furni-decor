@@ -30,7 +30,7 @@ import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serializati
 import { DataSource, QueryRunner } from 'typeorm';
  
 @ApiTags('Products')
- 
+ @Controller('/products')
 export class ProductAdminController {
   constructor(
     private readonly productService: ProductService,

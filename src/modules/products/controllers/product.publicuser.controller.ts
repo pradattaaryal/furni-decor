@@ -29,7 +29,7 @@ import { CategoryService } from 'src/modules/category/services/category.service'
 import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
  
 @ApiTags('Products')
- 
+@Controller('/products')
 export class PublicUserProductController {
   constructor(
     private readonly productService: ProductService,
