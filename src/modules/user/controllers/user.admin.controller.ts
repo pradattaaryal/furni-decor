@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
   Query,
-  SerializeOptions,
+ 
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ADMIN_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
@@ -24,9 +24,7 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { DataSource, QueryRunner } from 'typeorm';
 
-@SerializeOptions({
-  groups: ADMIN_ONLY_GROUP,
-})
+ 
 @ApiTags('users')
 @Controller('user')
 export class AdminUserController {

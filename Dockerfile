@@ -19,6 +19,8 @@ COPY package.json pnpm-lock.yaml ./
 
 RUN npm install -g pnpm@9.12.2 && pnpm install --prod --frozen-lockfile
 
+RUN mkdir -p images/users images/product_variants images/blogs
+
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3001

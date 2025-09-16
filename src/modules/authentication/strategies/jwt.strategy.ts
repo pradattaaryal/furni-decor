@@ -18,12 +18,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(keys: JwtKeysService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
       secretOrKey: keys.getAccessTokenPrivateKey(),
     });
   }
 
   async validate(payload: JwtPayload) {
+    
     return payload;
   }
 }

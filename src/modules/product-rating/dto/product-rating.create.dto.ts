@@ -1,6 +1,12 @@
 import { IsInt, Min, Max, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CustomIsNotEmpty, CustomIsNumber } from 'src/common/request/validators/custom-validator';
+import {
+  CustomIsNotEmpty,
+  CustomIsNumber,
+  CustomIsOptional,
+  CustomIsString,
+  CustomMaxLength,
+} from 'src/common/request/validators/custom-validator';
 import { Transform } from 'class-transformer';
 
 export class ProductRatingCreateDto {
@@ -15,4 +21,28 @@ export class ProductRatingCreateDto {
   @CustomIsNumber()
   @Transform(({ value }: { value: any }) => parseInt(value))
   productId: number;
+
+  @ApiProperty({
+    example: 1,
+    description: 'Parent comment ID',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsNumber()
+  @Transform(({ value }: { value: any }) =>
+    value ? parseInt(value) : undefined,
+  )
+  parent_id?: number;
+
+  @ApiProperty({
+    example: 'Best product line up i have evere laid my eye on',
+    description: 'comment',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsString()
+  @CustomMaxLength(1000)
+  @Transform(({ value }: { value: string }) => value?.trim())
+  comment?: string;
+
 }

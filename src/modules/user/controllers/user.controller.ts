@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Post,
-  SerializeOptions,
+ 
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ADMIN_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
@@ -16,9 +16,7 @@ import { UserEntity } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { DataSource } from 'typeorm';
 
-@SerializeOptions({
-  groups: ADMIN_ONLY_GROUP,
-})
+ 
 @ApiTags('users')
 @Controller('user')
 export class PublicUserController {

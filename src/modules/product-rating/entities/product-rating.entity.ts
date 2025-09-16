@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
@@ -20,6 +21,21 @@ export class ProductRatingEntity
   extends DatabaseBaseEntity
   implements IProductRatingEntity
 {
+  @Column({ name: 'is_approved', type: 'boolean', default: false })
+  isApproved: boolean;
+
+  @Column({ type: 'smallint', nullable: false })
+  rating: number;
+
+  // @Column({ type: 'int', nullable: true })
+  // parent_id: number | null;
+
+  @Column({ type: 'text', nullable: true })
+  comment?: string | null;
+  // ======================
+  // Relations=============
+  // ======================
+
   @ManyToOne(() => ProductEntity, (product) => product.ratings, {
     onDelete: 'CASCADE',
   })
@@ -31,10 +47,17 @@ export class ProductRatingEntity
   })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
+  @ManyToOne(
+    () => ProductRatingEntity,
+    (productrating) => productrating.children,
+    {
+      nullable: true,
+      onDelete: 'SET NULL',
+    },
+  )
+  @JoinColumn({ name: 'parent_id' })
+  parent?: ProductRatingEntity | null;
 
-  @Column({ name: 'is_approved', type: 'boolean', default: false })
-  isApproved: boolean;
-
-  @Column({ type: 'smallint', nullable: false })
-  rating: number;
+  @OneToMany(() => ProductRatingEntity, (productrating) => productrating.parent)
+  children?: ProductRatingEntity[];
 }

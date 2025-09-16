@@ -6,4 +6,7 @@ export interface IProductRatingEntity {
   user: IUserEntity;
   isApproved: boolean;
   rating: number;
+  parent?: IProductRatingEntity | null;
+  children?: IProductRatingEntity[];
+  comment?: string | null;
 }
