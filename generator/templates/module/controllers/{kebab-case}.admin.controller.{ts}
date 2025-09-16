@@ -8,7 +8,7 @@ import {
   Patch,
   Body,
   Query,
-  SerializeOptions,
+ 
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ADMIN_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
@@ -33,9 +33,7 @@ import { CustomResponseDecorator } from 'src/common/auth/decorators/custom.respo
 import { DataSource, FindOptionsWhere, In } from 'typeorm';
 
 
-@SerializeOptions({
-  groups: ADMIN_ONLY_GROUP,
-})
+ 
 @ApiTags('{PascalCase}')
 @Controller('{kebab-case}')
 export class {PascalCase}AdminController {

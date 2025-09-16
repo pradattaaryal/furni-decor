@@ -16,7 +16,7 @@ export class LoginDto implements IloginDto {
   @CustomIsNotEmpty({ message: 'Email is required' })
   email: string;
   @ApiProperty({
-    example: '123sdasd465',
+    example: 'StrongP@ssw0rd',
     description: 'same password used for register',
   })
   @CustomIsString({ message: 'Password must be a string' })

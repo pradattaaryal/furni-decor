@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
   Query,
-  SerializeOptions,
+ 
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ADMIN_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
@@ -22,10 +22,7 @@ import { UserService } from '../services/user.service';
 import { MarketingUserCreateDto } from '../dto/marketing.create.dto';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
-
-@SerializeOptions({
-  groups: ADMIN_ONLY_GROUP,
-})
+ 
 @ApiTags('users')
 @Controller('user')
 export class AdminUserController {

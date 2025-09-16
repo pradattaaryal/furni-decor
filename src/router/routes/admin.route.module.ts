@@ -10,6 +10,8 @@ import { ProductsModule } from 'src/modules/products/products.module';
 import { ProductAdminController } from 'src/modules/products/controllers/product.admin.controller';
 import { ProductVariantsModule } from 'src/modules/product-variants/product-variants.module';
 import { ProductVarientAdminController } from 'src/modules/product-variants/controllers/product-variant.admin.controller';
+import { ProductRatingAdminController } from 'src/modules/product-rating/controllers/product-rating.admin.controller';
+import { ProductRatingModule } from 'src/modules/product-rating/product-rating.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { ProductVarientAdminController } from 'src/modules/product-variants/cont
     CategoryModule,
     ProductsModule,
     ProductVariantsModule,
+    ProductRatingModule,
   ],
   controllers: [
     AdminUserController,
@@ -26,6 +29,7 @@ import { ProductVarientAdminController } from 'src/modules/product-variants/cont
     CategoryAdminController,
     ProductAdminController,
     ProductVarientAdminController,
+    ProductRatingAdminController,
   ],
 })
 export class AdminRouterModule {}
