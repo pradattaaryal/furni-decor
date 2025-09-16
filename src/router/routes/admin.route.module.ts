@@ -10,6 +10,8 @@ import { ProductsModule } from 'src/modules/products/products.module';
 import { ProductAdminController } from 'src/modules/products/controllers/product.admin.controller';
 import { ProductVariantsModule } from 'src/modules/product-variants/product-variants.module';
 import { ProductVarientAdminController } from 'src/modules/product-variants/controllers/product-variant.admin.controller';
+import { ProductRatingAdminController } from 'src/modules/product-rating/controllers/product-rating.admin.controller';
+import { ProductRatingModule } from 'src/modules/product-rating/product-rating.module';
 import { ImageAdminController } from 'src/modules/image/controllers/image.admin.controller';
 import { ImageModule } from 'src/modules/image/image.module';
 
@@ -21,6 +23,7 @@ import { ImageModule } from 'src/modules/image/image.module';
     CategoryModule,
     ProductsModule,
     ProductVariantsModule,
+    ProductRatingModule,
     ImageModule,
   ],
   controllers: [

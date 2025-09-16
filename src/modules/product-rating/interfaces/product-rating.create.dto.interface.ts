@@ -2,8 +2,10 @@ import { IProductEntity } from 'src/modules/products/interfaces/product.entity.i
 import { IUserEntity } from 'src/modules/user/interfaces/user.entity.interface';
 
 export interface IProductRatingCreateDto {
-  product: IProductEntity;
-  user: IUserEntity;
+  productId: number;
+  userId: string;
   isApproved: boolean;
   rating: number;
+  parent_id?: number;
+  comment?: string;
 }

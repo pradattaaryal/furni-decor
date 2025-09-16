@@ -25,7 +25,7 @@ import { ProductVariantUpdateDto } from '../dto/update-product-variant.dto';
 import { ProductVariantEntity } from '../entities/product-variant.entity';
 import { ProductVariantService } from '../services/product-variant.service';
 
-@ApiTags('ProductVarient')
+@ApiTags('Product Varient')
 @Controller('ProductVarient')
 @ApiBearerAuth('accessToken')
 export class ProductVarientAdminController {

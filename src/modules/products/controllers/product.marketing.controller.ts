@@ -10,7 +10,6 @@ import {
   HttpStatus,
   BadRequestException,
   NotFoundException,
-  SerializeOptions,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
@@ -27,14 +26,9 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 import { ResponseMessage } from 'src/common/response/decorators/responseMessage.decorator';
 import { CategoryService } from 'src/modules/category/services/category.service';
 import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
-@SerializeOptions({
-  groups: SYSTEM_USER_ONLY_GROUP,
-})
+
 @ApiTags('Products')
-@Controller({
-  version: '1',
-  path: '/products',
-})
+@Controller('/products')
 export class ProductMarketingController {
   constructor(
     private readonly productService: ProductService,

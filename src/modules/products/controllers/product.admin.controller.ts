@@ -10,7 +10,7 @@ import {
   HttpStatus,
   BadRequestException,
   NotFoundException,
-  SerializeOptions,
+   
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
@@ -27,18 +27,15 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 import { ResponseMessage } from 'src/common/response/decorators/responseMessage.decorator';
 import { CategoryService } from 'src/modules/category/services/category.service';
 import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
-@SerializeOptions({
-  groups: SYSTEM_USER_ONLY_GROUP,
-})
+import { DataSource, QueryRunner } from 'typeorm';
+ 
 @ApiTags('Products')
-@Controller({
-  version: '1',
-  path: '/products',
-})
+ @Controller('/products')
 export class ProductAdminController {
   constructor(
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
+    private _connection: DataSource,
   ) {}
 
   @Post('/create')
@@ -46,18 +43,34 @@ export class ProductAdminController {
   async create(
     @Body() body: ProductCreateDto,
   ): Promise<IResponse<{ product: ProductEntity; message: string }>> {
-    const category = await this.categoryService.getById(body.categoryId, {
-      options: { relations: ['children', 'parent'] },
-    });
-    if (!category) throw new NotFoundException('Cannot find Category');
+    const queryRunner: QueryRunner = this._connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const product = await this.productService.create(body);
-    return {
-      data: {
-        product,
-        message: 'Product created successfully',
-      },
-    };
+    try {
+      const category = await this.categoryService.getById(body.categoryId, {
+        options: { relations: ['children', 'parent'] },
+      });
+      if (!category) throw new NotFoundException('Cannot find Category');
+
+      const product = await this.productService.create(body, {
+        entityManager: queryRunner.manager,
+      });
+
+      await queryRunner.commitTransaction();
+
+      return {
+        data: {
+          product,
+          message: 'Product created successfully',
+        },
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   @Get('/list')

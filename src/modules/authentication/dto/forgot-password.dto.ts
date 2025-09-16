@@ -23,6 +23,7 @@ import {
   IVerifyOtp,
   IVerifyToken,
 } from '../interfaces/forgot-passowrd.dto.interface';
+import { UserRole } from 'src/modules/user/constant/user-type.constant';
 
 export class ForgotPasswordDto implements IForgotPassword {
   @ApiProperty({
@@ -156,6 +157,10 @@ export class VerifyTokenDto implements IVerifyToken {
   token: string;
 }
 
+export type AccessTokenPayload = {
+  sub: number;
+  roles: UserRole;
+};
 export class ChangeNewPasswordDto implements IChangeNewPassword {
   @ApiProperty({
     required: true,

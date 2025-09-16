@@ -1,15 +1,12 @@
-import {
-  createParamDecorator,
-  ExecutionContext,
-  ForbiddenException,
-} from '@nestjs/common';
-import { AuthenticatedRequest } from '../strategies/jwt.strategy';
+// common/decorators/get-user.decorator.ts
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { AccessTokenPayload } from '../services/authentication.service';
 
-export const GetJwtPayload = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
-    const jwtPayload = request.user;
-    if (!jwtPayload) throw new ForbiddenException('user not found');
-    return jwtPayload;
+export const GetUser = createParamDecorator(
+  (data: keyof AccessTokenPayload | undefined, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    const user = request.user as AccessTokenPayload;
+
+    return data ? user?.[data] : user;
   },
 );
