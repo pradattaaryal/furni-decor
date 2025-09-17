@@ -2,11 +2,16 @@ import { IProductEntity } from 'src/modules/products/interfaces/product.entity.i
 import { IUserEntity } from 'src/modules/user/interfaces/user.entity.interface';
 
 export interface IProductRatingEntity {
-  product: IProductEntity;
+  /*product: IProductEntity;
   user: IUserEntity;
   isApproved: boolean;
   rating: number;
   parent?: IProductRatingEntity | null;
   children?: IProductRatingEntity[];
-  comment?: string | null;
+  comment?: string | null;*/
+  productId: number;
+  rating: number;
+  parent_id?: number | null;
+  comment?: string;
+  userId: number;
 }

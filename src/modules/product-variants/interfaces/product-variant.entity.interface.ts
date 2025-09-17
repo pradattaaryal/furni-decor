@@ -7,6 +7,6 @@ export interface IProductVariantEntity {
   dimensions: Record<string, any>;
   color: string;
   count?: number | null;
-  price?: number | null;
+
   imageId?: number | null;
 }

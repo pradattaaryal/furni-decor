@@ -1,4 +1,4 @@
-import { FILE_ASSOCIATION_TYPE } from "../constants/association-type.enum";
+import { FILE_ASSOCIATION_TYPE } from '../constants/association-type.enum';
 
 export interface IImageInterface {
   path?: string;

@@ -1,7 +1,9 @@
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
+
 export interface IProductUpdateDto {
   name?: string;
   description?: string;
-
+  price?: number;
   // ================= Additional Product Specifications Start =================
   modelNumber?: string;
   secondaryMaterial?: string;
@@ -25,4 +27,5 @@ export interface IProductUpdateDto {
   coveredInWarranty?: string;
   notCoveredInWarranty?: string;
   domesticWarranty?: string;
+  images?: ImageEntity[];
 }

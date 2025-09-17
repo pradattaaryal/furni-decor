@@ -27,17 +27,11 @@ export class ProductVariantCreateDto implements IProductVariantCreateDto {
   @CustomIsString()
   color: string;
 
-  @ApiProperty({ example: 100.5, description: 'Price of variant' })
-  @CustomIsOptional()
-  @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseFloat(value))
-  price?: number;
-
   @ApiProperty({ example: 50, description: 'Available stock count' })
   @CustomIsOptional()
   @CustomIsNumber()
   @Transform(({ value }: { value: any }) => parseInt(value))
-  count?: number;
+  count: number;
 
   @ApiProperty({ example: 1, description: 'Related product id' })
   @CustomIsNotEmpty()
@@ -48,5 +42,5 @@ export class ProductVariantCreateDto implements IProductVariantCreateDto {
   @ApiProperty({ example: 12, description: 'Image ID for variant' })
   @CustomIsOptional()
   @CustomIsNumber()
-  imageId?: number;
+  imageId: number;
 }

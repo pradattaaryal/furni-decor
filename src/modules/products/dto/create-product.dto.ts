@@ -16,6 +16,7 @@ import {
 } from 'src/common/request/validators/custom-validator';
 import { IProductCreateDto } from '../interfaces/product.create.dto.interface';
 import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
 
 export class ProductCreateDto implements IProductCreateDto {
   @ApiProperty({
@@ -51,6 +52,10 @@ export class ProductCreateDto implements IProductCreateDto {
           weight: '25kg',
         },
         color: 'Blue',
+        price: 549.99,
+
+        count: 20,
+        imageId: 1,
       },
       {
         dimensions: {
@@ -61,6 +66,9 @@ export class ProductCreateDto implements IProductCreateDto {
           weight: '28kg',
         },
         color: 'Gray',
+        price: 549.99,
+        count: 20,
+        imageId: 1,
       },
     ],
     description: 'Product variants',
@@ -105,6 +113,12 @@ export class ProductCreateDto implements IProductCreateDto {
   @Transform(({ value }: { value: string }) => value?.trim())
   configuration?: string;
 
+  @ApiProperty({ example: 100.5, description: 'Price of variant' })
+  @CustomIsOptional()
+  @CustomIsNumber()
+  @Transform(({ value }: { value: any }) => parseFloat(value))
+  price: number;
+
   @ApiProperty({
     example: 'Leather',
     description: 'Upholstery material',
@@ -134,6 +148,15 @@ export class ProductCreateDto implements IProductCreateDto {
   @CustomIsString()
   @Transform(({ value }: { value: string }) => value?.trim())
   fillingMaterial?: string;
+
+  @ApiProperty({
+    example: [1, 2, 3],
+    description: 'Array of image IDs for the product',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsArray()
+  images: number[];
 
   @ApiProperty({
     example: 'Matte',

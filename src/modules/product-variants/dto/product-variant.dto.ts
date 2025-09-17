@@ -29,10 +29,6 @@ export class ProductVariantDto {
   @Transform(({ value }: { value: string }) => value?.trim())
   color: string;
 
-  @ApiProperty({ example: 100.5, description: 'Price of variant' })
-  @CustomIsNumber()
-  price: number;
-
   @ApiProperty({ example: 50, description: 'Available stock count' })
   @CustomIsNumber()
   count: number;

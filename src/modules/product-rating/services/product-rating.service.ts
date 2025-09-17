@@ -17,7 +17,7 @@ import { IPaginationMeta } from 'src/common/response/interfaces/response.interfa
 import { ProductRatingEntity } from '../entities/product-rating.entity';
 import { IProductRatingCreateDto } from '../interfaces/product-rating.create.dto.interface';
 import { IProductRatingEntity } from '../interfaces/product-rating.entity.interface';
- import { ProductRepository } from 'src/modules/products/repositories/product.repository';
+import { ProductRepository } from 'src/modules/products/repositories/product.repository';
 import { ProductRatingRepository } from '../repositories/product-rating.repository';
 import { ProductService } from 'src/modules/products/services/product.service';
 
@@ -25,7 +25,7 @@ import { ProductService } from 'src/modules/products/services/product.service';
 export class ProductRatingService {
   constructor(
     private readonly _productRatingRepo: ProductRatingRepository,
-    private readonly _productService: ProductService,  
+    private readonly _productService: ProductService,
   ) {}
 
   async create(
@@ -64,9 +64,7 @@ export class ProductRatingService {
     return this._productRatingRepo._findAll(options);
   }
 
-  getQueryBuilder(
-    alias: string,
-  ): SelectQueryBuilder<ProductRatingEntity> {
+  getQueryBuilder(alias: string): SelectQueryBuilder<ProductRatingEntity> {
     return this._productRatingRepo.getRepo().createQueryBuilder(alias);
   }
 
@@ -102,11 +100,7 @@ export class ProductRatingService {
     return this._productRatingRepo._restoreRaw(options);
   }
 
- 
-
   async validateProduct(productId: number) {
     return this._productService.fetchProduct(productId);
   }
-
-  
 }

@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
- 
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ADMIN_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
@@ -16,7 +15,6 @@ import { UserEntity } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { DataSource } from 'typeorm';
 
- 
 @ApiTags('users')
 @Controller('user')
 export class PublicUserController {
@@ -34,21 +32,18 @@ export class PublicUserController {
       message: string;
     }>
   > {
-    const queryRunner = this._connection.createQueryRunner()
+    const queryRunner = this._connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const result = await this._UserService.register(
-        registerDto,
-        {
-          entityManager: queryRunner.manager,
-        }
-      );
+      const result = await this._UserService.register(registerDto, {
+        entityManager: queryRunner.manager,
+      });
 
       result.user as UserEntity;
       await queryRunner.commitTransaction();
-      
+
       return {
         data: {
           otp: result.otp,
@@ -59,13 +54,7 @@ export class PublicUserController {
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
-      await queryRunner.release()
+      await queryRunner.release();
     }
-
-    
-
-    
-
-    
   }
 }

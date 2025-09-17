@@ -1,8 +1,16 @@
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { Expose } from 'class-transformer';
 import { ALL_GROUP } from 'src/common/database/constant/serialization-group.constant';
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
 
 export const PRODUCT_VARIANT_DATABASE_TABLE_NAME = 'product_variants';
 
@@ -18,25 +26,15 @@ export class ProductVariantEntity extends DatabaseBaseEntity {
   @Column({ type: 'int', nullable: true })
   count: number | null;
 
-  @Column({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    nullable: true,
-    transformer: {
-      to: (value: number) => value,
-      from: (value: string): number => parseFloat(value),
-    },
-  })
-  price: number;
-
-  @Column({ name: 'image_id', type: 'int', nullable: true })
-  imageId: number | null;
+  @OneToOne(() => ImageEntity, { cascade: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'image_id' })
+  image: ImageEntity | null;
 
   // @Column({ name: 'product_id', type: 'int' })
   // productId: number;
 
   @ManyToOne(() => ProductEntity, (product) => product.variants, {
+    createForeignKeyConstraints: false,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'product_id' })

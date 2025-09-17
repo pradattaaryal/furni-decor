@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import {
   ADMIN_ONLY_GROUP,
@@ -6,9 +6,18 @@ import {
 } from 'src/common/database/constant/serialization-group.constant';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { BigIntTransformerPipe } from 'src/utils/bigIntTransformer';
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { FILE_ASSOCIATION_TYPE } from '../constants/association-type.enum';
 import { IImageInterface } from '../interfaces/image.interfaces';
+import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
+import { ProductEntity } from 'src/modules/products/entities/product.entity';
 
 export const IMAGE_TABLE_NAME = 'image';
 
@@ -17,19 +26,15 @@ export const IMAGE_TABLE_NAME = 'image';
 })
 @Entity({ name: IMAGE_TABLE_NAME })
 export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
-  @Expose({ groups: ALL_GROUP })
   @Column({ type: 'varchar', length: 255 })
   path: string;
 
-  @Expose({ groups: ALL_GROUP })
   @Column({ type: 'varchar', length: 255 })
   filename: string;
-
-  @Expose({ groups: ALL_GROUP })
+  @Exclude()
   @Column({ type: 'varchar', length: 50 })
   mime: string;
-
-  @Expose({ groups: ALL_GROUP })
+  @Exclude()
   @Column({
     type: 'bigint',
     nullable: true,
@@ -37,7 +42,6 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
   })
   size?: number;
 
-  @Expose({ groups: ADMIN_ONLY_GROUP })
   @Index()
   @Column({
     type: 'varchar',
@@ -46,4 +50,13 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
     nullable: true,
   })
   type?: string | null;
+
+  @ManyToOne(() => ProductEntity, (product) => product.images, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'product_id' })
+  product: ProductEntity;
+
+  // @OneToOne(() => ProductVariantEntity, (variant) => variant.image)
+  // variant: ProductVariantEntity;
 }
