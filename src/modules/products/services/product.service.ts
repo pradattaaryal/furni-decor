@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { ProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
@@ -19,30 +19,86 @@ import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.inte
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { ProductVariantService } from 'src/modules/product-variants/services/product-variant.service';
 import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/create-product-variant.dto';
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { ImageService } from 'src/modules/image/services/image.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly _productRepo: ProductRepository,
     private readonly _variantService: ProductVariantService,
+    private readonly _imageService: ImageService,
   ) {}
+
+  //   async create(
+  //     createDto: ProductCreateDto,
+  //     options?: ICreateOptions,
+  //   ): Promise<ProductEntity> {
+  //     const { variants, images: imageIds, ...productData } = createDto;
+  //  let images: ImageEntity[] = [];
+  //   if (imageIds && imageIds.length > 0) {
+  //      for (const id of imageIds) {
+  //       const image = await this._imageService.getById(id);
+  //       if (!image) {
+  //         throw new BadRequestException(`Image with ID ${id} not found`);
+  //       }
+  //       images.push(image);
+  //     }
+  //   }
+  //    const product = await this._productRepo._create(
+  //     { ...productData, images },
+  //     options,
+  //   );
+  //     if (variants && variants.length > 0) {
+  //       for (const variantData of variants) {
+  //         const variantDto = new ProductVariantCreateDto();
+  //         variantDto.dimensions = variantData.dimensions;
+  //         variantDto.color = variantData.color;
+  //         variantDto.productId = product.id;
+  //         variantDto.count = variantData.count;
+  //         variantDto.imageId = variantData.imageId;
+  //         console.log(variantDto);
+  //         await this._variantService.create(variantDto);
+  //       }
+  //     }
+
+  //     return product;
+  //   }
 
   async create(
     createDto: ProductCreateDto,
     options?: ICreateOptions,
   ): Promise<ProductEntity> {
-    const { variants, ...productData } = createDto;
+    const { variants, images: imageIds, ...productData } = createDto;
 
-    const product = await this._productRepo._create(productData, options);
+    // Validate and fetch images
+    const images: ImageEntity[] = [];
+    if (imageIds?.length) {
+      for (const id of imageIds) {
+        const image = await this._imageService.getById(id);
+        if (!image) {
+          throw new BadRequestException(`Image with ID ${id} not found`);
+        }
+        images.push(image);
+      }
+    }
 
-    if (variants && variants.length > 0) {
-      for (const variantData of variants) {
-        const variantDto = new ProductVariantCreateDto();
-        variantDto.dimensions = variantData.dimensions;
-        variantDto.color = variantData.color;
-        variantDto.productId = product.id;
+    // Create the product
+    const product = await this._productRepo._create(
+      { ...productData, images },
+      options,
+    );
 
-        await this._variantService.create(variantDto);
+    // Create variants if any
+    if (variants?.length) {
+      const variantDtos = plainToInstance(
+        ProductVariantCreateDto,
+        variants.map((v) => ({ ...v, productId: product.id })),
+      );
+
+      for (const dto of variantDtos) {
+        await this._variantService.create(dto);
       }
     }
 
@@ -60,14 +116,17 @@ export class ProductService {
     return this._productRepo._findOneById(id, {
       options: {
         select: {
-          variants: { id: true, color: true, dimensions: true, price: true },
+          variants: { id: true, color: true, dimensions: true },
         },
         relations: {
-          variants: true,
           category: {
             parent: true,
             children: true,
           },
+          variants: {
+            image: true,
+          },
+          images: true,
         },
       },
     });

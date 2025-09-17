@@ -36,7 +36,7 @@ export class CategoryEntity
   slug: string;
 
   @Column({ type: 'text', nullable: true })
-  description?: string | null;  
+  description?: string | null;
   // ======================
   // Relations=============
   // ======================

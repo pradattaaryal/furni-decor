@@ -28,6 +28,7 @@ import { IProductRatingCreateDto } from '../interfaces/product-rating.create.dto
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { IProductRatingEntity } from '../interfaces/product-rating.entity.interface';
 
 @ApiTags('Product Rating ')
 @Controller('product-ratings')
@@ -66,10 +67,9 @@ export class ProductRatingAdminController {
       );
     }
 
-    const createData: IProductRatingCreateDto = {
+    const createData: IProductRatingEntity = {
       ...body,
-      userId: user.sub.toString(),
-      isApproved: false,
+      userId: user.sub,
     };
 
     const rating = await this.productRatingService.create(createData);

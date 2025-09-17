@@ -1,11 +1,11 @@
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
 
 export interface IProductCreateDto {
   name: string;
   description: string;
   variants?: ProductVariantDto[];
-
-  // ================= Additional Product Specifications Start =================
+  price?: number;
   modelNumber?: string;
   secondaryMaterial?: string;
   configuration?: string;
@@ -15,8 +15,6 @@ export interface IProductCreateDto {
   finishType?: string;
   adjustableHeadrest?: boolean;
   maxLoad?: string;
-  // ================= Additional Product Specifications End =================
-
   categoryId: number;
   salesPackage?: string;
   originOfManufacture?: string;
@@ -28,4 +26,5 @@ export interface IProductCreateDto {
   coveredInWarranty?: string;
   notCoveredInWarranty?: string;
   domesticWarranty?: string;
+  images: number[];
 }

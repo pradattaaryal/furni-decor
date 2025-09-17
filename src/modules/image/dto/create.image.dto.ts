@@ -29,7 +29,9 @@ export class ImageUploadDTO {
   file: any;
 }
 
-export class ImageUploadFolderDTO extends PickType(ImageUploadDTO, ['folder']) {}
+export class ImageUploadFolderDTO extends PickType(ImageUploadDTO, [
+  'folder',
+]) {}
 export class ImagesUploadDTO extends PickType(ImageUploadDTO, ['folder']) {
   @ApiProperty({
     type: 'array',

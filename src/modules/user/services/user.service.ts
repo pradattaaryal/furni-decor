@@ -26,7 +26,6 @@ import { IUserCreateDto } from '../interfaces/user.create.dto.interface';
 import { IPrepareUserCreateData } from '../interfaces/user.prepare-create.interface';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 
-
 @Injectable()
 export class UserService {
   constructor(
@@ -80,25 +79,22 @@ export class UserService {
     const hashedPassword = bcrypt.hashSync(registerDto.password, 10);
 
     // Apply defaults for optional fields if not provided
-    const userToCreate= {
+    const userToCreate = {
       ...registerDto,
       password: hashedPassword,
     };
 
-    const preparedData = await this.prepareCreateUserData(userToCreate)
+    const preparedData = await this.prepareCreateUserData(userToCreate);
 
     // Persist user
-    const user = await this.userRepo._create(
-      preparedData,
-      {
-        entityManager: options?.entityManager
-      }
-    );
+    const user = await this.userRepo._create(preparedData, {
+      entityManager: options?.entityManager,
+    });
 
     // Generate OTP
     const newOtp = await this.otpService.createOtpForUser(
       user.id,
-      options?.entityManager
+      options?.entityManager,
     );
 
     return {
@@ -138,7 +134,9 @@ export class UserService {
     const preparedData = await this.prepareCreateUserData(userToCreate);
 
     // Persist user
-    const user = await this.userRepo._create(preparedData, { entityManager: options?.entityManager });
+    const user = await this.userRepo._create(preparedData, {
+      entityManager: options?.entityManager,
+    });
 
     return { user };
   }
@@ -223,7 +221,7 @@ export class UserService {
   }
 
   async prepareCreateUserData(
-    data: IUserCreateDto
+    data: IUserCreateDto,
   ): Promise<IPrepareUserCreateData> {
     if (data.imageId) {
       const image = await this.imageService.getById(data.imageId);
@@ -232,9 +230,9 @@ export class UserService {
 
       return {
         ...data,
-        image
-      }
-    };
+        image,
+      };
+    }
 
     return data;
   }

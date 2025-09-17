@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
- 
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ADMIN_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
@@ -24,7 +23,6 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { DataSource, QueryRunner } from 'typeorm';
 
- 
 @ApiTags('users')
 @Controller('user')
 export class AdminUserController {
@@ -50,7 +48,6 @@ export class AdminUserController {
     });
   }
 
-
   @Get('/list/user')
   @ApiOperation({ summary: 'list user' })
   async listUser(
@@ -68,7 +65,6 @@ export class AdminUserController {
     });
   }
 
-
   @Post('create')
   @ApiOperation({ summary: 'Register a new user' })
   async register(@Body() registerDto: UserCreateDto): Promise<
@@ -82,26 +78,21 @@ export class AdminUserController {
     await queryRunner.startTransaction();
 
     try {
-      const data = await this._userService.register(
-        registerDto,
-        {
-          entityManager: queryRunner.manager,
-        }
-      )
+      const data = await this._userService.register(registerDto, {
+        entityManager: queryRunner.manager,
+      });
       data.user as UserEntity;
       await queryRunner.commitTransaction();
-      
+
       return {
         data: {
           otp: data.otp,
-          message: 'User Registered Successfully. Please verify your OTP'
-        }
-      }
-      
+          message: 'User Registered Successfully. Please verify your OTP',
+        },
+      };
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;
-
     } finally {
       await queryRunner.release();
     }

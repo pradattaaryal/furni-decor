@@ -16,9 +16,7 @@ import {
   IUpdateRawOptions,
 } from 'src/common/database/interfaces/updateOption.interface';
 import { DebuggerService } from 'src/common/debugger/debugger.service';
-import {
-  ImageTypes,
-} from 'src/common/file/constants/file.constant';
+import { ImageTypes } from 'src/common/file/constants/file.constant';
 import { IFile } from 'src/common/file/interfaces/file.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { DeepPartial, EntityManager, In, UpdateResult } from 'typeorm';
@@ -207,7 +205,7 @@ export class ImageService {
 
   private getImageType(folder: UPLOAD_FOLDER_ENUM): string {
     let type: string;
-    switch(folder) {
+    switch (folder) {
       case UPLOAD_FOLDER_ENUM.PRODUCT_VARIANT:
         type = FILE_ASSOCIATION_TYPE.PRODUCT_VARIANT;
         break;

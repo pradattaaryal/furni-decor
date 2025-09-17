@@ -17,10 +17,8 @@ import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { IProductRatingEntity } from '../interfaces/product-rating.entity.interface';
 
 @Entity({ name: 'product_ratings' })
-export class ProductRatingEntity
-  extends DatabaseBaseEntity
-  implements IProductRatingEntity
-{
+// implements IProductRatingEntity
+export class ProductRatingEntity extends DatabaseBaseEntity {
   @Column({ name: 'is_approved', type: 'boolean', default: false })
   isApproved: boolean;
 

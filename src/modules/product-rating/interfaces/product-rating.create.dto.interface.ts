@@ -3,9 +3,7 @@ import { IUserEntity } from 'src/modules/user/interfaces/user.entity.interface';
 
 export interface IProductRatingCreateDto {
   productId: number;
-  userId: string;
-  isApproved: boolean;
   rating: number;
-  parent_id?: number;
+  parent_id?: number | null;
   comment?: string;
 }

@@ -8,7 +8,7 @@ import { ImageEntity } from '../entities/image.entity';
 export class ImageRepository extends BaseRepository<ImageEntity> {
   constructor(
     @InjectRepository(ImageEntity)
-    private imageRepository: Repository<ImageEntity>,
+    private readonly imageRepository: Repository<ImageEntity>,
   ) {
     super(imageRepository);
   }

@@ -10,7 +10,6 @@ import {
   HttpStatus,
   BadRequestException,
   NotFoundException,
-   
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
@@ -28,15 +27,38 @@ import { ResponseMessage } from 'src/common/response/decorators/responseMessage.
 import { CategoryService } from 'src/modules/category/services/category.service';
 import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
 import { DataSource, QueryRunner } from 'typeorm';
- 
+
 @ApiTags('Products')
- @Controller('/products')
+@Controller('/products')
 export class ProductAdminController {
   constructor(
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
     private _connection: DataSource,
   ) {}
+  @Get('/list')
+  @ApiDocs({ operation: 'List Products' })
+  async list(
+    @Query() paginateQueryDto: PaginateQueryDto,
+  ): Promise<IResponsePaging<ProductEntity>> {
+    return this.productService.paginatedGet({
+      ...paginateQueryDto,
+      relations: {
+        category: {
+          parent: true,
+          children: true,
+        },
+        variants: {
+          image: true,
+        },
+        images: true,
+      },
+      searchableColumns: ['name', 'description'],
+      sortableColumns: ['id', 'name', 'createdAt'],
+      defaultSortColumn: 'createdAt',
+      defaultSortOrder: 'DESC',
+    });
+  }
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Product' })
@@ -71,26 +93,6 @@ export class ProductAdminController {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  @Get('/list')
-  @ApiDocs({ operation: 'List Products' })
-  async list(
-    @Query() paginateQueryDto: PaginateQueryDto,
-  ): Promise<IResponsePaging<ProductEntity>> {
-    return this.productService.paginatedGet({
-      ...paginateQueryDto,
-      relations: {
-        category: {
-          parent: true,
-          children: true,
-        },
-      },
-      searchableColumns: ['name', 'description'],
-      sortableColumns: ['id', 'name', 'createdAt'],
-      defaultSortColumn: 'createdAt',
-      defaultSortOrder: 'DESC',
-    });
   }
 
   @Get('/:id')
