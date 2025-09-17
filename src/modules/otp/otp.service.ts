@@ -45,8 +45,8 @@ export class OtpService {
       entityManager: manager,
       options: {
         where: {
-          id: userId
-        }
+          id: userId,
+        },
       },
     });
 
@@ -60,11 +60,14 @@ export class OtpService {
     const otp = this.generateOtp(6);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
 
-    const newOtp = await this.otpRepo._create({
-      UserEntity_id: userId,
-      otp,
-      expires_at: expiresAt,
-    }, { entityManager: manager} );
+    const newOtp = await this.otpRepo._create(
+      {
+        UserEntity_id: userId,
+        otp,
+        expires_at: expiresAt,
+      },
+      { entityManager: manager },
+    );
 
     return newOtp;
   }
@@ -122,21 +125,18 @@ export class OtpService {
   /**
    * Deletes all OTPs for a given user (housekeeping).
    */
-  async dropOtp(
-    userId: number,
-    manager?: EntityManager,
-  ): Promise<void> {
+  async dropOtp(userId: number, manager?: EntityManager): Promise<void> {
     if (!userId || isNaN(userId)) {
       throw new BadRequestException('Invalid userId');
     }
-    const otpToDelete  = await this.otpRepo._findOne({
+    const otpToDelete = await this.otpRepo._findOne({
       entityManager: manager,
       options: {
         where: {
           UserEntity_id: userId,
-        }
-      }
-    })
+        },
+      },
+    });
 
     if (otpToDelete) {
       await this.otpRepo._softDelete(otpToDelete, { entityManager: manager });

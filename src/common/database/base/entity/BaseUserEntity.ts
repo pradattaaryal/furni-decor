@@ -12,7 +12,6 @@ export class BaseUserEntity
   implements IBaseUserEntity
 {
   @ApiProperty()
-  @Expose({ groups: ALL_GROUP })
   @Index()
   @Column({ type: String, length: 100, unique: true, nullable: false })
   email: string;
@@ -37,7 +36,7 @@ export class BaseUserEntity
     default: UserRole.CUSTOMER,
   })
   role: string;
-
+  @Exclude()
   @Column({ type: 'timestamptz', name: 'password_changed_at', nullable: true })
   password_changed_at: Date;
 }

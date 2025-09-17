@@ -58,13 +58,13 @@ export class MarketingUserCreateDto implements IUserCreateDto {
   lastName?: string;
 
   @ApiProperty({
-      example: 123,
-      description: 'uploaded image Id',
-      required: false,
-    })
-    @CustomIsOptional()
-    @CustomIsNumber()
-    imageId?: number | undefined;
+    example: 123,
+    description: 'uploaded image Id',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsNumber()
+  imageId?: number | undefined;
 
   //   @ApiProperty({
   //     example: UserRole.MARKETING,

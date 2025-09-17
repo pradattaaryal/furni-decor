@@ -7,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   providers: [CategoryService],
-
   exports: [CategoryService],
   controllers: [],
   imports: [

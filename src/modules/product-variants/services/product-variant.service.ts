@@ -17,16 +17,32 @@ import {
 } from 'src/common/database/interfaces/updateOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
+import { ProductEntity } from 'src/modules/products/entities/product.entity';
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { ImageRepository } from 'src/modules/image/repositories/image.repository';
 
 @Injectable()
 export class ProductVariantService {
-  constructor(private readonly _variantRepo: ProductVariantRepository) {}
+  constructor(
+    private readonly _variantRepo: ProductVariantRepository,
+    private readonly _imageRepo: ImageRepository,
+  ) {}
 
   async create(
     createDto: ProductVariantCreateDto,
     options?: ICreateOptions,
   ): Promise<ProductVariantEntity> {
-    return await this._variantRepo._create(createDto, options);
+    const image = createDto.imageId
+      ? await this._imageRepo._findOneById(createDto.imageId)
+      : null;
+    const variant = new ProductVariantEntity();
+    variant.color = createDto.color;
+    variant.dimensions = createDto.dimensions;
+    variant.count = createDto.count;
+    variant.image = image;
+    variant.product = { id: createDto.productId } as ProductEntity;
+    console.log(`createDto at product varient service `, createDto);
+    return await this._variantRepo._create(variant, options);
   }
 
   async getById(

@@ -25,30 +25,30 @@ import { ProductVariantUpdateDto } from '../dto/update-product-variant.dto';
 import { ProductVariantEntity } from '../entities/product-variant.entity';
 import { ProductVariantService } from '../services/product-variant.service';
 
-@ApiTags('Product Varient')
-@Controller('ProductVarient')
+@ApiTags('Product Varients')
+@Controller('ProductVarients')
 @ApiBearerAuth('accessToken')
-export class ProductVarientAdminController {
+export class ProductVarientsAdminController {
   constructor(private readonly productVariantService: ProductVariantService) {}
 
   @Patch('/update/:id')
-  @ApiDocs({ operation: 'Update ProductVarient' })
+  @ApiDocs({ operation: 'Update ProductVarients' })
   @RequestParamGuard(IdParamDto)
   async updateById(
     @Param('id') id: number,
-    @Body() updateProductVarientData: ProductVariantUpdateDto,
+    @Body() updateProductVarientsData: ProductVariantUpdateDto,
   ): Promise<IResponse<{ product: ProductVariantEntity; message: string }>> {
     const found = await this.productVariantService.getById(id);
-    if (!found) throw new NotFoundException('Cannot find ProductVarient');
+    if (!found) throw new NotFoundException('Cannot find ProductVarients');
 
     const updated = await this.productVariantService.update(
       found,
-      updateProductVarientData,
+      updateProductVarientsData,
     );
     return {
       data: {
         product: updated,
-        message: 'ProductVarient updated successfully.',
+        message: 'ProductVarients updated successfully.',
       },
     };
   }

@@ -5,6 +5,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { IProductEntity } from '../interfaces/product.entity.interface';
 import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
 
 @Entity({ name: 'products' })
 export class ProductEntity
@@ -19,8 +20,6 @@ export class ProductEntity
 
   @Column({ name: 'category_id' })
   categoryId: number;
-
-  // ================= Additional Product Specifications Start =================
 
   @Column({
     name: 'model_number',
@@ -127,13 +126,29 @@ export class ProductEntity
   @Column({ name: 'domestic_warranty', type: 'text', nullable: true })
   domesticWarranty?: string;
 
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string): number => parseFloat(value),
+    },
+  })
+  price: number;
+  @OneToMany(() => ImageEntity, (image) => image.product)
+  images?: ImageEntity[];
+
   @ManyToOne(() => CategoryEntity, (category) => category.products, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'category_id' })
   category: CategoryEntity;
 
-  @OneToMany(() => ProductVariantEntity, (variant) => variant.product)
+  @OneToMany(() => ProductVariantEntity, (variant) => variant.product, {
+    createForeignKeyConstraints: false,
+  })
   variants: ProductVariantEntity[];
 
   @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
