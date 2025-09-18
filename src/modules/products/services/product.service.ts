@@ -193,13 +193,48 @@ export class ProductService {
   ): Promise<UpdateResult | null> {
     return await this._productRepo._restoreRaw(options);
   }
-
-  async update(
+ async update(
     product: ProductEntity,
     updateData: IProductUpdateDto,
     options?: IUpdateOptions<ProductEntity>,
-  ) {
-    Object.assign(product, updateData);
-    return await this._productRepo._update(product, options);
+  ): Promise<ProductEntity> {
+    const { variants, images: imageIds, ...productData } = updateData;
+
+    // Validate and fetch images if provided
+    if (imageIds?.length) {
+      const images: ImageEntity[] = [];
+      for (const id of imageIds) {
+        const image = await this._imageService.getById(id, options);
+        if (!image) {
+          throw new BadRequestException(`Image with ID ${id} not found`);
+        }
+        images.push(image);
+      }
+      product.images = images;
+    }
+
+    // Update product data
+    Object.assign(product, productData);
+
+    // Save updated product
+    const updatedProduct = await this._productRepo._update(product, options);
+
+    // Handle variants if provided
+    if (variants?.length) {
+      // Optionally, delete existing variants (depending on requirements)
+     // await this._variantService.deleteByProductId(product.id, options);
+
+      // Create new variants
+      const variantDtos = plainToInstance(
+        ProductVariantCreateDto,
+        variants.map((v) => ({ ...v, productId: product.id })),
+      );
+
+      for (const dto of variantDtos) {
+        await this._variantService.create(dto, options);
+      }
+    }
+
+    return updatedProduct;
   }
 }

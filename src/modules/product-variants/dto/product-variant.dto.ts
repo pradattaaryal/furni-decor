@@ -12,16 +12,16 @@ export class ProductVariantDto {
 
   @ApiProperty({
     example: {
-      height: '80cm',
-      width: '120cm',
-      depth: '75cm',
-      seatHeight: '45cm',
-      weight: '25kg',
+      height: 80,
+      width: 120,
+      depth: 75,
+      seatHeight: 45,
+      weight: 25,
     },
     description: 'Variant dimensions',
   })
   @CustomIsNotEmpty()
-  dimensions: Record<string, any>;
+  dimensions: Record<number, any>;
 
   @ApiProperty({ example: 'Blue', description: 'Variant color' })
   @CustomIsNotEmpty()
@@ -29,9 +29,9 @@ export class ProductVariantDto {
   @Transform(({ value }: { value: string }) => value?.trim())
   color: string;
 
-  @ApiProperty({ example: 50, description: 'Available stock count' })
+  @ApiProperty({ example: 50, description: 'Available stock  quantity' })
   @CustomIsNumber()
-  count: number;
+   quantity: number;
 
   @ApiProperty({ example: 12, description: 'Image ID for variant' })
   @CustomIsNumber()

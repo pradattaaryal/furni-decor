@@ -41,7 +41,7 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
     transformer: new BigIntTransformerPipe(),
   })
   size?: number;
-
+  @Exclude()
   @Index()
   @Column({
     type: 'varchar',
@@ -51,8 +51,9 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
   })
   type?: string | null;
 
-@ManyToOne(() => ProductEntity, (product) => product.images, {
-  onDelete: 'SET NULL',  
-})  @JoinColumn({ name: 'product_id' })
+  @ManyToOne(() => ProductEntity, (product) => product.images, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
 }

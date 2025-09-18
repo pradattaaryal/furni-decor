@@ -74,9 +74,8 @@ export class ProductEntity
 
   @Column({ name: 'adjustable_headrest', type: 'boolean', nullable: true })
   adjustableHeadrest?: boolean;
-
-  @Column({ name: 'max_load', type: 'varchar', length: 50, nullable: true })
-  maxLoad?: string;
+  @Column({ name: 'max_load', type: 'int', nullable: true })
+  maxLoad?: number;
 
   // ================= Additional Product Specifications End =================
 
@@ -95,13 +94,15 @@ export class ProductEntity
     nullable: true,
   })
   originOfManufacture?: string;
-
   @Column({
-    name: 'discount_value',
     type: 'decimal',
     precision: 10,
     scale: 2,
     nullable: true,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string): number => parseFloat(value),
+    },
   })
   discountValue?: number;
 

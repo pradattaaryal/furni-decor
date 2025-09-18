@@ -1,7 +1,7 @@
 export interface IProductVariantCreateDto {
-  dimensions: Record<string, any>;
+  dimensions: Record<number, any>;
   color: string;
   productId: number;
-  count?: number;
+   quantity?: number;
   imageId?: number;
 }

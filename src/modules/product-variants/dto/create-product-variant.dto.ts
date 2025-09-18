@@ -20,18 +20,18 @@ export class ProductVariantCreateDto implements IProductVariantCreateDto {
     description: 'Variant dimensions',
   })
   @CustomIsNotEmpty()
-  dimensions: Record<string, any>;
+  dimensions: Record<number, any>;
 
   @ApiProperty({ example: 'red', description: 'Variant color' })
   @CustomIsNotEmpty()
   @CustomIsString()
   color: string;
 
-  @ApiProperty({ example: 50, description: 'Available stock count' })
+  @ApiProperty({ example: 50, description: 'Available stock  quantity' })
   @CustomIsOptional()
   @CustomIsNumber()
   @Transform(({ value }: { value: any }) => parseInt(value))
-  count: number;
+   quantity: number;
 
   @ApiProperty({ example: 1, description: 'Related product id' })
   @CustomIsNotEmpty()

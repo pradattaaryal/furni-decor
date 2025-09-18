@@ -1,8 +1,8 @@
 export interface IProductVariantDto {
   id: number;
   productId: number;
-  dimensions: Record<string, any>;
+  dimensions: Record<number, any>;
   color: string;
-  count: number | null;
+   quantity: number | null;
   imageId: number | null;
 }

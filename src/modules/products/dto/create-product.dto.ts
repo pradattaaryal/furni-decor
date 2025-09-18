@@ -45,28 +45,26 @@ export class ProductCreateDto implements IProductCreateDto {
     example: [
       {
         dimensions: {
-          height: '80cm',
-          width: '120cm',
-          depth: '75cm',
-          seatHeight: '45cm',
-          weight: '25kg',
+          height:80,
+          width: 120,
+          depth:75,
+          seatHeight:45,
+          weight:25,
         },
         color: 'Blue',
-
-        count: 20,
+        quantity: 20,
         imageId: 1,
       },
       {
         dimensions: {
-          height: '85cm',
-          width: '140cm',
-          depth: '80cm',
-          seatHeight: '46cm',
-          weight: '28kg',
+          height:85,
+          width:140,
+          depth:80,
+          seatHeight:46,
+          weight:28,
         },
-        color: 'Gray',
-
-        count: 20,
+        color: 'Blue',
+        quantity: 20,
         imageId: 1,
       },
     ],
@@ -79,9 +77,7 @@ export class ProductCreateDto implements IProductCreateDto {
   @CustomValidateNested({ each: true })
   @Type(() => ProductVariantDto)
   variants?: ProductVariantDto[];
-
-  // ================= Additional Product Specifications Start =================
-
+ 
   @ApiProperty({
     example: 'XYZ123',
     description: 'Model number',
@@ -176,14 +172,13 @@ export class ProductCreateDto implements IProductCreateDto {
   adjustableHeadrest?: boolean;
 
   @ApiProperty({
-    example: '120kg',
-    description: 'Maximum load capacity',
+    example: '120',
+    description: 'Maximum load capacity in KG',
     required: false,
   })
   @CustomIsOptional()
-  @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
-  maxLoad?: string;
+  @CustomIsNumber()
+  maxLoad?: number;
 
   // ================= Additional Product Specifications End =================
 

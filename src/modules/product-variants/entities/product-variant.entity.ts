@@ -18,13 +18,13 @@ export const PRODUCT_VARIANT_DATABASE_TABLE_NAME = 'product_variants';
 @Index(['id'])
 export class ProductVariantEntity extends DatabaseBaseEntity {
   @Column({ type: 'jsonb', nullable: false })
-  dimensions: Record<string, any>;
+  dimensions: Record<number, any>;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
   color: string;
 
   @Column({ type: 'int', nullable: true })
-  count: number | null;
+   quantity: number | null;
 
   @OneToOne(() => ImageEntity, { cascade: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'image_id' })

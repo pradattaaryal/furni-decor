@@ -38,7 +38,7 @@ export class ProductVariantService {
     const variant = new ProductVariantEntity();
     variant.color = createDto.color;
     variant.dimensions = createDto.dimensions;
-    variant.count = createDto.count;
+    variant. quantity = createDto. quantity;
     variant.image = image;
     variant.product = { id: createDto.productId } as ProductEntity;
     console.log(`createDto at product varient service `, createDto);

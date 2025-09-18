@@ -14,7 +14,7 @@ export interface IProductCreateDto {
   fillingMaterial?: string;
   finishType?: string;
   adjustableHeadrest?: boolean;
-  maxLoad?: string;
+  maxLoad?: number;
   categoryId: number;
   salesPackage?: string;
   originOfManufacture?: string;
