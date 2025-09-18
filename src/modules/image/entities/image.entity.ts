@@ -51,12 +51,8 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
   })
   type?: string | null;
 
-  @ManyToOne(() => ProductEntity, (product) => product.images, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'product_id' })
+@ManyToOne(() => ProductEntity, (product) => product.images, {
+  onDelete: 'SET NULL',  
+})  @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
-
-  // @OneToOne(() => ProductVariantEntity, (variant) => variant.image)
-  // variant: ProductVariantEntity;
 }
