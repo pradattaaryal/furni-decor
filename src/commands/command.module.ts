@@ -6,6 +6,7 @@ import { DatabaseModule } from 'src/common/database/database.module';
 import { SeedCommand } from './seed.command';
 import { TriggerCommand } from './trigger.command';
 import { TriggerRemoveCommand } from './remove-trigger.command';
+import { DebuggerModule } from 'src/common/debugger/debugger.module';
 
 @Module({
   imports: [
@@ -16,7 +17,9 @@ import { TriggerRemoveCommand } from './remove-trigger.command';
       load: configs,
       envFilePath: ['.env'],
     }),
+    DebuggerModule
   ],
-  providers: [SeedCommand, TriggerCommand, TriggerRemoveCommand],
+  providers: [TriggerCommand]
+  // providers: [SeedCommand, TriggerCommand, TriggerRemoveCommand],
 })
 export class CommandModule {}

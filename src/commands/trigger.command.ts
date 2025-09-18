@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
 import { DataSource } from 'typeorm';
+import { addNameTsvTriggers } from 'src/database/triggers/product-name-tsv.trigger';
 
 @Injectable()
 export class TriggerCommand {
@@ -14,10 +15,7 @@ export class TriggerCommand {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.startTransaction();
     try {
-      //await addNameTsvTriggers(queryRunner);
-      // await addTicketQuantityTriggers(queryRunner); // Ticket Quantity is handled in ticket service
-      // await addAttendeesSearchFieldTriggers(queryRunner);
-      // await addEventsRegisterSearchFieldTriggers(queryRunner);
+      await addNameTsvTriggers(queryRunner);
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
