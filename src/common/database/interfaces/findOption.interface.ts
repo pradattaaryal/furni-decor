@@ -62,3 +62,4 @@ export interface IPaginateQueryBuilderOption<T = any>
   page?: number;
   limit?: number;
 }
+ 

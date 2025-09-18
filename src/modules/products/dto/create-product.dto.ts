@@ -52,7 +52,6 @@ export class ProductCreateDto implements IProductCreateDto {
           weight: '25kg',
         },
         color: 'Blue',
-        price: 549.99,
 
         count: 20,
         imageId: 1,
@@ -66,7 +65,7 @@ export class ProductCreateDto implements IProductCreateDto {
           weight: '28kg',
         },
         color: 'Gray',
-        price: 549.99,
+
         count: 20,
         imageId: 1,
       },
