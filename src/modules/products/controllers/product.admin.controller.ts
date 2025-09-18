@@ -24,7 +24,7 @@ import {
 } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { CategoryService } from 'src/modules/category/services/category.service';
-import { Between, DataSource, LessThan, MoreThan, QueryRunner } from 'typeorm';
+import { Between, DataSource, QueryRunner } from 'typeorm';
 
 @ApiTags('Products')
 @Controller('/products')
