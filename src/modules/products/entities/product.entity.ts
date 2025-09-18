@@ -1,7 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Index } from 'typeorm';
 import { IProductEntity } from '../interfaces/product.entity.interface';
 import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
@@ -139,6 +138,15 @@ export class ProductEntity
   price: number;
   @OneToMany(() => ImageEntity, (image) => image.product)
   images?: ImageEntity[];
+
+  //search by product name 
+  @Column({
+    name: 'name_tsv',
+    type: 'tsvector',
+    nullable: true,
+  })
+  @Index('event_name_tsv_idx', { synchronize: false })
+  nameTsv: string;
 
   @ManyToOne(() => CategoryEntity, (category) => category.products, {
     onDelete: 'CASCADE',

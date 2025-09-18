@@ -113,7 +113,7 @@ export class ProductAdminController {
     }
   }
 
-  @Get('/:id')
+  @Get(':id')
   @ApiDocs({ operation: 'Get Product by ID' })
   async getById(
     @Param() params: IdParamDto,
@@ -130,8 +130,7 @@ export class ProductAdminController {
     };
   }
 
-  // controller
-  @Patch('/:id')
+  @Patch(':id')
   @ApiDocs({ operation: 'Update Product' })
   async updateById(
     @Param() params: IdParamDto,
@@ -161,7 +160,7 @@ export class ProductAdminController {
     };
   }
 
-  @Delete('/:id/soft-delete')
+  @Delete('soft-delete/:id')
   @ApiDocs({ operation: 'Soft Delete Product' })
   async softDeleteById(
     @Param() params: IdParamDto,
@@ -185,7 +184,7 @@ export class ProductAdminController {
     };
   }
 
-  @Patch('/:id/restore')
+  @Patch('restore/:id')
   @ApiDocs({ operation: 'Restore Product' })
   async restoreById(
     @Param() params: IdParamDto,
@@ -211,7 +210,7 @@ export class ProductAdminController {
     };
   }
 
-  @Delete('/:id')
+  @Delete('hard-delete/:id')
   @ApiDocs({ operation: 'Delete Product' })
   async deleteById(
     @Param() params: IdParamDto,
