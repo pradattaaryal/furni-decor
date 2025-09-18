@@ -7,26 +7,24 @@ import {
   Param,
   Delete,
   Query,
-  HttpStatus,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
 import { ProductCreateDto } from '../dto/create-product.dto';
 import { ProductUpdateDto } from '../dto/update-product.dto';
 import { ProductEntity } from '../entities/product.entity';
-import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
+import {
+  ProductPaginateQueryDto,
+} from 'src/common/doc/query/paginateQuery.dto';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
 import {
   IResponse,
   IResponsePaging,
 } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
-import { ResponseMessage } from 'src/common/response/decorators/responseMessage.decorator';
 import { CategoryService } from 'src/modules/category/services/category.service';
-import { SYSTEM_USER_ONLY_GROUP } from 'src/common/database/constant/serialization-group.constant';
-import { DataSource, QueryRunner } from 'typeorm';
+import { Between, DataSource, QueryRunner } from 'typeorm';
 
 @ApiTags('Products')
 @Controller('/products')
@@ -36,28 +34,56 @@ export class ProductAdminController {
     private readonly categoryService: CategoryService,
     private _connection: DataSource,
   ) {}
+  
   @Get('/list')
   @ApiDocs({ operation: 'List Products' })
   async list(
-    @Query() paginateQueryDto: PaginateQueryDto,
+    @Query() paginateQueryDto: ProductPaginateQueryDto,
   ): Promise<IResponsePaging<ProductEntity>> {
-    return this.productService.paginatedGet({
-      ...paginateQueryDto,
-      relations: {
-        category: {
-          parent: true,
-          children: true,
+    
+    const where: any = {};
+    if (
+      paginateQueryDto.minPrice !== undefined &&
+      paginateQueryDto.maxPrice !== undefined
+    ) {
+      where.price = Between(
+        paginateQueryDto.minPrice,
+        paginateQueryDto.maxPrice,
+      );
+    }
+ if (paginateQueryDto.categoryId !== undefined) {
+      where.category = { id: paginateQueryDto.categoryId };
+    }
+     if (paginateQueryDto.color) {
+      where.variants = { color: paginateQueryDto.color };
+    }
+
+    if (paginateQueryDto.searchBy == 'name') {
+      paginateQueryDto.searchBy = '@@nameTsv'
+    }
+    delete paginateQueryDto.minPrice;
+    delete paginateQueryDto.maxPrice;
+    delete paginateQueryDto.categoryId;
+    delete paginateQueryDto.color;
+
+    const data =  await this.productService.paginatedGet({
+      ...paginateQueryDto, 
+      options: {
+        relations: {
+          category: { parent: true, children: true },
+          variants: { image: true },
+          images: true,
         },
-        variants: {
-          image: true,
-        },
-        images: true,
+        where,
       },
-      searchableColumns: ['name', 'description'],
-      sortableColumns: ['id', 'name', 'createdAt'],
+      searchableColumns: ['@@nameTsv'],
+      defaultSearchColumns: ['@@nameTsv'],
+      sortableColumns: ['id', 'name', 'createdAt', 'price'],
       defaultSortColumn: 'createdAt',
       defaultSortOrder: 'DESC',
     });
+
+    return data;
   }
 
   @Post('/create')
@@ -95,7 +121,7 @@ export class ProductAdminController {
     }
   }
 
-  @Get('/:id')
+  @Get(':id')
   @ApiDocs({ operation: 'Get Product by ID' })
   async getById(
     @Param() params: IdParamDto,
@@ -112,8 +138,7 @@ export class ProductAdminController {
     };
   }
 
-  // controller
-  @Patch('/:id')
+  @Patch(':id')
   @ApiDocs({ operation: 'Update Product' })
   async updateById(
     @Param() params: IdParamDto,
@@ -143,7 +168,7 @@ export class ProductAdminController {
     };
   }
 
-  @Delete('/:id/soft-delete')
+  @Delete('soft-delete/:id')
   @ApiDocs({ operation: 'Soft Delete Product' })
   async softDeleteById(
     @Param() params: IdParamDto,
@@ -167,7 +192,7 @@ export class ProductAdminController {
     };
   }
 
-  @Patch('/:id/restore')
+  @Patch('restore/:id')
   @ApiDocs({ operation: 'Restore Product' })
   async restoreById(
     @Param() params: IdParamDto,
@@ -193,7 +218,7 @@ export class ProductAdminController {
     };
   }
 
-  @Delete('/:id')
+  @Delete('hard-delete/:id')
   @ApiDocs({ operation: 'Delete Product' })
   async deleteById(
     @Param() params: IdParamDto,
