@@ -152,7 +152,7 @@ export class ProductRatingAdminController {
     };
   }
 
-  @Delete('/hard/:id')
+  @Delete('/hard-delete/:id')
   @ApiDocs({ operation: 'Hard delete Product Rating' })
   async deleteById(
     @Param('id') id: number,

@@ -30,7 +30,7 @@ import { CartItemAdminController } from 'src/modules/cart-item/controllers/cart-
     ProductRatingModule,
     ImageModule,
     CartModule,
-    CartItemModule
+    CartItemModule,
   ],
   controllers: [
     AdminUserController,
@@ -41,7 +41,7 @@ import { CartItemAdminController } from 'src/modules/cart-item/controllers/cart-
     ProductVarientsAdminController,
     ImageAdminController,
     CartAdminController,
-    CartItemAdminController
+    CartItemAdminController,
   ],
 })
 export class AdminRouterModule {}

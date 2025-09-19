@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CartItemService } from '../services/cart-item.service';
@@ -14,9 +15,11 @@ import { CreateCartItemDto } from '../dto/cart-item.create.dto';
 import { CartItemUpdateDto } from '../dto/cart-item.update.dto';
 import { CartItemEntity } from '../entities/cart-item.entity';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
-import { IResponse } from 'src/common/response/interfaces/response.interface';
+import { IResponse, IResponsePaging } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { DataSource, QueryRunner } from 'typeorm';
+import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
+import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 
 @ApiTags('Cart Items')
 @Controller('/cart-items')
@@ -25,7 +28,7 @@ export class CartItemAdminController {
     private readonly cartItemService: CartItemService,
     private _connection: DataSource,
   ) {}
- @Post('/create')
+  @Post('/create')
   @ApiDocs({ operation: 'Add Product to Cart' })
   async create(
     @Body() body: CreateCartItemDto,
@@ -67,12 +70,35 @@ export class CartItemAdminController {
     return {
       data: {
         item,
-        message: item ? 'Cart Item retrieved successfully' : 'Cart Item not found',
+        message: item
+          ? 'Cart Item retrieved successfully'
+          : 'Cart Item not found',
       },
     };
   }
+// @Get('cart/:cartId')
+// @ApiDocs({ operation: 'Get All Cart Items by Cart ID' })
+// async getAllByCartId(
+//   @Param('cartId') cartId: number,
+// ): Promise<IResponse<{ items: CartItemEntity[]; message: string }>> {
+//   const items = await this.cartItemService.getAllByCartId(cartId, {
+//     relations: { product: true, variant: true },
+//   });
 
- 
+//   return {
+//     data: {
+//       items,
+//       message: items.length
+//         ? 'Cart items retrieved successfully'
+//         : 'No items found in this cart',
+//     },
+//   };
+// }
+
+
+
+  
+
   @Patch(':id')
   @ApiDocs({ operation: 'Update Cart Item' })
   async update(
@@ -84,14 +110,7 @@ export class CartItemAdminController {
     await queryRunner.startTransaction();
 
     try {
-      const existing = await this.cartItemService.getById(params.id, {
-        entityManager: queryRunner.manager,
-      });
-      if (!existing) {
-        throw new NotFoundException('Cart Item not found');
-      }
-
-      const updated = await this.cartItemService.update(existing, updateDto, {
+      const updated = await this.cartItemService.update(params.id, updateDto, {
         entityManager: queryRunner.manager,
       });
 
@@ -111,8 +130,33 @@ export class CartItemAdminController {
     }
   }
 
-  @Delete('soft-delete/:id')
-  @ApiDocs({ operation: 'Soft Delete Cart Item' })
+  // @Delete('soft-delete/:id')
+  // @ApiDocs({ operation: 'Soft Delete Cart Item' })
+  // async softDelete(
+  //   @Param() params: IdParamDto,
+  // ): Promise<IResponse<{ item: CartItemEntity | null; message: string }>> {
+  //   const item = await this.cartItemService.getById(params.id);
+  //   if (!item) {
+  //     return {
+  //       data: {
+  //         item: null,
+  //         message: 'Cart Item not found',
+  //       },
+  //     };
+  //   }
+
+  //   const deleted = await this.cartItemService.softDelete(item);
+  //   return {
+  //     data: {
+  //       item: deleted,
+  //       message: 'Cart Item soft deleted successfully',
+  //     },
+  //   };
+  // }
+
+
+   @Delete('hard-delete/:id')
+  @ApiDocs({ operation: 'Hard Delete Cart Item' })
   async softDelete(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ item: CartItemEntity | null; message: string }>> {
@@ -126,11 +170,11 @@ export class CartItemAdminController {
       };
     }
 
-    const deleted = await this.cartItemService.softDelete(item);
+    const deleted = await this.cartItemService.delete(item);
     return {
       data: {
         item: deleted,
-        message: 'Cart Item soft deleted successfully',
+        message: 'Cart Item Hard deleted successfully',
       },
     };
   }

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import {
@@ -96,7 +100,10 @@ export class CartService {
     return await this._cartRepo._restoreRaw(options);
   }
 
-  async update(updateData: IUpdateCartDto, options?: IUpdateOptions<CartEntity>): Promise<CartEntity> {
+  async update(
+    updateData: IUpdateCartDto,
+    options?: IUpdateOptions<CartEntity>,
+  ): Promise<CartEntity> {
     // Validate input
     if (!updateData.cartId) {
       throw new BadRequestException('cartId is required');
@@ -105,13 +112,16 @@ export class CartService {
     // Fetch cart
     const cart = await this._cartRepo._findOneById(updateData.cartId);
     if (!cart) {
-      throw new NotFoundException(`Cart with ID ${updateData.cartId} not found`);
+      throw new NotFoundException(
+        `Cart with ID ${updateData.cartId} not found`,
+      );
     }
 
     // Update allowed fields
     const { totalPrice } = updateData;
     if (totalPrice !== undefined) {
-      if (totalPrice < 0) throw new BadRequestException('totalPrice cannot be negative');
+      if (totalPrice < 0)
+        throw new BadRequestException('totalPrice cannot be negative');
       cart.totalPrice = totalPrice;
     }
 
