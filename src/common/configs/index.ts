@@ -4,6 +4,8 @@ import RequestConfig from './request.config';
 import DataBaseConfig from './database.config';
 import MailConfig from './mail.config';
 import AuthConfig from './auth.config';
+import FileConfig from './file.config';
+
 export default [
   DataBaseConfig,
   AppConfig,
@@ -11,4 +13,5 @@ export default [
   RequestConfig,
   MailConfig,
   AuthConfig,
+  FileConfig,
 ];
