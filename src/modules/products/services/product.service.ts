@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { ProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
-import { ProductCreateDto } from '../dto/create-product.dto';
+import { ProductCreateDto } from '../dto/product.create.dto';
 import { IProductUpdateDto } from '../interfaces/product.update.dto.interface';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import {
@@ -18,7 +18,7 @@ import {
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { ProductVariantService } from 'src/modules/product-variants/services/product-variant.service';
-import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/create-product-variant.dto';
+import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/product-variant.create.dto';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { ImageService } from 'src/modules/image/services/image.service';
 import { plainToInstance } from 'class-transformer';
@@ -30,42 +30,6 @@ export class ProductService {
     private readonly _variantService: ProductVariantService,
     private readonly _imageService: ImageService,
   ) {}
-
-  //   async create(
-  //     createDto: ProductCreateDto,
-  //     options?: ICreateOptions,
-  //   ): Promise<ProductEntity> {
-  //     const { variants, images: imageIds, ...productData } = createDto;
-  //  let images: ImageEntity[] = [];
-  //   if (imageIds && imageIds.length > 0) {
-  //      for (const id of imageIds) {
-  //       const image = await this._imageService.getById(id);
-  //       if (!image) {
-  //         throw new BadRequestException(`Image with ID ${id} not found`);
-  //       }
-  //       images.push(image);
-  //     }
-  //   }
-  //    const product = await this._productRepo._create(
-  //     { ...productData, images },
-  //     options,
-  //   );
-  //     if (variants && variants.length > 0) {
-  //       for (const variantData of variants) {
-  //         const variantDto = new ProductVariantCreateDto();
-  //         variantDto.dimensions = variantData.dimensions;
-  //         variantDto.color = variantData.color;
-  //         variantDto.productId = product.id;
-  //         variantDto.count = variantData.count;
-  //         variantDto.imageId = variantData.imageId;
-  //         console.log(variantDto);
-  //         await this._variantService.create(variantDto);
-  //       }
-  //     }
-
-  //     return product;
-  //   }
-
   async create(
     createDto: ProductCreateDto,
     options?: ICreateOptions,
@@ -193,7 +157,7 @@ export class ProductService {
   ): Promise<UpdateResult | null> {
     return await this._productRepo._restoreRaw(options);
   }
- async update(
+  async update(
     product: ProductEntity,
     updateData: IProductUpdateDto,
     options?: IUpdateOptions<ProductEntity>,
@@ -222,7 +186,7 @@ export class ProductService {
     // Handle variants if provided
     if (variants?.length) {
       // Optionally, delete existing variants (depending on requirements)
-     // await this._variantService.deleteByProductId(product.id, options);
+      // await this._variantService.deleteByProductId(product.id, options);
 
       // Create new variants
       const variantDtos = plainToInstance(

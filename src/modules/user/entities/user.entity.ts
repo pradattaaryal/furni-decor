@@ -5,6 +5,7 @@ import { ALL_GROUP } from 'src/common/database/constant/serialization-group.cons
 import { BaseUserEntity } from 'src/common/database/base/entity/BaseUserEntity';
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 
 export const USERS_DATABASE_TABLE_NAME = 'users';
 
@@ -22,4 +23,7 @@ export class UserEntity extends BaseUserEntity {
   @OneToOne(() => ImageEntity, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'image_id' })
   image: ImageEntity | null;
+
+  @OneToOne(() => CartEntity, (cart) => cart.user)
+  cart: CartEntity;
 }

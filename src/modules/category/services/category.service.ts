@@ -13,7 +13,7 @@ import {
 } from 'src/common/database/interfaces/updateOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { SelectQueryBuilder, UpdateResult } from 'typeorm';
-import { CategoryCreateDto } from '../dto/create-category.dto';
+import { CategoryCreateDto } from '../dto/category.create.dto';
 import { CategoryEntity } from '../entities/category.entity';
 import { ICategoryUpdateDto } from '../interfaces/category.update.dto.interface';
 import { CategoryRepository } from '../repositories/category.repository';

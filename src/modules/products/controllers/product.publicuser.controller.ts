@@ -11,12 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
-import { ProductCreateDto } from '../dto/create-product.dto';
-import { ProductUpdateDto } from '../dto/update-product.dto';
+import { ProductCreateDto } from '../dto/product.create.dto';
+import { ProductUpdateDto } from '../dto/product.update.dto';
 import { ProductEntity } from '../entities/product.entity';
-import {
-  ProductPaginateQueryDto,
-} from 'src/common/doc/query/paginateQuery.dto';
+import { ProductPaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
 import {
   IResponse,
@@ -34,7 +32,7 @@ export class PublicUserProductController {
     private readonly categoryService: CategoryService,
     private _connection: DataSource,
   ) {}
-  
+
   @Get('/list')
   @ApiDocs({ operation: 'List Products' })
   async list(
@@ -58,15 +56,15 @@ export class PublicUserProductController {
     }
 
     if (paginateQueryDto.searchBy == 'name') {
-      paginateQueryDto.searchBy = '@@nameTsv'
+      paginateQueryDto.searchBy = '@@nameTsv';
     }
     delete paginateQueryDto.minPrice;
     delete paginateQueryDto.maxPrice;
     delete paginateQueryDto.categoryId;
     delete paginateQueryDto.color;
 
-    const data =  await this.productService.paginatedGet({
-      ...paginateQueryDto, 
+    const data = await this.productService.paginatedGet({
+      ...paginateQueryDto,
       options: {
         relations: {
           category: { parent: true, children: true },
@@ -85,19 +83,17 @@ export class PublicUserProductController {
     return data;
   }
 
-  
-
   @Get(':id')
   @ApiDocs({ operation: 'Get Product by ID' })
   async getById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
-    const product = await this.productService.getById(params.id,{
+    const product = await this.productService.getById(params.id, {
       relations: {
-          category: { parent: true, children: true },
-          variants: { image: true },
-          images: true,
-        },
+        category: { parent: true, children: true },
+        variants: { image: true },
+        images: true,
+      },
     });
 
     return {
@@ -109,12 +105,4 @@ export class PublicUserProductController {
       },
     };
   }
-
-  
-
- 
-
-  
-
- 
 }

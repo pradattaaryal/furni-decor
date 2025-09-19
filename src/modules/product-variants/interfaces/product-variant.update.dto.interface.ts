@@ -3,6 +3,6 @@ export interface IProductVariantUpdateDto {
   dimensions?: Record<string, any>;
   color?: string;
   productId?: number;
-   quantity?: number;
+  quantity?: number;
   imageId?: number;
 }

@@ -18,8 +18,8 @@ import {
   IResponse,
   IResponsePaging,
 } from 'src/common/response/interfaces/response.interface';
-import { CategoryCreateDto } from '../dto/create-category.dto';
-import { CategoryUpdateDto } from '../dto/update-category.dto';
+import { CategoryCreateDto } from '../dto/category.create.dto';
+import { CategoryUpdateDto } from '../dto/category.update.dto';
 import { CategoryEntity } from '../entities/category.entity';
 import { CategoryService } from '../services/category.service';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';

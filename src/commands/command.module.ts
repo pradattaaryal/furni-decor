@@ -17,9 +17,9 @@ import { DebuggerModule } from 'src/common/debugger/debugger.module';
       load: configs,
       envFilePath: ['.env'],
     }),
-    DebuggerModule
+    DebuggerModule,
   ],
-  providers: [TriggerCommand]
+  providers: [TriggerCommand],
   // providers: [SeedCommand, TriggerCommand, TriggerRemoveCommand],
 })
 export class CommandModule {}

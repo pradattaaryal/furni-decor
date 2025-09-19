@@ -31,7 +31,7 @@ export class ProductVariantDto {
 
   @ApiProperty({ example: 50, description: 'Available stock  quantity' })
   @CustomIsNumber()
-   quantity: number;
+  quantity: number;
 
   @ApiProperty({ example: 12, description: 'Image ID for variant' })
   @CustomIsNumber()

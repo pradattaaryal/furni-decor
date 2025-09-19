@@ -24,7 +24,7 @@ export class ProductVariantEntity extends DatabaseBaseEntity {
   color: string;
 
   @Column({ type: 'int', nullable: true })
-   quantity: number | null;
+  quantity: number | null;
 
   @OneToOne(() => ImageEntity, { cascade: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'image_id' })

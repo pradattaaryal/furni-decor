@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { ProductVariantRepository } from '../repositories/product-variant.repository';
 import { ProductVariantEntity } from '../entities/product-variant.entity';
-import { ProductVariantCreateDto } from '../dto/create-product-variant.dto';
+import { ProductVariantCreateDto } from '../dto/product-variant.create.dto';
 import { IProductVariantUpdateDto } from '../interfaces/product-variant.update.dto.interface';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import {
@@ -38,7 +38,7 @@ export class ProductVariantService {
     const variant = new ProductVariantEntity();
     variant.color = createDto.color;
     variant.dimensions = createDto.dimensions;
-    variant. quantity = createDto. quantity;
+    variant.quantity = createDto.quantity;
     variant.image = image;
     variant.product = { id: createDto.productId } as ProductEntity;
     console.log(`createDto at product varient service `, createDto);

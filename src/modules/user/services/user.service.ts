@@ -7,7 +7,7 @@ import { UserEntity } from '../entities/user.entity';
 import { UserCreateDto } from '../dto/user.create.dto';
 import { MarketingUserCreateDto } from '../dto/marketing.create.dto';
 import { UserRepository } from '../repositories/user.repository';
-import { OtpService } from 'src/modules/otp/otp.service';
+import { OtpService } from 'src/modules/otp/service/otp.service';
 import { Not, UpdateResult } from 'typeorm';
 import {
   IUpdateOptions,

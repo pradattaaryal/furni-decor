@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
-import { ProductCreateDto } from '../dto/create-product.dto';
-import { ProductUpdateDto } from '../dto/update-product.dto';
+import { ProductCreateDto } from '../dto/product.create.dto';
+import { ProductUpdateDto } from '../dto/product.update.dto';
 import { ProductEntity } from '../entities/product.entity';
 import {
   PaginateQueryDto,
@@ -129,8 +129,7 @@ export class ProductMarketingController {
     };
   }
 
- 
-@Patch('/:id')
+  @Patch('/:id')
   @ApiDocs({ operation: 'Update Product' })
   async updateById(
     @Param() params: IdParamDto,
@@ -151,10 +150,13 @@ export class ProductMarketingController {
 
       // Validate category if provided in update
       if (updateProductData.categoryId) {
-        const category = await this.categoryService.getById(updateProductData.categoryId, {
-          options: { relations: ['children', 'parent'] },
-          entityManager: queryRunner.manager,
-        });
+        const category = await this.categoryService.getById(
+          updateProductData.categoryId,
+          {
+            options: { relations: ['children', 'parent'] },
+            entityManager: queryRunner.manager,
+          },
+        );
         if (!category) {
           throw new NotFoundException('Cannot find Category');
         }

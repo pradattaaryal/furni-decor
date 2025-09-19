@@ -1,6 +1,13 @@
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, Index } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  Index,
+} from 'typeorm';
 import { IProductEntity } from '../interfaces/product.entity.interface';
 import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
@@ -140,7 +147,7 @@ export class ProductEntity
   @OneToMany(() => ImageEntity, (image) => image.product)
   images?: ImageEntity[];
 
-  //search by product name 
+  //search by product name
   @Column({
     name: 'name_tsv',
     type: 'tsvector',

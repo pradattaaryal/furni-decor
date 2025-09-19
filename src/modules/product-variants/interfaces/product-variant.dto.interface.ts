@@ -3,6 +3,6 @@ export interface IProductVariantDto {
   productId: number;
   dimensions: Record<number, any>;
   color: string;
-   quantity: number | null;
+  quantity: number | null;
   imageId: number | null;
 }
