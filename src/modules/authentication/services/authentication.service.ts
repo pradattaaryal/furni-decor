@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { OtpService } from 'src/modules/otp/otp.service';
+import { OtpService } from 'src/modules/otp/service/otp.service';
 import { UserRole } from 'src/modules/user/constant/user-type.constant';
 import { UserCreateDto } from 'src/modules/user/dto/user.create.dto';
 import { UserEntity } from 'src/modules/user/entities/user.entity';

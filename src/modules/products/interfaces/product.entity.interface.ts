@@ -8,7 +8,6 @@ export interface IProductEntity extends DatabaseBaseEntity {
   description: string;
   categoryId: number;
   price?: number;
-  // ================= Additional Product Specifications Start =================
   modelNumber?: string;
   secondaryMaterial?: string;
   configuration?: string;
@@ -17,9 +16,7 @@ export interface IProductEntity extends DatabaseBaseEntity {
   fillingMaterial?: string;
   finishType?: string;
   adjustableHeadrest?: boolean;
-  maxLoad?: string;
-  // ================= Additional Product Specifications End =================
-
+  maxLoad?: number;
   salesPackage?: string;
   originOfManufacture?: string;
   discountValue?: number;
@@ -30,8 +27,6 @@ export interface IProductEntity extends DatabaseBaseEntity {
   coveredInWarranty?: string;
   notCoveredInWarranty?: string;
   domesticWarranty?: string;
-
-  // Relations
   category?: CategoryEntity;
   variants?: ProductVariantEntity[];
   images?: ImageEntity[];

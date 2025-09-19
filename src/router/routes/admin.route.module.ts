@@ -14,6 +14,10 @@ import { ProductRatingAdminController } from 'src/modules/product-rating/control
 import { ProductRatingModule } from 'src/modules/product-rating/product-rating.module';
 import { ImageAdminController } from 'src/modules/image/controllers/image.admin.controller';
 import { ImageModule } from 'src/modules/image/image.module';
+import { CartAdminController } from 'src/modules/cart/controllers/cart.admin.controller';
+import { CartModule } from 'src/modules/cart/cart.module';
+import { CartItemModule } from 'src/modules/cart-item/cart-item.module';
+import { CartItemAdminController } from 'src/modules/cart-item/controllers/cart-item.admin.controller';
 
 @Module({
   imports: [
@@ -25,6 +29,8 @@ import { ImageModule } from 'src/modules/image/image.module';
     ProductVariantsModule,
     ProductRatingModule,
     ImageModule,
+    CartModule,
+    CartItemModule
   ],
   controllers: [
     AdminUserController,
@@ -34,6 +40,8 @@ import { ImageModule } from 'src/modules/image/image.module';
     ProductRatingAdminController,
     ProductVarientsAdminController,
     ImageAdminController,
+    CartAdminController,
+    CartItemAdminController
   ],
 })
 export class AdminRouterModule {}

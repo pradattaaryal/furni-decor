@@ -18,8 +18,8 @@ import {
   IResponse,
   IResponsePaging,
 } from 'src/common/response/interfaces/response.interface';
-import { CategoryCreateDto } from '../dto/create-category.dto';
-import { CategoryUpdateDto } from '../dto/update-category.dto';
+import { CategoryCreateDto } from '../dto/category.create.dto';
+import { CategoryUpdateDto } from '../dto/category.update.dto';
 import { CategoryEntity } from '../entities/category.entity';
 import { CategoryService } from '../services/category.service';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
@@ -111,53 +111,53 @@ export class CategoryAdminController {
     };
   }
 
-  @Delete('/soft-delete/:id')
-  @ApiDocs({ operation: 'Soft delete Category' })
-  async softDeleteById(
-    @Param('id') id: number,
-  ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
-    const found = await this.categoryService.getById(id);
-    if (!found) throw new NotFoundException('Cannot find Category');
+  // @Delete('/soft-delete/:id')
+  // @ApiDocs({ operation: 'Soft delete Category' })
+  // async softDeleteById(
+  //   @Param('id') id: number,
+  // ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
+  //   const found = await this.categoryService.getById(id);
+  //   if (!found) throw new NotFoundException('Cannot find Category');
 
-    const category = await this.categoryService.softDelete(found);
-    return {
-      data: {
-        category,
-        message: 'Category soft deleted successfully.',
-      },
-    };
-  }
+  //   const category = await this.categoryService.softDelete(found);
+  //   return {
+  //     data: {
+  //       category,
+  //       message: 'Category soft deleted successfully.',
+  //     },
+  //   };
+  // }
 
-  @Patch('/restore/:id')
-  @ApiDocs({ operation: 'Restore Category' })
-  async restoreById(
-    @Param('id') id: number,
-  ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
-    await this.categoryService.restore({ where: { id } });
-    const category = await this.categoryService.getById(id);
-    if (!category) throw new NotFoundException('Cannot find Category');
-    return {
-      data: {
-        category,
-        message: 'Category restored successfully.',
-      },
-    };
-  }
+  // @Patch('/restore/:id')
+  // @ApiDocs({ operation: 'Restore Category' })
+  // async restoreById(
+  //   @Param('id') id: number,
+  // ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
+  //   await this.categoryService.restore({ where: { id } });
+  //   const category = await this.categoryService.getById(id);
+  //   if (!category) throw new NotFoundException('Cannot find Category');
+  //   return {
+  //     data: {
+  //       category,
+  //       message: 'Category restored successfully.',
+  //     },
+  //   };
+  // }
 
-  @Delete('/hard/:id')
-  @ApiDocs({ operation: 'Hard delete Category' })
-  async deleteById(
-    @Param('id') id: number,
-  ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
-    const found = await this.categoryService.getById(id);
-    if (!found) throw new NotFoundException('Cannot find Category');
+  // @Delete('/hard/:id')
+  // @ApiDocs({ operation: 'Hard delete Category' })
+  // async deleteById(
+  //   @Param('id') id: number,
+  // ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
+  //   const found = await this.categoryService.getById(id);
+  //   if (!found) throw new NotFoundException('Cannot find Category');
 
-    const category = await this.categoryService.delete(found);
-    return {
-      data: {
-        category,
-        message: 'Category permanently deleted successfully.',
-      },
-    };
-  }
+  //   const category = await this.categoryService.delete(found);
+  //   return {
+  //     data: {
+  //       category,
+  //       message: 'Category permanently deleted successfully.',
+  //     },
+  //   };
+  // }
 }

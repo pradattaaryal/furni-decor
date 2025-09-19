@@ -21,7 +21,7 @@ import {
 
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
-import { ProductVariantUpdateDto } from '../dto/update-product-variant.dto';
+import { ProductVariantUpdateDto } from '../dto/product-variant.update.dto';
 import { ProductVariantEntity } from '../entities/product-variant.entity';
 import { ProductVariantService } from '../services/product-variant.service';
 
