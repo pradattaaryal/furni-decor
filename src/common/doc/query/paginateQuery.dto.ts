@@ -170,17 +170,29 @@ export class PaginateQueryIsActiveWithSkipDto extends PaginateQueryWithSkipDto {
 }
 
 export class ProductPaginateQueryDto extends PaginateQueryDto {
- @ApiPropertyOptional({ type: Number, description: 'Minimum price filter', example: 10 })
+  @ApiPropertyOptional({
+    type: Number,
+    description: 'Minimum price filter',
+    example: 10,
+  })
   @CustomIsOptional()
   @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
   minPrice?: number;
 
-  @ApiPropertyOptional({ type: Number, description: 'Maximum price filter', example: 1000 })
+  @ApiPropertyOptional({
+    type: Number,
+    description: 'Maximum price filter',
+    example: 1000,
+  })
   @CustomIsOptional()
   @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
   maxPrice?: number;
 
-  @ApiPropertyOptional({ type: Number, description: 'Category ID filter', example: 4 })
+  @ApiPropertyOptional({
+    type: Number,
+    description: 'Category ID filter',
+    example: 4,
+  })
   @CustomIsOptional()
   @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
   categoryId?: number;
