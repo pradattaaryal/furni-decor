@@ -45,17 +45,15 @@ export class CartAdminController {
       },
     };
   }
-  //   @Post('/update')
-  // @ApiDocs({ operation: 'Update Cart' })
-  // async update(
-  //   @Body() body: UpdateCartDto,
-  // ): Promise<IResponse<{ cart: CartEntity; message: string }>> {
-  //   //const cart = await this.cartService.Update(body);
-  //    return {
-  //     data: {
-  //       cart,
-  //       message: 'Cart created successfully.',
-  //     },
-  //   };
-  // }
+   @Post('/update')
+  @ApiDocs({ operation: 'Update Cart' })
+  async update(@Body() body: UpdateCartDto): Promise<IResponse<{ cart: CartEntity; message: string }>> {
+    const cart = await this.cartService.update(body);
+    return {
+      data: {
+        cart,
+        message: 'Cart updated successfully.',
+      },
+    };
+  }
 }

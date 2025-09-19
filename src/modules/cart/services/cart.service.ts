@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import {
@@ -17,6 +17,7 @@ import { CartEntity } from '../entities/cart.entity';
 import { CartRepository } from '../repositories/cart.repository';
 import { CreateCartDto } from '../dto/cart.create.dto';
 import { IUpdateCartDto } from '../interfaces/cart.update.dto.interface';
+import { UpdateCartDto } from '../dto/cart.update.dto';
 
 @Injectable()
 export class CartService {
@@ -94,12 +95,27 @@ export class CartService {
   ): Promise<UpdateResult | null> {
     return await this._cartRepo._restoreRaw(options);
   }
-async update(
-    cartdata: CartEntity,
-    updateData: IUpdateCartDto,
-    options?: IUpdateOptions<CartEntity>,
-  ) {
-    Object.assign(cartdata, updateData);
-    return await this._cartRepo._update(cartdata, options);
+
+  async update(updateData: IUpdateCartDto, options?: IUpdateOptions<CartEntity>): Promise<CartEntity> {
+    // Validate input
+    if (!updateData.cartId) {
+      throw new BadRequestException('cartId is required');
+    }
+
+    // Fetch cart
+    const cart = await this._cartRepo._findOneById(updateData.cartId);
+    if (!cart) {
+      throw new NotFoundException(`Cart with ID ${updateData.cartId} not found`);
+    }
+
+    // Update allowed fields
+    const { totalPrice } = updateData;
+    if (totalPrice !== undefined) {
+      if (totalPrice < 0) throw new BadRequestException('totalPrice cannot be negative');
+      cart.totalPrice = totalPrice;
+    }
+
+    // Persist changes
+    return await this._cartRepo._update(cart, options);
   }
 }

@@ -26,7 +26,7 @@ export class CartItemAdminController {
     private _connection: DataSource,
   ) {}
  @Post('/create')
-  @ApiDocs({ operation: 'Create Cart Item' })
+  @ApiDocs({ operation: 'Add Product to Cart' })
   async create(
     @Body() body: CreateCartItemDto,
   ): Promise<IResponse<{ item: CartItemEntity; message: string }>> {
