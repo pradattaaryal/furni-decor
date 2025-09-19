@@ -1,5 +1,5 @@
- import { ApiProperty } from '@nestjs/swagger';
- 
+import { ApiProperty } from '@nestjs/swagger';
+
 import {
   ResponseDefaultSerialization,
   ResponsePaginationDefaultSerialization,
@@ -19,4 +19,3 @@ export class CartItemPaginationSerialization extends ResponsePaginationDefaultSe
   })
   data: CartItemEntity[];
 }
- 

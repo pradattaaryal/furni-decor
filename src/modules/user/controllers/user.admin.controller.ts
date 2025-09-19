@@ -149,7 +149,7 @@ export class AdminUserController {
     };
   }
 
-  @Delete('/hard/:id')
+  @Delete('/hard-delete/:id')
   @ApiDocs({ operation: 'Hard delete User' })
   async deleteById(
     @Param('id') id: number,

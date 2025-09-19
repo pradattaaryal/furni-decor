@@ -144,7 +144,7 @@ export class CategoryAdminController {
   //   };
   // }
 
-  // @Delete('/hard/:id')
+  // @Delete('/hard-delete/:id')
   // @ApiDocs({ operation: 'Hard delete Category' })
   // async deleteById(
   //   @Param('id') id: number,
