@@ -35,16 +35,4 @@ export class CartItemEntity
 
   @Column({ type: 'int', default: 1 })
   quantity: number;
-
-  @Column({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    nullable: false,
-    transformer: {
-      to: (value: number) => value,
-      from: (value: string) => parseFloat(value),
-    },
-  })
-  price: number;
 }

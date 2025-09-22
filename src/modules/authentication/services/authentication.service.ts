@@ -14,6 +14,7 @@ import { UserRepository } from 'src/modules/user/repositories/user.repository';
 import { UserService } from 'src/modules/user/services/user.service';
 import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { CartService } from 'src/modules/cart/services/cart.service';
 
 export type AccessTokenPayload = { sub: number; roles: UserRole };
 export type TokenPayloadForCredentialReset = { sub: number; email: string };
@@ -25,6 +26,7 @@ export class AuthenticationService {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
+    private readonly _cartService: CartService,
   ) {}
 
   /** ================= AUTH HELPERS ================== */
@@ -144,6 +146,8 @@ export class AuthenticationService {
     }
 
     await this.verifyUser(user);
+    const userId = user.id;
+    await this._cartService.create({ userId });
 
     const tokens = await this.generateAccessToken({
       id: user.id,

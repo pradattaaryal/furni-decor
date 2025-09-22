@@ -8,7 +8,6 @@ export interface ICartItemEntity {
   productId: number;
   variantId?: number;
   quantity: number;
-  price: number;
   cart?: CartEntity;
   product?: ProductEntity;
   variant?: ProductVariantEntity;

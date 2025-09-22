@@ -11,17 +11,14 @@ import { ICreateOptions } from 'src/common/database/interfaces/createOption.inte
 import {
   IFindAllOptions,
   IFindOneOptions,
-  IPaginateFindOption,
 } from 'src/common/database/interfaces/findOption.interface';
 import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
-import { ProductVariantRepository } from 'src/modules/product-variants/repositories/product-variant.repository';
 import { ProductVariantService } from 'src/modules/product-variants/services/product-variant.service';
 import { ProductService } from 'src/modules/products/services/product.service';
 import { CartService } from 'src/modules/cart/services/cart.service';
-import { CartEntity } from 'src/modules/cart/entities/cart.entity';
-import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
-import { CartRepository } from 'src/modules/cart/repositories/cart.repository';
+import { ICartItemEntity } from '../interfaces/cart-item.entity.interface';
+import { CartItemQuantityDto } from '../dto/cart-item.increment.dto';
 
 @Injectable()
 export class CartItemService {
@@ -37,21 +34,18 @@ export class CartItemService {
     options?: ICreateOptions,
   ): Promise<CartItemEntity> {
     try {
-      const { cartId, productId, variantId, quantity, price } = createDto;
+      const { cartId, productId, variantId, quantity } = createDto;
 
-      // Validate cart
       const cart = await this._cartService.getById(cartId);
       if (!cart) {
         throw new BadRequestException(`Cart with ID ${cartId} not found`);
       }
 
-      // Validate product
       const product = await this._productService.getById(productId);
       if (!product) {
         throw new BadRequestException(`Product with ID ${productId} not found`);
       }
 
-      // Validate variant (if provided)
       let variant;
       if (variantId) {
         variant = await this._productVariantService.getById(variantId);
@@ -61,18 +55,16 @@ export class CartItemService {
           );
         }
       }
-      // valadation for stock quantity
       if (variant.quantity < 0) {
         throw new BadRequestException(
           `Product variant with ID ${variantId} out of stock found`,
         );
       }
-      // Calculate total price for this cart item
       const unitPrice = product.price;
       const totalPrice = unitPrice * quantity;
       cart.totalPrice = (cart.totalPrice || 0) + totalPrice;
       await this._cartService.update(
-        { cartId: cart.id, totalPrice: cart.totalPrice }, // IUpdateCartDto
+        { cartId: cart.id, totalPrice: cart.totalPrice },
         options,
       );
       const cartItemData: Partial<CartItemEntity> = {
@@ -83,7 +75,6 @@ export class CartItemService {
         variant: variant,
         variantId: variant?.id,
         quantity,
-        price,
       };
 
       return await this._cartItemRepo._create(cartItemData, options);
@@ -119,63 +110,55 @@ export class CartItemService {
     return await this._cartItemRepo._findAll(options);
   }
   async recalculateCartTotal(
-    cartId: number,
+    entity: ICartItemEntity,
     options?: IUpdateOptions<CartItemEntity>,
-  ): Promise<number> {
-    // Fetch cart
-    const cart = await this._cartService.getById(cartId, options);
+  ) {
+    const cart = await this._cartService.getById(entity.cartId);
     if (!cart) {
-      throw new NotFoundException(`Cart with ID ${cartId} not found`);
+      throw new BadRequestException(`Cart with ID ${entity.cartId} not found`);
     }
-
-    // Fetch all items in the cart
-    const items = await this._cartItemRepo._findAll({
-      options: {
-        where: { cartId },
-        relations: { product: true, variant: true },
-      },
-    });
-
-    if (!items || items.length === 0) {
-      cart.totalPrice = 0;
-      await this._cartService.update(
-        { cartId: cart.id, totalPrice: 0 },
-        options,
+    const product = await this._productService.getById(entity.productId);
+    if (!product) {
+      throw new BadRequestException(
+        `Product with ID ${entity.productId} not found`,
       );
-      return 0;
     }
 
-    // Calculate total price
-    let totalPrice = 0;
-    for (const item of items) {
-      const unitPrice = item.product?.price;
-      totalPrice += unitPrice * item.quantity;
+    let variant;
+    if (entity.variantId) {
+      variant = await this._productVariantService.getById(entity.variantId);
+      if (!variant) {
+        throw new BadRequestException(
+          `Product variant with ID ${entity.variantId} not found`,
+        );
+      }
     }
-
-    // Update cart total
-    cart.totalPrice = totalPrice;
+    if (variant.quantity < 0) {
+      throw new BadRequestException(
+        `Product variant with ID ${entity.variantId} out of stock found`,
+      );
+    }
+    const unitPrice = product.price;
+    const totalPrice = unitPrice * entity.quantity;
+    cart.totalPrice = (cart.totalPrice || 0) - totalPrice;
     await this._cartService.update(
-      { cartId: cart.id, totalPrice: totalPrice },
+      { cartId: cart.id, totalPrice: cart.totalPrice },
       options,
     );
-
     return totalPrice;
   }
 
- 
   async update(
     id: number,
     updateDto: CartItemUpdateDto,
     options?: IUpdateOptions<CartItemEntity>,
   ): Promise<CartItemEntity> {
     try {
-      // Fetch existing cart item
       const existing = await this.getById(id, options);
       if (!existing) {
         throw new NotFoundException(`Cart item with ID ${id} not found`);
       }
 
-      // Validate cart
       const cart = await this._cartService.getById(existing.cartId);
       if (!cart) {
         throw new BadRequestException(
@@ -183,8 +166,7 @@ export class CartItemService {
         );
       }
 
-      // Recalculate cart total: subtract old, add new
-      const oldTotal = existing.price * existing.quantity;
+      const oldTotal = cart.totalPrice;
       const product = await this._productService.getById(existing.productId);
       if (!product) {
         throw new BadRequestException(
@@ -198,13 +180,11 @@ export class CartItemService {
 
       cart.totalPrice = (cart.totalPrice || 0) - oldTotal + newTotal;
 
-      // Update cart
       await this._cartService.update(
         { cartId: cart.id, totalPrice: cart.totalPrice },
         options,
       );
 
-      // Apply updates on the cart item entity
       Object.assign(existing, {
         ...updateDto,
         price: unitPrice,
@@ -215,6 +195,101 @@ export class CartItemService {
     } catch (error) {
       console.error('Error while updating cart item:', error);
       throw error;
+    }
+  }
+
+  async incrementQuantity(
+    cartItemId: number,
+    incrementDto: CartItemQuantityDto,
+    options?: IUpdateOptions<CartItemEntity>,
+  ): Promise<CartItemEntity> {
+    const cartItem = await this.getById(cartItemId, options);
+    if (!cartItem)
+      throw new NotFoundException(`Cart item with ID ${cartItemId} not found`);
+
+    const product = await this._productService.getById(cartItem.productId);
+    if (!product)
+      throw new BadRequestException(
+        `Product with ID ${cartItem.productId} not found`,
+      );
+
+    let variant;
+    if (cartItem.variantId) {
+      variant = await this._productVariantService.getById(cartItem.variantId);
+      if (!variant)
+        throw new BadRequestException(
+          `Product variant with ID ${cartItem.variantId} not found`,
+        );
+
+      if (variant.quantity < cartItem.quantity + incrementDto.quantity) {
+        throw new BadRequestException(
+          `Not enough stock for variant ID ${variant.id}`,
+        );
+      }
+    }
+
+    cartItem.quantity += incrementDto.quantity;
+
+    const totalIncrease = product.price * incrementDto.quantity;
+    const cart = await this._cartService.getById(cartItem.cartId);
+    if (!cart) {
+      throw new BadRequestException('cart not found');
+    }
+    cart.totalPrice = cart.totalPrice + totalIncrease;
+
+    await this._cartService.update(
+      { cartId: cart.id, totalPrice: cart.totalPrice },
+      options,
+    );
+
+    return await this._cartItemRepo._update(cartItem, options);
+  }
+
+  async decrementQuantity(
+    cartItemId: number,
+    decrementDto: CartItemQuantityDto,
+    options?: IUpdateOptions<CartItemEntity>,
+  ): Promise<CartItemEntity | null> {
+    const cartItem = await this.getById(cartItemId, options);
+    if (!cartItem)
+      throw new NotFoundException(`Cart item with ID ${cartItemId} not found`);
+
+    const product = await this._productService.getById(cartItem.productId);
+    if (!product)
+      throw new BadRequestException(
+        `Product with ID ${cartItem.productId} not found`,
+      );
+
+    if (decrementDto.quantity >= cartItem.quantity) {
+      await this._cartItemRepo._delete(cartItem, options);
+
+      const cart = await this._cartService.getById(cartItem.cartId);
+      if (!cart) {
+        throw new BadRequestException('cart not found');
+      }
+      cart.totalPrice =
+        (cart.totalPrice || 0) - product.price * cartItem.quantity;
+      await this._cartService.update(
+        { cartId: cart.id, totalPrice: cart.totalPrice },
+        options,
+      );
+
+      return null;
+    } else {
+      cartItem.quantity -= decrementDto.quantity;
+
+      const cart = await this._cartService.getById(cartItem.cartId);
+      if (!cart) {
+        throw new BadRequestException('cart not found');
+      }
+      cart.totalPrice =
+        (cart.totalPrice || 0) - product.price * decrementDto.quantity;
+      await this._cartService.update(
+        { cartId: cart.id, totalPrice: cart.totalPrice },
+        options,
+      );
+
+      return await this._cartItemRepo._update(cartItem, options);
     }
   }
 
@@ -229,7 +304,7 @@ export class CartItemService {
     entity: CartItemEntity,
     options?: IDeleteOptions<CartItemEntity>,
   ): Promise<CartItemEntity> {
-    await this.recalculateCartTotal(entity.cartId, options);
+    await this.recalculateCartTotal(entity, options);
     return await this._cartItemRepo._delete(entity, options);
   }
 }
