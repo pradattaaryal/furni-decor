@@ -37,12 +37,10 @@ export class UserService {
     createDto: UserCreateDto,
     options?: ICreateOptions,
   ): Promise<UserEntity> {
-    // Validate required fields upfront
     if (!createDto.email || !createDto.password) {
       throw new BadRequestException('Email and password are required');
     }
 
-    // Check if the user already exists by email
     await this.throwErrorIfExistingUserByEmailFound(
       createDto.email,
       null,
@@ -58,9 +56,6 @@ export class UserService {
     return user;
   }
 
-  /**
-   * Register a regular user with hashed password and OTP generation
-   */
   async register(
     registerDto: UserCreateDto,
     options?: ICreateOptions,
@@ -104,9 +99,6 @@ export class UserService {
     };
   }
 
-  /**
-   * Register an employee (Marketing) user
-   */
   async registerEmployee(
     registerDto: MarketingUserCreateDto,
     options?: ICreateOptions,
@@ -117,13 +109,10 @@ export class UserService {
       );
     }
 
-    // Prevent duplicate email
     await this.throwErrorIfExistingUserByEmailFound(registerDto.email);
 
-    // Hash password
     const hashedPassword = bcrypt.hashSync(registerDto.password, 10);
 
-    // Apply defaults
     const userToCreate = {
       ...registerDto,
       password: hashedPassword,
@@ -133,7 +122,6 @@ export class UserService {
 
     const preparedData = await this.prepareCreateUserData(userToCreate);
 
-    // Persist user
     const user = await this.userRepo._create(preparedData, {
       entityManager: options?.entityManager,
     });
@@ -141,9 +129,6 @@ export class UserService {
     return { user };
   }
 
-  /**
-   * Prevent duplicate emails
-   */
   private async throwErrorIfExistingUserByEmailFound(
     email: string,
     excludeUser?: UserEntity | null,
@@ -169,9 +154,6 @@ export class UserService {
     }
   }
 
-  /**
-   * Fetch user by ID
-   */
   async getById(
     id: number,
     options?: IFindOneOptions<UserEntity>,

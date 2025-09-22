@@ -10,6 +10,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtKeysService } from 'src/modules/authentication/services/jwt-token.service';
 import { ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { CartModule } from '../cart/cart.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
     UserModule,
     UserRepositoryModule,
     OtpModule,
+    CartModule,
   ],
   controllers: [],
   providers: [

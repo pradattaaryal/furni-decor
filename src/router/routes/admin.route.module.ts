@@ -18,6 +18,8 @@ import { CartAdminController } from 'src/modules/cart/controllers/cart.admin.con
 import { CartModule } from 'src/modules/cart/cart.module';
 import { CartItemModule } from 'src/modules/cart-item/cart-item.module';
 import { CartItemAdminController } from 'src/modules/cart-item/controllers/cart-item.admin.controller';
+import { ShippingAddressModule } from 'src/modules/shipping-address/shipping-address.module';
+import { ShippingAddressAdminController } from 'src/modules/shipping-address/controllers/shipping-address.admin.controller';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { CartItemAdminController } from 'src/modules/cart-item/controllers/cart-
     ImageModule,
     CartModule,
     CartItemModule,
+    ShippingAddressModule,
   ],
   controllers: [
     AdminUserController,
@@ -42,6 +45,7 @@ import { CartItemAdminController } from 'src/modules/cart-item/controllers/cart-
     ImageAdminController,
     CartAdminController,
     CartItemAdminController,
+    ShippingAddressAdminController,
   ],
 })
 export class AdminRouterModule {}

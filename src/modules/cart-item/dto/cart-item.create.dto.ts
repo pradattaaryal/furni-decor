@@ -26,8 +26,4 @@ export class CreateCartItemDto implements ICartItemCreateDto {
   @ApiProperty({ example: 1, description: 'Quantity' })
   @CustomIsNumber()
   quantity: number;
-
-  @ApiProperty({ example: 100.5, description: 'Price of the item' })
-  @CustomIsNumber({ maxDecimalPlaces: 2 })
-  price: number;
 }

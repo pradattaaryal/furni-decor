@@ -6,6 +6,7 @@ import { BaseUserEntity } from 'src/common/database/base/entity/BaseUserEntity';
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
+import { ShippingAddressEntity } from 'src/modules/shipping-address/entities/shipping-address.entity';
 
 export const USERS_DATABASE_TABLE_NAME = 'users';
 
@@ -26,4 +27,7 @@ export class UserEntity extends BaseUserEntity {
 
   @OneToOne(() => CartEntity, (cart) => cart.user)
   cart: CartEntity;
+
+  @OneToMany(() => ShippingAddressEntity, (address) => address.user)
+  shippingAddresses: ShippingAddressEntity[];
 }
