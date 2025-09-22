@@ -86,8 +86,9 @@ export class AuthAdminController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    return;
+  async googleAuth(@Request() req: any) {
+  const redirectUrl = req.query.redirect || '/';  
+  req.session.redirectUrl = redirectUrl;  
   }
 
   @Get('google/callback')
@@ -105,12 +106,22 @@ export class AuthAdminController {
       email: profile.email,
       displayName: profile.displayName,
     });
-    return {
-      data: {
-        tokens: result.tokens,
-        user: result.user,
-        message: 'Login successful',
-      },
-    };
+
+  const redirectUrl = req.session.redirectUrl || '/';
+  delete req.session.redirectUrl; // clean up
+
+    const query = new URLSearchParams({
+    accessToken: result.tokens.accessToken,
+    user: JSON.stringify(result.user),
+  }).toString();
+
+    // return {
+    //   data: {
+    //     tokens: result.tokens,
+    //     user: result.user,
+    //     message: 'Login successful',
+    //   },
+    // };
+    return req.res.redirect(`${redirectUrl}?${query}`);
   }
 }

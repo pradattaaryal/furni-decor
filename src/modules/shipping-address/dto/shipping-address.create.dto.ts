@@ -1,35 +1,35 @@
-import { IsString, IsBoolean, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+ import { ApiProperty } from '@nestjs/swagger';
 import { ICreateShippingAddress } from '../interfaces/shipping-address.create.dto.interface';
-
+import { CustomIsBoolean, CustomIsOptional, CustomIsString } from 'src/common/request/validators/custom-validator';
+ 
 export class CreateShippingAddressDto implements ICreateShippingAddress {
   @ApiProperty()
-  @IsString()
+  @CustomIsString()
   addressLine1: string;
 
   @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
+  @CustomIsString()
+  @CustomIsOptional()
   addressLine2?: string;
 
   @ApiProperty()
-  @IsString()
+  @CustomIsString()
   city: string;
 
   @ApiProperty()
-  @IsString()
+  @CustomIsString()
   state: string;
 
   @ApiProperty()
-  @IsString()
+  @CustomIsString()
   postalCode: string;
 
   @ApiProperty()
-  @IsString()
+  @CustomIsString()
   country: string;
 
   @ApiProperty({ default: false, description: 'Set as default address' })
-  @IsBoolean()
-  @IsOptional()
+  @CustomIsBoolean()
+  @CustomIsOptional()
   default: boolean;
 }
