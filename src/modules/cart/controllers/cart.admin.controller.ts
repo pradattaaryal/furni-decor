@@ -36,26 +36,6 @@ export class CartAdminController {
     private readonly _userService: UserService,
   ) {}
 
-  @Post('/create')
-  @ApiDocs({ operation: 'Create Cart' })
-  async create(
-    @Body() body: CreateCartDto,
-  ): Promise<IResponse<{ cart: CartEntity; message: string }>> {
-    const user = await this._userService.getById(body.userId);
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-    if (!user.verified) {
-      throw new BadRequestException('User is not verified ');
-    }
-    const cart = await this.cartService.create(body);
-    return {
-      data: {
-        cart,
-        message: 'Cart created successfully.',
-      },
-    };
-  }
   @Post('/update')
   @ApiDocs({ operation: 'Update Cart' })
   async update(
