@@ -80,24 +80,6 @@ export class CartItemAdminController {
       },
     };
   }
-  // @Get('cart/:cartId')
-  // @ApiDocs({ operation: 'Get All Cart Items by Cart ID' })
-  // async getAllByCartId(
-  //   @Param('cartId') cartId: number,
-  // ): Promise<IResponse<{ items: CartItemEntity[]; message: string }>> {
-  //   const items = await this.cartItemService.getAllByCartId(cartId, {
-  //     relations: { product: true, variant: true },
-  //   });
-
-  //   return {
-  //     data: {
-  //       items,
-  //       message: items.length
-  //         ? 'Cart items retrieved successfully'
-  //         : 'No items found in this cart',
-  //     },
-  //   };
-  // }
 
   @Patch(':id')
   @ApiDocs({ operation: 'Update Cart Item' })
@@ -130,30 +112,6 @@ export class CartItemAdminController {
     }
   }
 
-  // @Delete('soft-delete/:id')
-  // @ApiDocs({ operation: 'Soft Delete Cart Item' })
-  // async softDelete(
-  //   @Param() params: IdParamDto,
-  // ): Promise<IResponse<{ item: CartItemEntity | null; message: string }>> {
-  //   const item = await this.cartItemService.getById(params.id);
-  //   if (!item) {
-  //     return {
-  //       data: {
-  //         item: null,
-  //         message: 'Cart Item not found',
-  //       },
-  //     };
-  //   }
-
-  //   const deleted = await this.cartItemService.softDelete(item);
-  //   return {
-  //     data: {
-  //       item: deleted,
-  //       message: 'Cart Item soft deleted successfully',
-  //     },
-  //   };
-  // }
-
   @Delete('hard-delete/:id')
   @ApiDocs({ operation: 'Hard Delete Cart Item' })
   async softDelete(
@@ -178,7 +136,7 @@ export class CartItemAdminController {
     };
   }
 
-  @Patch(':id/decrement')
+  @Patch('/decrement/:id')
   @ApiDocs({ operation: 'Decrease Cart Item Quantity' })
   async decrementQuantity(
     @Param('id') id: number,
@@ -214,7 +172,7 @@ export class CartItemAdminController {
       await queryRunner.release();
     }
   }
-  @Patch(':id/increment')
+  @Patch('/increment/:id')
   @ApiDocs({ operation: 'Increase Cart Item Quantity' })
   async incrementQuantity(
     @Param('id') id: number,

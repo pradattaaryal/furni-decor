@@ -137,6 +137,7 @@ export class AuthenticationService {
       } as UserCreateDto);
 
       user = await this.userService.getById(user.id);
+      await this._cartService.create({ userId: user.id });
     }
 
     if (!user?.id) {
@@ -146,8 +147,6 @@ export class AuthenticationService {
     }
 
     await this.verifyUser(user);
-    const userId = user.id;
-    await this._cartService.create({ userId });
 
     const tokens = await this.generateAccessToken({
       id: user.id,

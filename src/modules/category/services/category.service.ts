@@ -108,20 +108,4 @@ export class CategoryService {
   ) {
     return await this._categoryRepo._update(category, options);
   }
-
-  // Custom methods for category-specific functionality
-  async fetchCategoryByName(slug: string): Promise<CategoryEntity[]> {
-    return this._categoryRepo.fetchCategoryByName(slug);
-  }
-
-  async fetchCategory(id: number): Promise<CategoryEntity | null> {
-    return this._categoryRepo.fetchCategory(id);
-  }
-
-  async updateCategory(
-    id: number,
-    data: Partial<CategoryEntity>,
-  ): Promise<CategoryEntity | null> {
-    return this._categoryRepo.updateCategory(id, data);
-  }
 }

@@ -7,6 +7,7 @@ import { ProductRatingEntity } from 'src/modules/product-rating/entities/product
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { ShippingAddressEntity } from 'src/modules/shipping-address/entities/shipping-address.entity';
+import { OrderEntity } from 'src/modules/order/entities/order.entity';
 
 export const USERS_DATABASE_TABLE_NAME = 'users';
 
@@ -30,4 +31,7 @@ export class UserEntity extends BaseUserEntity {
 
   @OneToMany(() => ShippingAddressEntity, (address) => address.user)
   shippingAddresses: ShippingAddressEntity[];
+
+  @OneToMany(() => OrderEntity, (order) => order.user)
+  orders: OrderEntity[];
 }

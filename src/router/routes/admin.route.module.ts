@@ -20,6 +20,10 @@ import { CartItemModule } from 'src/modules/cart-item/cart-item.module';
 import { CartItemAdminController } from 'src/modules/cart-item/controllers/cart-item.admin.controller';
 import { ShippingAddressModule } from 'src/modules/shipping-address/shipping-address.module';
 import { ShippingAddressAdminController } from 'src/modules/shipping-address/controllers/shipping-address.admin.controller';
+import { OrderModule } from 'src/modules/order/order.module';
+import { OrderAdminController } from 'src/modules/order/controllers/order.admin.controller';
+import { OrderItemModule } from 'src/modules/order-item/order-item.module';
+import { OrderItemAdminController } from 'src/modules/order-item/controllers/order-item.admin.controller';
 
 @Module({
   imports: [
@@ -34,6 +38,8 @@ import { ShippingAddressAdminController } from 'src/modules/shipping-address/con
     CartModule,
     CartItemModule,
     ShippingAddressModule,
+    OrderModule,
+    OrderItemModule,
   ],
   controllers: [
     AdminUserController,
@@ -43,9 +49,11 @@ import { ShippingAddressAdminController } from 'src/modules/shipping-address/con
     ProductRatingAdminController,
     ProductVarientsAdminController,
     ImageAdminController,
+    OrderAdminController,
     CartAdminController,
     CartItemAdminController,
     ShippingAddressAdminController,
+    OrderItemAdminController,
   ],
 })
 export class AdminRouterModule {}

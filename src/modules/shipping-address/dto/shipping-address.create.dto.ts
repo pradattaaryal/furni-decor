@@ -1,34 +1,67 @@
- import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { ICreateShippingAddress } from '../interfaces/shipping-address.create.dto.interface';
-import { CustomIsBoolean, CustomIsOptional, CustomIsString } from 'src/common/request/validators/custom-validator';
- 
+import {
+  CustomIsBoolean,
+  CustomIsOptional,
+  CustomIsString,
+} from 'src/common/request/validators/custom-validator';
+
 export class CreateShippingAddressDto implements ICreateShippingAddress {
+  @ApiProperty({
+    description: 'Address 1',
+    required: false,
+    example: 'Kathmandu 10 kalimandir',
+  })
   @ApiProperty()
   @CustomIsString()
   addressLine1: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    description: 'Address 2',
+    required: true,
+    example: 'paokara 11 Rammandir',
+  })
   @CustomIsString()
   @CustomIsOptional()
   addressLine2?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'City',
+    required: true,
+    example: 'Pokhara',
+  })
   @CustomIsString()
   city: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'State',
+    required: true,
+    example: 'Bagmati',
+  })
   @CustomIsString()
   state: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Postalcode',
+    required: true,
+    example: '445A81',
+  })
   @CustomIsString()
   postalCode: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Country',
+    required: true,
+    example: 'Nepal',
+  })
   @CustomIsString()
   country: string;
 
-  @ApiProperty({ default: false, description: 'Set as default address' })
+  @ApiProperty({
+    description: 'Defult shipping address',
+    required: true,
+    example: 'true',
+  })
   @CustomIsBoolean()
   @CustomIsOptional()
   default: boolean;

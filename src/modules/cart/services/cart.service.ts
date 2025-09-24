@@ -26,7 +26,18 @@ import { UpdateCartDto } from '../dto/cart.update.dto';
 @Injectable()
 export class CartService {
   constructor(private readonly _cartRepo: CartRepository) {}
-
+  async findByUserId(userId: number): Promise<CartEntity | null> {
+    return this._cartRepo._findOne({
+      options: { where: { userId: userId } },
+      relations: {
+        user: true,
+        items: {
+          product: { images: true },
+          variant: { image: true },
+        },
+      },
+    });
+  }
   async create(
     createDto: CreateCartDto,
     options?: ICreateOptions,

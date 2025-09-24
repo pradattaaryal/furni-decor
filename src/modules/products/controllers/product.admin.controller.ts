@@ -22,14 +22,14 @@ import {
 } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { CategoryService } from 'src/modules/category/services/category.service';
-import { Between, DataSource, QueryRunner } from 'typeorm';
+import { Between, DataSource, IsNull, QueryRunner } from 'typeorm';
 
 @ApiTags('Products')
 @Controller('/products')
 export class ProductAdminController {
   constructor(
-    private readonly productService: ProductService,
-    private readonly categoryService: CategoryService,
+    private readonly _productService: ProductService,
+    private readonly _categoryService: CategoryService,
     private _connection: DataSource,
   ) {}
 
@@ -63,7 +63,7 @@ export class ProductAdminController {
     delete paginateQueryDto.categoryId;
     delete paginateQueryDto.color;
 
-    const data = await this.productService.paginatedGet({
+    const data = await this._productService.paginatedGet({
       ...paginateQueryDto,
       options: {
         relations: {
@@ -93,12 +93,12 @@ export class ProductAdminController {
     await queryRunner.startTransaction();
 
     try {
-      const category = await this.categoryService.getById(body.categoryId, {
+      const category = await this._categoryService.getById(body.categoryId, {
         options: { relations: ['children', 'parent'] },
       });
       if (!category) throw new NotFoundException('Cannot find Category');
 
-      const product = await this.productService.create(body, {
+      const product = await this._productService.create(body, {
         entityManager: queryRunner.manager,
       });
 
@@ -118,12 +118,41 @@ export class ProductAdminController {
     }
   }
 
+  @Get('/slug/:slug')
+  @ApiDocs({ operation: 'Get Product by Slug' })
+  async getBySLug(
+    @Param('slug') slug: string,
+  ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
+    const product = await this._productService.getOne({
+      options: {
+        where: {
+          slug: slug,
+          deletedAt: IsNull(),
+        },
+        relations: {
+          category: { parent: true, children: true },
+          variants: { image: true },
+          images: true,
+        },
+      },
+    });
+
+    return {
+      data: {
+        product,
+        message: product
+          ? 'Product retrieved successfully'
+          : 'Product not found',
+      },
+    };
+  }
+
   @Get(':id')
   @ApiDocs({ operation: 'Get Product by ID' })
   async getById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
-    const product = await this.productService.getById(params.id, {
+    const product = await this._productService.getById(params.id, {
       relations: {
         category: { parent: true, children: true },
         variants: { image: true },
@@ -153,7 +182,7 @@ export class ProductAdminController {
 
     try {
       // Validate product existence
-      const existingProduct = await this.productService.getById(params.id, {
+      const existingProduct = await this._productService.getById(params.id, {
         entityManager: queryRunner.manager,
       });
       if (!existingProduct) {
@@ -162,7 +191,7 @@ export class ProductAdminController {
 
       // Validate category if provided in update
       if (updateProductData.categoryId) {
-        const category = await this.categoryService.getById(
+        const category = await this._categoryService.getById(
           updateProductData.categoryId,
           {
             options: { relations: ['children', 'parent'] },
@@ -175,7 +204,7 @@ export class ProductAdminController {
       }
 
       // Update product
-      const updatedProduct = await this.productService.update(
+      const updatedProduct = await this._productService.update(
         existingProduct,
         updateProductData,
         { entityManager: queryRunner.manager },
@@ -202,7 +231,7 @@ export class ProductAdminController {
   async softDeleteById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
-    const product = await this.productService.getById(params.id);
+    const product = await this._productService.getById(params.id);
     if (!product) {
       return {
         data: {
@@ -212,7 +241,7 @@ export class ProductAdminController {
       };
     }
 
-    const softDeletedProduct = await this.productService.softDelete(product);
+    const softDeletedProduct = await this._productService.softDelete(product);
     return {
       data: {
         product: softDeletedProduct,
@@ -226,7 +255,7 @@ export class ProductAdminController {
   async restoreById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
-    const restoreResult = await this.productService.restore({
+    const restoreResult = await this._productService.restore({
       where: { id: params.id },
     });
     if (!restoreResult || restoreResult.affected === 0) {
@@ -238,7 +267,7 @@ export class ProductAdminController {
       };
     }
 
-    const restoredProduct = await this.productService.getById(params.id);
+    const restoredProduct = await this._productService.getById(params.id);
     return {
       data: {
         product: restoredProduct,
@@ -252,7 +281,7 @@ export class ProductAdminController {
   async deleteById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
-    const product = await this.productService.getById(params.id);
+    const product = await this._productService.getById(params.id);
     if (!product) {
       return {
         data: {
@@ -262,7 +291,7 @@ export class ProductAdminController {
       };
     }
 
-    const deletedProduct = await this.productService.delete(product);
+    const deletedProduct = await this._productService.delete(product);
     return {
       data: {
         product: deletedProduct,

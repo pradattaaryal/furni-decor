@@ -5,9 +5,11 @@ import {
   JoinColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { OrderEntity } from 'src/modules/order/entities/order.entity';
 
 @Entity({ name: 'shipping_addresses' })
 export class ShippingAddressEntity extends DatabaseBaseEntity {
@@ -42,4 +44,8 @@ export class ShippingAddressEntity extends DatabaseBaseEntity {
   })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
+
+  // shipping-address.entity.ts
+  @OneToMany(() => OrderEntity, (order) => order.shippingAddress)
+  orders: OrderEntity[];
 }
