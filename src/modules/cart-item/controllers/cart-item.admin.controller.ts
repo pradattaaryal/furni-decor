@@ -114,7 +114,7 @@ export class CartItemAdminController {
 
   @Delete('hard-delete/:id')
   @ApiDocs({ operation: 'Hard Delete Cart Item' })
-  async softDelete(
+  async hardDelete(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ item: CartItemEntity | null; message: string }>> {
     const item = await this.cartItemService.getById(params.id);
