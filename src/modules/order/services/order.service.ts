@@ -60,8 +60,7 @@ export class OrderService {
       variantId: item.variantId,
       quantity: item.quantity,
       price: item.product?.price,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    
     }));
     await this._orderItemService.bulkCreateFromRepo(bulkOrderItems, options);
     await this._cartService.softDelete(cart)

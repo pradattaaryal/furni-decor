@@ -35,34 +35,4 @@ export class ProductRepository extends BaseRepository<ProductEntity> {
     return this.productRepo;
   }
 
-  async fetchProductByName(name: string): Promise<ProductEntity[]> {
-    return await this.productRepo
-      .createQueryBuilder('product')
-      .where('product.name ILIKE :name', { name: `%${name}%` })
-      .getMany();
-  }
-
-  async fetchProduct(id: number): Promise<ProductEntity | null> {
-    return await this.productRepo
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .where('product.id = :id', { id })
-      .getOne();
-  }
-
-  async updateProduct(
-    id: number,
-    data: Partial<ProductEntity>,
-  ): Promise<ProductEntity | null> {
-    await this.productRepo.update(id, data);
-    return await this.fetchProduct(id);
-  }
-
-  async getProductsByCategory(categoryId: number): Promise<ProductEntity[]> {
-    return await this.productRepo
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .where('product.categoryId = :categoryId', { categoryId })
-      .getMany();
-  }
 }
