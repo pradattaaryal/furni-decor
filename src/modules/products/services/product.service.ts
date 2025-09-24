@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { ProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
@@ -22,6 +26,10 @@ import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/produc
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { ImageService } from 'src/modules/image/services/image.service';
 import { plainToInstance } from 'class-transformer';
+import { CategoryEntity } from 'src/modules/category/entities/category.entity';
+import slugify from 'slugify';
+import { Option } from 'nestjs-command';
+import { CategoryService } from 'src/modules/category/services/category.service';
 
 @Injectable()
 export class ProductService {
@@ -29,6 +37,7 @@ export class ProductService {
     private readonly _productRepo: ProductRepository,
     private readonly _variantService: ProductVariantService,
     private readonly _imageService: ImageService,
+    private readonly _categoryService: CategoryService,
   ) {}
   async create(
     createDto: ProductCreateDto,
@@ -49,10 +58,17 @@ export class ProductService {
     }
 
     // Create the product
-    const product = await this._productRepo._create(
-      { ...productData, images },
-      options,
-    );
+    // const product = await this._productRepo._create(
+    //   { ...productData, images },
+    //   options,
+    // );
+
+    const product = await this._productRepo.createProduct({
+      ...productData,
+      images: imageIds,
+    });
+
+    console.log({ fromProductService: product });
 
     // Create variants if any
     if (variants?.length) {
@@ -200,5 +216,35 @@ export class ProductService {
     }
 
     return updatedProduct;
+  }
+
+  // ProductService.ts
+  async getBySlug(slug: string): Promise<ProductEntity> {
+    if (!slug) {
+      throw new NotFoundException(`Slug is required`);
+    }
+
+    const product = await this._productRepo._findOne({
+      options: {
+        where: { slug: slug },
+
+        relations: {
+          category: {
+            parent: true,
+            children: true,
+          },
+          variants: {
+            image: true,
+          },
+          images: true,
+        },
+      },
+    });
+    console.log(product);
+    if (!product) {
+      throw new NotFoundException(`Product with slug "${slug}" not found`);
+    }
+
+    return product;
   }
 }

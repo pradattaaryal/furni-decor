@@ -13,7 +13,6 @@ import {
 
 @Index(['id', 'createdAt']) //Composite index
 export class DatabaseBaseEntity extends BaseEntity {
-  @ApiProperty()
   @Generated()
   @Index({ where: '"deleted_at" IS NULL' })
   @PrimaryColumn({

@@ -1,8 +1,8 @@
-/*import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseRepository } from 'src/common/database/base/repositories/base.repository';
-import { OrderEntity } from '../entities/attendees.entity';
+import { OrderEntity } from '../entities/order.entity';
 
 @Injectable()
 export class OrderRepository extends BaseRepository<OrderEntity> {
@@ -17,4 +17,3 @@ export class OrderRepository extends BaseRepository<OrderEntity> {
     return this.repository;
   }
 }
-*/

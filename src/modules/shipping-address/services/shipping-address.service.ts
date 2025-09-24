@@ -11,7 +11,10 @@ import {
   IFindOneOptions,
   IPaginateFindOption,
 } from 'src/common/database/interfaces/findOption.interface';
-import { IUpdateOptions, IUpdateRawOptions } from 'src/common/database/interfaces/updateOption.interface';
+import {
+  IUpdateOptions,
+  IUpdateRawOptions,
+} from 'src/common/database/interfaces/updateOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IShippingAddressEntity } from '../interfaces/shipping-address.emtity.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
@@ -60,7 +63,7 @@ export class ShippingAddressService {
 
   async getById(
     id: number,
-        options?: IFindOneOptions<ShippingAddressEntity>,
+    options?: IFindOneOptions<ShippingAddressEntity>,
   ): Promise<ShippingAddressEntity> {
     const address = await this._shippingAddressRepo._findOneById(id, options);
     if (!address) {
@@ -112,7 +115,7 @@ export class ShippingAddressService {
       return await this._shippingAddressRepo._update(address, options);
     } catch (error) {
       console.error('Error while setting shipping address as default:', error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -123,13 +126,10 @@ export class ShippingAddressService {
     return await this._shippingAddressRepo._delete(entity, options);
   }
 
-
-    async softDelete(
-      entity: ShippingAddressEntity,
-      options?: IUpdateOptions<ShippingAddressEntity>,
-    ): Promise<ShippingAddressEntity> {
-      return await this._shippingAddressRepo._softDelete(entity, options);
-    }
-  
- 
+  async softDelete(
+    entity: ShippingAddressEntity,
+    options?: IUpdateOptions<ShippingAddressEntity>,
+  ): Promise<ShippingAddressEntity> {
+    return await this._shippingAddressRepo._softDelete(entity, options);
+  }
 }

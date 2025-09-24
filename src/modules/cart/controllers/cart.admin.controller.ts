@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -26,13 +27,16 @@ import { IPaginateFindOption } from 'src/common/database/interfaces/findOption.i
 import { CartRepository } from '../repositories/cart.repository';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
+import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
+import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
 
 @ApiTags('Cart')
 @Controller('carts')
 @ApiBearerAuth('accessToken')
 export class CartAdminController {
   constructor(
-    private readonly cartService: CartService,
+    private readonly _cartService: CartService,
     private readonly _userService: UserService,
   ) {}
 
@@ -41,7 +45,7 @@ export class CartAdminController {
   async update(
     @Body() body: UpdateCartDto,
   ): Promise<IResponse<{ cart: CartEntity; message: string }>> {
-    const cart = await this.cartService.update(body);
+    const cart = await this._cartService.update(body);
     return {
       data: {
         cart,
@@ -55,7 +59,7 @@ export class CartAdminController {
   async getById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ cart: CartEntity | null; message: string }>> {
-    const cart = await this.cartService.getById(params.id, {
+    const cart = await this._cartService.getById(params.id, {
       relations: {
         user: true,
         items: {
@@ -66,6 +70,22 @@ export class CartAdminController {
         },
       },
     });
+
+    return {
+      data: {
+        cart,
+        message: cart ? 'Cart retrieved successfully' : 'Cart not found',
+      },
+    };
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiDocs({ operation: 'Get Cart by User ID ' })
+  async getCartByUseId(
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<IResponse<{ cart: CartEntity | null; message: string }>> {
+    const cart = await this._cartService.findByUserId(user.sub);
 
     return {
       data: {

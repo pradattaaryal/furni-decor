@@ -6,6 +6,7 @@ import {
   HttpCode,
   Post,
   Request,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -23,7 +24,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from '../dto/forgot-password.dto';
-
+import { Response } from 'express';
 @ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -86,16 +87,14 @@ export class AuthAdminController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Request() req: any) {
-  const redirectUrl = req.query.redirect || '/';  
-  req.session.redirectUrl = redirectUrl;  
-  }
+  async googleAuth(@Request() req: any) {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleCallback(
     @Request() req: any,
-  ): Promise<IResponse<{ tokens: object; user: object; message: string }>> {
+    @Res() res: Response,
+  ): Promise<void> {
     const profile = req.user as {
       providerId: string;
       email?: string;
@@ -107,21 +106,11 @@ export class AuthAdminController {
       displayName: profile.displayName,
     });
 
-  const redirectUrl = req.session.redirectUrl || '/';
-  delete req.session.redirectUrl; // clean up
-
     const query = new URLSearchParams({
-    accessToken: result.tokens.accessToken,
-    user: JSON.stringify(result.user),
-  }).toString();
+      accessToken: result.tokens.accessToken,
+      user: JSON.stringify(result.user),
+    }).toString();
 
-    // return {
-    //   data: {
-    //     tokens: result.tokens,
-    //     user: result.user,
-    //     message: 'Login successful',
-    //   },
-    // };
-    return req.res.redirect(`${redirectUrl}?${query}`);
+    res.redirect(`https://decor.wendevs.com/?${query}`);
   }
 }
