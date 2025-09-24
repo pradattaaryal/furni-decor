@@ -7,11 +7,16 @@ import {
   ManyToOne,
   OneToMany,
   Index,
+  BeforeInsert,
+  BeforeUpdate,
+  AfterInsert,
+  AfterUpdate,
 } from 'typeorm';
 import { IProductEntity } from '../interfaces/product.entity.interface';
 import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import slugify from 'slugify';
 
 @Entity({ name: 'products' })
 export class ProductEntity
@@ -133,6 +138,9 @@ export class ProductEntity
   @Column({ name: 'domestic_warranty', type: 'text', nullable: true })
   domesticWarranty?: string;
 
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: true })
+  slug: string;
+
   @Column({
     type: 'decimal',
     precision: 10,
@@ -169,4 +177,19 @@ export class ProductEntity
 
   @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
   ratings: ProductRatingEntity[];
+
+  // @AfterInsert()
+  // async generateSlug(): Promise<void> {
+  //   if (!this.name) return;
+
+  //   const slug = slugify(`${this.name}-${this.id}`, {
+  //     lower: true,
+  //     strict: true,
+  //     replacement: '-'
+  //   });
+
+  //   this.slug=slug
+
+  //   return
+  // }
 }

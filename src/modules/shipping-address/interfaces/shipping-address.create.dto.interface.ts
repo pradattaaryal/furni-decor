@@ -5,5 +5,4 @@ export interface ICreateShippingAddress {
   state: string;
   postalCode: string;
   country: string;
-  default: boolean;
 }

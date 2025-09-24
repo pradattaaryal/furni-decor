@@ -11,6 +11,7 @@ import { ICreateOptions } from 'src/common/database/interfaces/createOption.inte
 import {
   IFindAllOptions,
   IFindOneOptions,
+  IPaginateFindOption,
 } from 'src/common/database/interfaces/findOption.interface';
 import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
@@ -19,6 +20,7 @@ import { ProductService } from 'src/modules/products/services/product.service';
 import { CartService } from 'src/modules/cart/services/cart.service';
 import { ICartItemEntity } from '../interfaces/cart-item.entity.interface';
 import { CartItemQuantityDto } from '../dto/cart-item.increment.dto';
+import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 
 @Injectable()
 export class CartItemService {
@@ -146,6 +148,13 @@ export class CartItemService {
       options,
     );
     return totalPrice;
+  }
+
+  async paginatedGet(options?: IPaginateFindOption<CartItemEntity>): Promise<{
+    data: CartItemEntity[];
+    _pagination: IPaginationMeta;
+  }> {
+    return await this._cartItemRepo._paginateFind(options);
   }
 
   async update(

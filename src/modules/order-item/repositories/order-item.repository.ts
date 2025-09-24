@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseRepository } from 'src/common/database/base/repositories/base.repository';
-import { CategoryEntity } from '../entities/category.entity';
+import { OrderItemEntity } from '../entities/order-item.entity';
 
 @Injectable()
-export class CategoryRepository extends BaseRepository<CategoryEntity> {
+export class OrderItemRepository extends BaseRepository<OrderItemEntity> {
   constructor(
-    @InjectRepository(CategoryEntity)
-    private repository: Repository<CategoryEntity>,
+    @InjectRepository(OrderItemEntity)
+    private repository: Repository<OrderItemEntity>,
   ) {
     super(repository);
   }
 
-  getRepo(): Repository<CategoryEntity> {
+  getRepo(): Repository<OrderItemEntity> {
     return this.repository;
   }
 }

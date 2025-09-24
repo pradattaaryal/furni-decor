@@ -14,7 +14,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { ShippingAddressService } from '../services/shipping-address.service';
 import { CreateShippingAddressDto } from '../dto/shipping-address.create.dto';
 import { ShippingAddressEntity } from '../entities/shipping-address.entity';
-import { IResponse, IResponsePaging } from 'src/common/response/interfaces/response.interface';
+import {
+  IResponse,
+  IResponsePaging,
+} from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
@@ -25,7 +28,9 @@ import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 @ApiTags('Shipping Address')
 @Controller('/shipping-address')
 export class ShippingAddressAdminController {
-  constructor(private readonly shippingAddressService: ShippingAddressService) {}
+  constructor(
+    private readonly shippingAddressService: ShippingAddressService,
+  ) {}
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Shipping Address' })
@@ -76,9 +81,12 @@ export class ShippingAddressAdminController {
 
   @Delete('/soft-delete/:id')
   @ApiDocs({ operation: 'Soft Delete Shipping Address' })
-  async softDelete(
-    @Param() params: IdParamDto,
-  ): Promise<IResponse<{ shippingAddress: ShippingAddressEntity | null; message: string }>> {
+  async softDelete(@Param() params: IdParamDto): Promise<
+    IResponse<{
+      shippingAddress: ShippingAddressEntity | null;
+      message: string;
+    }>
+  > {
     const address = await this.shippingAddressService.getById(params.id);
     if (!address) {
       return {
@@ -89,7 +97,8 @@ export class ShippingAddressAdminController {
       };
     }
 
-    const deletedAddress = await this.shippingAddressService.softDelete(address);
+    const deletedAddress =
+      await this.shippingAddressService.softDelete(address);
     return {
       data: {
         shippingAddress: deletedAddress,
@@ -100,9 +109,12 @@ export class ShippingAddressAdminController {
 
   @Delete('/hard-delete/:id')
   @ApiDocs({ operation: 'Hard Delete Shipping Address' })
-  async hardDelete(
-    @Param() params: IdParamDto,
-  ): Promise<IResponse<{ shippingAddress: ShippingAddressEntity | null; message: string }>> {
+  async hardDelete(@Param() params: IdParamDto): Promise<
+    IResponse<{
+      shippingAddress: ShippingAddressEntity | null;
+      message: string;
+    }>
+  > {
     const address = await this.shippingAddressService.getById(params.id);
     if (!address) {
       throw new BadRequestException('Shipping address not found');
@@ -119,9 +131,12 @@ export class ShippingAddressAdminController {
 
   @Patch('/restore/:id')
   @ApiDocs({ operation: 'Restore Shipping Address' })
-  async restore(
-    @Param() params: IdParamDto,
-  ): Promise<IResponse<{ shippingAddress: ShippingAddressEntity | null; message: string }>> {
+  async restore(@Param() params: IdParamDto): Promise<
+    IResponse<{
+      shippingAddress: ShippingAddressEntity | null;
+      message: string;
+    }>
+  > {
     const restoreResult = await this.shippingAddressService.restore({
       where: { id: params.id },
     });
@@ -135,7 +150,9 @@ export class ShippingAddressAdminController {
       };
     }
 
-    const restoredAddress = await this.shippingAddressService.getById(params.id);
+    const restoredAddress = await this.shippingAddressService.getById(
+      params.id,
+    );
     return {
       data: {
         shippingAddress: restoredAddress,
@@ -144,14 +161,17 @@ export class ShippingAddressAdminController {
     };
   }
 
-  @Patch('/:id/set-default')
+  @Patch('/set-default/:id')
   @ApiDocs({ operation: 'Set Shipping Address as Default' })
   @UseGuards(JwtAuthGuard)
   async setDefault(
     @Param() params: IdParamDto,
     @GetUser() user: AccessTokenPayload,
   ): Promise<IResponse<{ item: ShippingAddressEntity; message: string }>> {
-    const item = await this.shippingAddressService.setDefault(params.id, user.sub);
+    const item = await this.shippingAddressService.setDefault(
+      params.id,
+      user.sub,
+    );
 
     return {
       data: {
