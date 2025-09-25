@@ -88,8 +88,6 @@ export class ProductEntity
   @Column({ name: 'max_load', type: 'int', nullable: true })
   maxLoad?: number;
 
-  // ================= Additional Product Specifications End =================
-
   @Column({
     name: 'sales_package',
     type: 'varchar',
@@ -178,18 +176,4 @@ export class ProductEntity
   @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
   ratings: ProductRatingEntity[];
 
-  // @AfterInsert()
-  // async generateSlug(): Promise<void> {
-  //   if (!this.name) return;
-
-  //   const slug = slugify(`${this.name}-${this.id}`, {
-  //     lower: true,
-  //     strict: true,
-  //     replacement: '-'
-  //   });
-
-  //   this.slug=slug
-
-  //   return
-  // }
-}
+ }

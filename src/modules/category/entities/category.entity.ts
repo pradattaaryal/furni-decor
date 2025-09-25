@@ -22,9 +22,7 @@ export class CategoryEntity
   extends DatabaseBaseEntity
   implements ICategoryEntity
 {
-  // ======================
-  // Columns===============
-  // ======================
+
 
   @Column({ type: 'varchar', length: 255, unique: true })
   name: string;

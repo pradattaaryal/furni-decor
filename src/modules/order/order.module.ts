@@ -8,12 +8,14 @@ import { ShippingAddressModule } from '../shipping-address/shipping-address.modu
 import { CartService } from '../cart/services/cart.service';
 import { CartModule } from '../cart/cart.module';
 import { OrderItemModule } from '../order-item/order-item.module';
+import { ImageModule } from '../image/image.module';
 @Module({
   imports: [
     OrderRepositoryModule,
     forwardRef(() => OrderItemModule),
     ShippingAddressModule,
     CartModule,
+
     TypeOrmModule.forFeature([OrderEntity]),
     forwardRef(() => UserModule),
   ],

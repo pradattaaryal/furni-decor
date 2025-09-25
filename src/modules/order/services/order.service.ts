@@ -42,7 +42,7 @@ export class OrderService {
     const cart = await this._cartService.findByUserId(user_id);
 
     if (!cart) {
-      throw new NotFoundException('Cart not found');
+      throw new NotFoundException('Cart not aaaaaaaa found');
     }
     if (!cart.items || cart.items.length === 0) {
       throw new BadRequestException('Cart is empty, cannot create order');
@@ -62,7 +62,9 @@ export class OrderService {
       price: item.product?.price,
     
     }));
-    await this._orderItemService.bulkCreateFromRepo(bulkOrderItems, options);
+    for (const item of bulkOrderItems) {
+      await this._orderItemService.create(item, options);
+    }
     await this._cartService.softDelete(cart)
     return order;
   }

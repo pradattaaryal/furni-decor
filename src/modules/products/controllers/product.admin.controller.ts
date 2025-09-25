@@ -23,6 +23,7 @@ import {
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { CategoryService } from 'src/modules/category/services/category.service';
 import { Between, DataSource, IsNull, QueryRunner } from 'typeorm';
+import { ProductResponseDto } from '../dto/product.response.dto';
 
 @ApiTags('Products')
 @Controller('/products')
@@ -31,7 +32,7 @@ export class ProductAdminController {
     private readonly _productService: ProductService,
     private readonly _categoryService: CategoryService,
     private _connection: DataSource,
-  ) {}
+  ) { }
 
   @Get('/list')
   @ApiDocs({ operation: 'List Products' })
@@ -151,7 +152,7 @@ export class ProductAdminController {
   @ApiDocs({ operation: 'Get Product by ID' })
   async getById(
     @Param() params: IdParamDto,
-  ): Promise<IResponse<{ product: ProductEntity | null; message: string }>> {
+  ): Promise<IResponse<{ product: ProductResponseDto | null; message: string }>> {
     const product = await this._productService.getById(params.id, {
       relations: {
         category: { parent: true, children: true },
@@ -159,13 +160,15 @@ export class ProductAdminController {
         images: true,
       },
     });
-
+    let productDto: ProductResponseDto | null = null;
+    if (product) {
+      productDto = this.mapToResponseDto(product);
+    }
     return {
       data: {
-        product,
-        message: product
-          ? 'Product retrieved successfully'
-          : 'Product not found',
+        product: productDto,
+        message: 'Product retrieved successfully',
+
       },
     };
   }
@@ -299,4 +302,59 @@ export class ProductAdminController {
       },
     };
   }
+
+
+private mapToResponseDto(product: ProductEntity): ProductResponseDto {
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    description: product.description,
+    price: product.price,
+
+    additionalData: {
+      general: {
+        salesPackage: product.salesPackage,
+        model: product.modelNumber,
+        secondaryMaterial: product.secondaryMaterial,
+        configuration: product.configuration,
+        upholsteryMaterial: product.upholsteryMaterial,
+        upholsteryColor: product.upholsteryColor,
+      },
+      product: {
+        fillingMaterial: product.fillingMaterial,
+        finishType: product.finishType,
+        adjustableHeadrest: product.adjustableHeadrest,
+        maxLoad: product.maxLoad,
+        originOfManufacture: product.originOfManufacture,
+      },
+      dimension: product.variants?.[0]?.dimensions || {},
+      warranty: {
+        warrantySummary: product.warrantySummary,
+        warrantyServiceType: product.warrantyServiceType,
+        coveredInWarranty: product.coveredInWarranty,
+        notCoveredInWarranty: product.notCoveredInWarranty,
+        domesticWarranty: product.domesticWarranty,
+      },
+    },
+
+    variants: product.variants?.map((variant) => {
+      const { image, ...rest } = variant;
+      const mappedVariant: any = { ...rest, image };
+      if (image?.id != null) {
+        mappedVariant.imageId = image.id;
+      }
+      return mappedVariant;
+    }),
+
+    images: product.images?.map((img) => ({
+      id: img.id,
+      path: img.path,
+      filename: img.filename,
+    })),
+
+    category: product.category,
+  };
+}
+
 }

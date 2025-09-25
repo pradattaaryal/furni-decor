@@ -39,8 +39,8 @@ export class ShippingAddressService {
 
       return await this._shippingAddressRepo._create(entity, options);
     } catch (error) {
-      console.error('Error while creating shipping address:', error);
-      throw error;
+       
+      throw new BadRequestException("shipping address not created");
     }
   }
 

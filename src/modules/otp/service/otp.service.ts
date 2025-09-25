@@ -17,9 +17,7 @@ export class OtpService {
     private readonly _cartService: CartService,
   ) {}
 
-  /**
-   * Generate a numeric OTP of given length
-   */
+ 
   private generateOtp(length = 6): string {
     if (length <= 0) {
       throw new BadRequestException('OTP length must be greater than 0');
@@ -32,10 +30,7 @@ export class OtpService {
     ).join('');
   }
 
-  /**
-   * Creates a new OTP for a user. Any existing OTPs are dropped before creation.
-   */
-  async createOtpForUser(
+    async createOtpForUser(
     userId: number,
     manager?: EntityManager,
   ): Promise<OtpEntity> {
@@ -57,7 +52,7 @@ export class OtpService {
     }
 
     // Drop old OTPs to avoid clutter
-    // await this.dropOtp(userId, manager);
+    //await this.dropOtp(userId, manager);
 
     const otp = this.generateOtp(6);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry

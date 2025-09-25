@@ -30,6 +30,7 @@ import { IdParamDto } from 'src/common/dto/id-param.dto';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
+import { ImageService } from 'src/modules/image/services/image.service';
 
 @ApiTags('Cart')
 @Controller('carts')

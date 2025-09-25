@@ -56,7 +56,7 @@ export class OrderItemAdminController {
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ item: OrderItemEntity | null; message: string }>> {
     const item = await this.orderItemService.getById(params.id, {
-      relations: { order: true, product: true, variant: true },
+      relations: { order: true},
     });
     return {
       data: {
