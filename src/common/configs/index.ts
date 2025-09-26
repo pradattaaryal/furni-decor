@@ -5,7 +5,8 @@ import DataBaseConfig from './database.config';
 import MailConfig from './mail.config';
 import AuthConfig from './auth.config';
 import FileConfig from './file.config';
-
+import StripeConfig from './stripe.config'
+import paypalConfig from './paypal.config';
 export default [
   DataBaseConfig,
   AppConfig,
@@ -14,4 +15,6 @@ export default [
   MailConfig,
   AuthConfig,
   FileConfig,
+  StripeConfig,
+  paypalConfig
 ];

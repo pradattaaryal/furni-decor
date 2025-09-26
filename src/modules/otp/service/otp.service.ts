@@ -17,7 +17,6 @@ export class OtpService {
     private readonly _cartService: CartService,
   ) {}
 
- 
   private generateOtp(length = 6): string {
     if (length <= 0) {
       throw new BadRequestException('OTP length must be greater than 0');
@@ -30,7 +29,7 @@ export class OtpService {
     ).join('');
   }
 
-    async createOtpForUser(
+  async createOtpForUser(
     userId: number,
     manager?: EntityManager,
   ): Promise<OtpEntity> {

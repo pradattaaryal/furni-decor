@@ -4,17 +4,21 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IFindOneOptions } from 'src/common/database/interfaces/findOption.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
+import {
+  IFindOneOptions,
+  IPaginateFindOption,
+} from 'src/common/database/interfaces/findOption.interface';
+import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { CartService } from 'src/modules/cart/services/cart.service';
+import { OrderItemService } from 'src/modules/order-item/services/order-item.service';
 import { ShippingAddressService } from 'src/modules/shipping-address/services/shipping-address.service';
 import { EntityManager, Repository } from 'typeorm';
+import { ORDER_STATUS } from '../constant/order.constant';
 import { CreateOrderDto } from '../dto/order.create.dto';
 import { OrderEntity } from '../entities/order.entity';
 import { OrderRepository } from '../repositories/order.repository';
-import { OrderItemEntity } from 'src/modules/order-item/entities/order-item.entity';
-import { OrderItemService } from 'src/modules/order-item/services/order-item.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CreateOrderItemDto } from 'src/modules/order-item/dto/order-item.create.dto';
 
 @Injectable()
 export class OrderService {
@@ -25,7 +29,7 @@ export class OrderService {
     private readonly _cartService: CartService,
     private readonly _orderItemService: OrderItemService,
     private readonly _orderRepo: OrderRepository,
-  ) { }
+  ) {}
 
   async createOrderWithoutItems(
     user_id,
@@ -60,12 +64,11 @@ export class OrderService {
       variantId: item.variantId,
       quantity: item.quantity,
       price: item.product?.price,
-    
     }));
     for (const item of bulkOrderItems) {
       await this._orderItemService.create(item, options);
     }
-    await this._cartService.softDelete(cart)
+    await this._cartService.softDelete(cart);
     return order;
   }
 
@@ -75,5 +78,39 @@ export class OrderService {
   ): Promise<OrderEntity | null> {
     const data = await this._orderRepo._findOneById(id, options);
     return data;
+  }
+
+  async softdelete(
+    entity: OrderEntity,
+    options?: IDeleteOptions<OrderEntity>,
+  ): Promise<OrderEntity> {
+    return this._orderRepo._softDelete(entity, options);
+  }
+
+  async paginatedGet(options?: IPaginateFindOption<OrderEntity>): Promise<{
+    data: OrderEntity[];
+    _pagination: IPaginationMeta;
+  }> {
+    return await this._orderRepo._paginateFind(options);
+  }
+
+  async updateStatus(
+    id: number,
+    status: ORDER_STATUS,
+  ): Promise<{ message: string; order: OrderEntity }> {
+    const order = await this.getById(id);
+
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+
+    order.status = status;
+
+    const updatedOrder = await this._orderRepo._update(order);
+
+    return {
+      message: `Order status updated to ${status}`,
+      order: updatedOrder,
+    };
   }
 }

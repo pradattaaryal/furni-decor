@@ -34,5 +34,4 @@ export class ProductRepository extends BaseRepository<ProductEntity> {
   getRepo(): Repository<ProductEntity> {
     return this.productRepo;
   }
-
 }

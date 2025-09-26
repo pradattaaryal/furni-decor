@@ -1,142 +1,133 @@
-// import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-// import { DataSource, EntityManager } from 'typeorm';
-// import { CURRENCY_ENUM } from 'src/common/constants/currency.constant';
-// import { AbstractPaymentService } from '../abstract/payment.abstract.service';
-// import { PAYMENT_METHOD, PAYMENT_PAYPAL_PROVIDER, PAYMENT_STRIPE_PROVIDER, PaymentMetadata } from '../constants/payment.constant';
-// import { STRIPE_UI_MODE } from '../stripe/constants/stripe.constant';
-// import { PaymentEntity } from '../entities/payment.entity';
-// import { PaymentCreateDto } from '../dtos/payment.create.dto';
-// import { PaymentUpdateDto } from '../dtos/payment.update.dto';
-// import { IPaymentProcessDto } from '../interfaces/payment.interface';
-// import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
-// import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
-// import { IFindOneOptions } from 'src/common/database/interfaces/findOption.interface';
-// import { PaymentRepository } from '../repositories/payment.repository';
-// import { OrderRepository } from 'src/modules/order/repositories/order/order.repository';
-// import { PaymentDomainService } from './payment-domain.service';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PaymentEntity } from '../entities/payment.entity';
+import { PaymentFactoryService } from './payment-factory.service';
+import { PaymentStatus } from '../constant/payment.constant';
+import { ConfirmPaymentDto, CreatePaymentDto, PaymentIntentDto } from '../dto/payment.create.dto';
+import { PaymentRepository } from '../repositories/payment.repository';
 
-// @Injectable()
-// export class PaymentService {
-//   constructor(
-//     @Inject(PAYMENT_PAYPAL_PROVIDER)
-//     private readonly paypalpaymentProvider: AbstractPaymentService,
-//     @Inject(PAYMENT_STRIPE_PROVIDER)
-//     private readonly stripepaymentProvider: AbstractPaymentService,
-//     private readonly paymentRepository: PaymentRepository,
-//     private readonly orderRepository: OrderRepository,
-//     private readonly paymentDomainService: PaymentDomainService,
+@Injectable()
+export class PaymentService {
+  constructor(
+    @InjectRepository(PaymentEntity)
+    private readonly paymentRepository: Repository<PaymentEntity>,
+    private readonly paymentRepo: PaymentRepository,
+    private paymentFactory: PaymentFactoryService,
+  ) { }
 
-//   ) {}
+  async createPayment(createPaymentDto: CreatePaymentDto): Promise<PaymentEntity> {
+    const payment = this.paymentRepository.create({
+      ...createPaymentDto,
+      status: PaymentStatus.PENDING,
+    });
 
-//   async createAndInitiatePayment(
-//     createPaymentDto: PaymentCreateDto,
-//     userId: string,
-//     entityManager?: EntityManager,
-//   ): Promise<{ payment: PaymentEntity; url: string }> {
+    return this.paymentRepository.save(payment);
+  }
 
-//     const { paymentMethod, orderId } = createPaymentDto;
+  async createPaymentIntent(paymentIntentDto: PaymentIntentDto, options?: any) {
+    const payment = await this.findPaymentById(paymentIntentDto.paymentId);
 
-//     // Step 1: Validate order existence
-//     const order = await this.orderRepository._findOne({
-//       options: { where: { id: orderId } },
-//       entityManager,
-//     });
+    if (payment.status !== PaymentStatus.PENDING) {
+      throw new BadRequestException('Payment is not in pending status');
+    }
 
-//     if (!order) {
-//       throw new NotFoundException(`Order with ID ${orderId} not found`);
-//     }
+    const provider = this.paymentFactory.getProvider(payment.provider);
+    const intentResponse = await provider.createPaymentIntent(payment, options);
 
-//     // Step 2: Select payment provider dynamically
-//     const provider = this.getProviderByMethod(paymentMethod);
+    // Update payment with provider payment intent ID
+    payment.providerPaymentIntentId = intentResponse.paymentIntentId;
+    await this.paymentRepository.save(payment);
 
-//     // Step 3: Create payment entry in DB
-//     const payment = await this.paymentRepository._create(
-//       { ...createPaymentDto },
-//       { entityManager },
-//     );
-//     const metadata: PaymentMetadata = {
-//       paymentId: payment.id.toString(),
-//       userId: userId.toString(),
-//       orderId: createPaymentDto.orderId.toString(),
-//     };
-//     // Step 4: Call provider to initiate payment
-//     const session = await provider.payment({
-//       amount: payment.amount * 100, // Stripe/PayPal expect smallest currency unit
-//       currency: payment.currency,
-//       metadata,
-//     });
+    return {
+      payment,
+      ...intentResponse,
+    };
+  }
 
-//     return { payment, url: session.url };
-//   }
+  async confirmPayment(confirmPaymentDto: ConfirmPaymentDto) {
+    const payment = await this.findPaymentById(confirmPaymentDto.paymentId);
 
+    if (!payment.providerPaymentIntentId) {
+      throw new BadRequestException('Payment intent not found');
+    }
 
+    const provider = this.paymentFactory.getProvider(payment.provider);
+    const confirmation = await provider.confirmPayment(
+      payment.providerPaymentIntentId,
+      confirmPaymentDto,
+    );
 
-//   private getProviderByMethod(method: PAYMENT_METHOD): AbstractPaymentService {
-//     switch (method) {
-//       case PAYMENT_METHOD.STRIPE:
-//         return this.stripepaymentProvider;
-//       case PAYMENT_METHOD.PAYPAL:
-//         return this.paypalpaymentProvider;
-//       default:
-//         throw new BadRequestException(`Unsupported payment method: ${method}`);
-//     }
-//   }
+    // Update payment status
+    payment.status = confirmation.success ? PaymentStatus.COMPLETED : PaymentStatus.FAILED;
+    payment.providerTransactionId = confirmation.transactionId;
+    payment.metadata = {
+      ...payment.metadata,
+      confirmation: confirmation.metadata,
+    };
 
+    await this.paymentRepository.save(payment);
 
+    return {
+      payment,
+      confirmation,
+    };
+  }
 
-  
-//   async update(
-//     payment: PaymentEntity,
-//     updatePaymentDto: PaymentUpdateDto,
-//     options?: IUpdateOptions<PaymentEntity>,
-//   ): Promise<PaymentEntity> {
-//     Object.assign(payment, updatePaymentDto);
-//     return await this.paymentRepository._update(payment, options);
-//   }
+  async refundPayment(paymentId: string, amount?: number) {
+    const payment = await this.findPaymentById(paymentId);
 
-//   async getById(
-//     id: number,
-//     options?: IFindOneOptions<PaymentEntity>,
-//   ): Promise<PaymentEntity | null> {
-//     return await this.paymentRepository._findOneById(id, options);
-//   }
+    if (payment.status !== PaymentStatus.COMPLETED) {
+      throw new BadRequestException('Only completed payments can be refunded');
+    }
 
-//   async getByOrderId(
-//     orderId: number,
-//     options?: IFindOneOptions<PaymentEntity>,
-//   ): Promise<PaymentEntity | null> {
-//     return await this.paymentRepository._findOne({
-//       ...options,
-//       options: {
-//         where: { orderId },
-//         ...options?.options,
-//       },
-//     });
-//   }
+    const provider = this.paymentFactory.getProvider(payment.provider);
+    const refundResponse = await provider.refundPayment(
+      payment.providerTransactionId || payment.providerPaymentIntentId,
+      amount,
+    );
 
-//   // async processPayment(options: IPaymentProcessDto): Promise<any> {
-//   //   return await this.paymentProvider.payment({
-//   //     user: { 
-//   //       id: options.userId,
-//   //       email: options.userEmail,
-//   //       userType: options.userType
-//   //     },
-//   //     pendingAmount: options.pendingAmount || 1000,
-//   //     currency: options.currency || CURRENCY_ENUM.aud,
-//   //     uiMode: STRIPE_UI_MODE.HOSTED,
-//   //     productName: options.productName || 'Payment',
-//   //     orderId: options.orderId,
-//   //   });
-//   // }
+    if (refundResponse.success) {
+      payment.status = PaymentStatus.REFUNDED;
+      await this.paymentRepository.save(payment);
+    }
 
-//   async cancelPayment(paymentId: number): Promise<PaymentEntity> {
-//     return this.paymentDomainService.cancelPayment(paymentId);
-//   }
+    return {
+      payment,
+      refund: refundResponse,
+    };
+  }
 
-//   async completePayment(
-//     paymentId: number, 
-//     transactionId: string
-//   ): Promise<PaymentEntity> {
-//     return this.paymentDomainService.completePaymentAndLink(paymentId, transactionId);
-//   }
-// }
+  async getPaymentStatus(paymentId: string) {
+    const payment = await this.findPaymentById(paymentId);
+
+    if (payment.providerPaymentIntentId) {
+      const provider = this.paymentFactory.getProvider(payment.provider);
+      const providerStatus = await provider.getPaymentStatus(payment.providerPaymentIntentId);
+
+      return {
+        payment,
+        providerStatus,
+      };
+    }
+
+    return { payment };
+  }
+
+  async findPaymentById(id: string): Promise<PaymentEntity> {
+
+    const paymentID = parseInt(id, 10)
+    const payment = await this.paymentRepo._findOne({ options: { where: { id: paymentID } } });
+    if (!payment) {
+      throw new NotFoundException(`Payment with ID ${id} not found`);
+    }
+    return payment;
+  }
+
+  async getUserPayments(userId: string): Promise<PaymentEntity[]> {
+    return this.paymentRepository.find({
+      where: { userId },
+
+    });
+  }
+}

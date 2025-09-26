@@ -32,7 +32,7 @@ export class ProductAdminController {
     private readonly _productService: ProductService,
     private readonly _categoryService: CategoryService,
     private _connection: DataSource,
-  ) { }
+  ) {}
 
   @Get('/list')
   @ApiDocs({ operation: 'List Products' })
@@ -152,7 +152,9 @@ export class ProductAdminController {
   @ApiDocs({ operation: 'Get Product by ID' })
   async getById(
     @Param() params: IdParamDto,
-  ): Promise<IResponse<{ product: ProductResponseDto | null; message: string }>> {
+  ): Promise<
+    IResponse<{ product: ProductResponseDto | null; message: string }>
+  > {
     const product = await this._productService.getById(params.id, {
       relations: {
         category: { parent: true, children: true },
@@ -168,7 +170,6 @@ export class ProductAdminController {
       data: {
         product: productDto,
         message: 'Product retrieved successfully',
-
       },
     };
   }
@@ -303,58 +304,56 @@ export class ProductAdminController {
     };
   }
 
+  private mapToResponseDto(product: ProductEntity): ProductResponseDto {
+    return {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      price: product.price,
 
-private mapToResponseDto(product: ProductEntity): ProductResponseDto {
-  return {
-    id: product.id,
-    name: product.name,
-    slug: product.slug,
-    description: product.description,
-    price: product.price,
-
-    additionalData: {
-      general: {
-        salesPackage: product.salesPackage,
-        model: product.modelNumber,
-        secondaryMaterial: product.secondaryMaterial,
-        configuration: product.configuration,
-        upholsteryMaterial: product.upholsteryMaterial,
-        upholsteryColor: product.upholsteryColor,
+      additionalData: {
+        general: {
+          salesPackage: product.salesPackage,
+          model: product.modelNumber,
+          secondaryMaterial: product.secondaryMaterial,
+          configuration: product.configuration,
+          upholsteryMaterial: product.upholsteryMaterial,
+          upholsteryColor: product.upholsteryColor,
+        },
+        product: {
+          fillingMaterial: product.fillingMaterial,
+          finishType: product.finishType,
+          adjustableHeadrest: product.adjustableHeadrest,
+          maxLoad: product.maxLoad,
+          originOfManufacture: product.originOfManufacture,
+        },
+        dimension: product.variants?.[0]?.dimensions || {},
+        warranty: {
+          warrantySummary: product.warrantySummary,
+          warrantyServiceType: product.warrantyServiceType,
+          coveredInWarranty: product.coveredInWarranty,
+          notCoveredInWarranty: product.notCoveredInWarranty,
+          domesticWarranty: product.domesticWarranty,
+        },
       },
-      product: {
-        fillingMaterial: product.fillingMaterial,
-        finishType: product.finishType,
-        adjustableHeadrest: product.adjustableHeadrest,
-        maxLoad: product.maxLoad,
-        originOfManufacture: product.originOfManufacture,
-      },
-      dimension: product.variants?.[0]?.dimensions || {},
-      warranty: {
-        warrantySummary: product.warrantySummary,
-        warrantyServiceType: product.warrantyServiceType,
-        coveredInWarranty: product.coveredInWarranty,
-        notCoveredInWarranty: product.notCoveredInWarranty,
-        domesticWarranty: product.domesticWarranty,
-      },
-    },
 
-    variants: product.variants?.map((variant) => {
-      const { image, ...rest } = variant;
-      const mappedVariant: any = { ...rest, image };
-      if (image?.id != null) {
-        mappedVariant.imageId = image.id;
-      }
-      return mappedVariant;
-    }),
+      variants: product.variants?.map((variant) => {
+        const { image, ...rest } = variant;
+        const mappedVariant: any = { ...rest, image };
+        if (image?.id != null) {
+          mappedVariant.imageId = image.id;
+        }
+        return mappedVariant;
+      }),
 
-    images: product.images?.map((img) => ({
-      id: img.id,
-      path: img.path,
-      filename: img.filename,
-    })),
+      images: product.images?.map((img) => ({
+        id: img.id,
+        path: img.path,
+        filename: img.filename,
+      })),
 
-    category: product.category,
-  };
-}
-
+      category: product.category,
+    };
+  }
 }

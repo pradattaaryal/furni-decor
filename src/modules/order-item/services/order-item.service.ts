@@ -28,9 +28,8 @@ export class OrderItemService {
     private readonly _orderService: OrderService,
     private readonly _productService: ProductService,
     private readonly _productVariantService: ProductVariantService,
-    private readonly _imageService: ImageService
-
-  ) { }
+    private readonly _imageService: ImageService,
+  ) {}
 
   async create(
     dto: CreateOrderItemDto,
@@ -41,17 +40,25 @@ export class OrderItemService {
     const order = await this._orderService.getById(orderId);
     if (!order) throw new BadRequestException(`Order ${orderId} not found`);
 
-    const product = await this._productService.getById(productId, { options: { relations: { images: true } } });
+    const product = await this._productService.getById(productId, {
+      options: { relations: { images: true } },
+    });
     if (!product)
       throw new BadRequestException(`Product ${productId} not found`);
     console.log('product data:', JSON.stringify(product, null, 2));
-    if (!variantId) { throw new NotFoundException(`Varient ${variantId}  not found`) }
+    if (!variantId) {
+      throw new NotFoundException(`Varient ${variantId}  not found`);
+    }
 
-    const productVarient = await this._productVariantService.getById(variantId, { options: { relations: { image: true } } });
+    const productVarient = await this._productVariantService.getById(
+      variantId,
+      { options: { relations: { image: true } } },
+    );
     console.log(`product varient data: ${productVarient}`);
     if (!productVarient) {
-      { throw new NotFoundException(`product varient not found`) }
-
+      {
+        throw new NotFoundException(`product varient not found`);
+      }
     }
     if (productVarient.quantity < quantity) {
       throw new BadRequestException(
@@ -59,12 +66,14 @@ export class OrderItemService {
       );
     }
 
-
-
-
-    const productImage = await this.getImageById(product.images?.[0]?.id, `Product ${product.id}`);
-    const variantImage = await this.getImageById(productVarient?.image?.id, `Variant ${productVarient?.id}`);
-
+    const productImage = await this.getImageById(
+      product.images?.[0]?.id,
+      `Product ${product.id}`,
+    );
+    const variantImage = await this.getImageById(
+      productVarient?.image?.id,
+      `Variant ${productVarient?.id}`,
+    );
 
     const price = product.price * quantity;
 
@@ -97,20 +106,25 @@ export class OrderItemService {
   ): Promise<OrderItemEntity | null> {
     return this._orderItemRepo._findOneById(id, options);
   }
-  async getImageById(imageId?: number, context?: string): Promise<ImageEntity | null> {
+  async getImageById(
+    imageId?: number,
+    context?: string,
+  ): Promise<ImageEntity | null> {
     if (!imageId) return null;
 
     const image = await this._imageService.getById(imageId);
     if (!image) {
-      throw new NotFoundException(`${context ? context + ' ' : ''}Image with ID ${imageId} not found`);
+      throw new NotFoundException(
+        `${context ? context + ' ' : ''}Image with ID ${imageId} not found`,
+      );
     }
     return image;
   }
-  async delete(
+  async softdelete(
     entity: OrderItemEntity,
     options?: IDeleteOptions<OrderItemEntity>,
   ): Promise<OrderItemEntity> {
-    return this._orderItemRepo._delete(entity, options);
+    return this._orderItemRepo._softDelete(entity, options);
   }
   async bulkCreateFromRepo(
     items: Partial<OrderItemEntity>[],
@@ -118,5 +132,4 @@ export class OrderItemService {
   ): Promise<void> {
     await this._orderItemRepo._createBulk(items, options);
   }
-
 }

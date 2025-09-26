@@ -175,5 +175,4 @@ export class ProductEntity
 
   @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
   ratings: ProductRatingEntity[];
-
- }
+}
