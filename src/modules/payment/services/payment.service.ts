@@ -1,10 +1,18 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaymentEntity } from '../entities/payment.entity';
 import { PaymentFactoryService } from './payment-factory.service';
 import { PaymentStatus } from '../constant/payment.constant';
-import { ConfirmPaymentDto, CreatePaymentDto, PaymentIntentDto } from '../dto/payment.create.dto';
+import {
+  ConfirmPaymentDto,
+  CreatePaymentDto,
+  PaymentIntentDto,
+} from '../dto/payment.create.dto';
 import { PaymentRepository } from '../repositories/payment.repository';
 
 @Injectable()
@@ -14,9 +22,11 @@ export class PaymentService {
     private readonly paymentRepository: Repository<PaymentEntity>,
     private readonly paymentRepo: PaymentRepository,
     private paymentFactory: PaymentFactoryService,
-  ) { }
+  ) {}
 
-  async createPayment(createPaymentDto: CreatePaymentDto): Promise<PaymentEntity> {
+  async createPayment(
+    createPaymentDto: CreatePaymentDto,
+  ): Promise<PaymentEntity> {
     const payment = this.paymentRepository.create({
       ...createPaymentDto,
       status: PaymentStatus.PENDING,
@@ -59,7 +69,9 @@ export class PaymentService {
     );
 
     // Update payment status
-    payment.status = confirmation.success ? PaymentStatus.COMPLETED : PaymentStatus.FAILED;
+    payment.status = confirmation.success
+      ? PaymentStatus.COMPLETED
+      : PaymentStatus.FAILED;
     payment.providerTransactionId = confirmation.transactionId;
     payment.metadata = {
       ...payment.metadata,
@@ -103,7 +115,9 @@ export class PaymentService {
 
     if (payment.providerPaymentIntentId) {
       const provider = this.paymentFactory.getProvider(payment.provider);
-      const providerStatus = await provider.getPaymentStatus(payment.providerPaymentIntentId);
+      const providerStatus = await provider.getPaymentStatus(
+        payment.providerPaymentIntentId,
+      );
 
       return {
         payment,
@@ -115,9 +129,10 @@ export class PaymentService {
   }
 
   async findPaymentById(id: string): Promise<PaymentEntity> {
-
-    const paymentID = parseInt(id, 10)
-    const payment = await this.paymentRepo._findOne({ options: { where: { id: paymentID } } });
+    const paymentID = parseInt(id, 10);
+    const payment = await this.paymentRepo._findOne({
+      options: { where: { id: paymentID } },
+    });
     if (!payment) {
       throw new NotFoundException(`Payment with ID ${id} not found`);
     }
@@ -127,7 +142,6 @@ export class PaymentService {
   async getUserPayments(userId: string): Promise<PaymentEntity[]> {
     return this.paymentRepository.find({
       where: { userId },
-
     });
   }
 }

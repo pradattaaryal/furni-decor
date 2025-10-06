@@ -1,17 +1,21 @@
-import { 
-  Controller, 
-  Post, 
-  Get, 
-  Body, 
-  Param, 
-  Query, 
-  HttpCode, 
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Query,
+  HttpCode,
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
 import { PaymentService } from '../services/payment.service';
-import { ConfirmPaymentDto, CreatePaymentDto, PaymentIntentDto } from '../dto/payment.create.dto';
- 
+import {
+  ConfirmPaymentDto,
+  CreatePaymentDto,
+  PaymentIntentDto,
+} from '../dto/payment.create.dto';
+
 @Controller('payments')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
@@ -22,10 +26,7 @@ export class PaymentController {
   }
 
   @Post('intent')
-  async createPaymentIntent(
-    @Body() paymentIntentDto: PaymentIntentDto,
-  ) {
- 
+  async createPaymentIntent(@Body() paymentIntentDto: PaymentIntentDto) {
     return this.paymentService.createPaymentIntent(paymentIntentDto);
   }
 

@@ -16,11 +16,11 @@ import { PaymentRepositoryModule } from './repositories/payment.repository.modul
     ConfigModule,
     PaymentRepositoryModule,
   ],
-//  controllers: [PaymentController],
+  //  controllers: [PaymentController],
   providers: [
     PaymentService,
     PaymentFactoryService,
-    
+
     StripeProvider,
     // PayPalProvider,
   ],

@@ -72,12 +72,6 @@ export abstract class BaseRepository<T extends DatabaseBaseEntity> {
     return await this._entityRepo.save(entity);
   }
 
-  /**
-   * create bulk record at once and return array of id
-   * @param createDto array of entity
-   * @param options
-   * @returns [number] - array of id
-   */
   async _createBulk(
     createDto: QueryDeepPartialEntity<T>[],
     options?: ICreateOptions,

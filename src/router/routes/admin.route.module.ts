@@ -26,6 +26,8 @@ import { OrderItemModule } from 'src/modules/order-item/order-item.module';
 import { OrderItemAdminController } from 'src/modules/order-item/controllers/order-item.admin.controller';
 import { PaymentModule } from 'src/modules/payment/payment.module';
 import { PaymentController } from 'src/modules/payment/controllers/payment.user.controller';
+import { WishlistModule } from 'src/modules/wishlist/wishlist.module';
+import { WishlistAdminController } from 'src/modules/wishlist/controllers/wishlist.admin.controller';
 // import { PaymentModule } from 'src/modules/payment/payment.module';
 // import { PaymentPublicUserController } from 'src/modules/payment/controller/payment.public-user.controller';
 
@@ -44,7 +46,8 @@ import { PaymentController } from 'src/modules/payment/controllers/payment.user.
     ShippingAddressModule,
     OrderModule,
     OrderItemModule,
-     PaymentModule,
+    PaymentModule,
+    WishlistModule,
   ],
   controllers: [
     PaymentController,
@@ -60,6 +63,7 @@ import { PaymentController } from 'src/modules/payment/controllers/payment.user.
     CartItemAdminController,
     ShippingAddressAdminController,
     OrderItemAdminController,
+    WishlistAdminController,
   ],
 })
 export class AdminRouterModule {}

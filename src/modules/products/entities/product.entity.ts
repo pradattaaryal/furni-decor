@@ -17,6 +17,7 @@ import { ProductVariantEntity } from 'src/modules/product-variants/entities/prod
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import slugify from 'slugify';
+import { WishlistEntity } from 'src/modules/wishlist/entities/wishlist.entity';
 
 @Entity({ name: 'products' })
 export class ProductEntity
@@ -175,4 +176,7 @@ export class ProductEntity
 
   @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
   ratings: ProductRatingEntity[];
+
+  @OneToMany(() => WishlistEntity, (wishlist) => wishlist.product)
+  wishlists: WishlistEntity[];
 }

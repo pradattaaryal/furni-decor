@@ -13,8 +13,14 @@ export interface PaymentConfirmationResponse {
 }
 
 export interface PaymentProvider {
-  createPaymentIntent(payment: any, options?: any): Promise<PaymentIntentResponse>;
-  confirmPayment(paymentIntentId: string, options?: any): Promise<PaymentConfirmationResponse>;
+  createPaymentIntent(
+    payment: any,
+    options?: any,
+  ): Promise<PaymentIntentResponse>;
+  confirmPayment(
+    paymentIntentId: string,
+    options?: any,
+  ): Promise<PaymentConfirmationResponse>;
   refundPayment(transactionId: string, amount?: number): Promise<any>;
   getPaymentStatus(paymentIntentId: string): Promise<string>;
 }

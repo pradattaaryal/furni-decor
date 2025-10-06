@@ -1,5 +1,13 @@
 // dto/init-payment.dto.ts
-import { IsString, IsArray, ValidateNested, IsNumber, Min, IsOptional, IsIn } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  ValidateNested,
+  IsNumber,
+  Min,
+  IsOptional,
+  IsIn,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -11,12 +19,18 @@ export class PaymentOrderItemDto {
   @IsNumber()
   productId: number;
 
-  @ApiPropertyOptional({ description: 'Variant ID if applicable', example: 201 })
+  @ApiPropertyOptional({
+    description: 'Variant ID if applicable',
+    example: 201,
+  })
   @IsOptional()
   @IsNumber()
   variantId?: number;
 
-  @ApiProperty({ description: 'Name of the product', example: 'Premium Package' })
+  @ApiProperty({
+    description: 'Name of the product',
+    example: 'Premium Package',
+  })
   @IsString()
   productName: string;
 
@@ -24,7 +38,10 @@ export class PaymentOrderItemDto {
   @IsString()
   color: string;
 
-  @ApiProperty({ description: 'Model or version of the product', example: 'PX-2000' })
+  @ApiProperty({
+    description: 'Model or version of the product',
+    example: 'PX-2000',
+  })
   @IsString()
   model: string;
 
@@ -58,7 +75,7 @@ export class InitPaymentDto {
   @ValidateNested({ each: true })
   @Type(() => PaymentOrderItemDto)
   items: PaymentOrderItemDto[];
- 
+
   @ApiProperty({
     description: 'Payment gateway to use',
     example: 'paypal',
@@ -78,8 +95,10 @@ export class InitPaymentDto {
   @IsIn(['CAPTURE', 'AUTHORIZE'])
   intent?: 'CAPTURE' | 'AUTHORIZE';
 
- 
-  @ApiPropertyOptional({ description: 'Optional metadata for internal use', example: { campaign: 'SUMMER2025' } })
+  @ApiPropertyOptional({
+    description: 'Optional metadata for internal use',
+    example: { campaign: 'SUMMER2025' },
+  })
   @IsOptional()
   metadata?: Record<string, any>;
 }

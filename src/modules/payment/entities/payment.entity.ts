@@ -1,10 +1,12 @@
-import { Column, Entity } from "typeorm";
-import { PaymentProviderEnum, PaymentStatus } from "../constant/payment.constant";
-import { DatabaseBaseEntity } from "src/common/database/base/entity/BaseEntity";
- 
+import { Column, Entity } from 'typeorm';
+import {
+  PaymentProviderEnum,
+  PaymentStatus,
+} from '../constant/payment.constant';
+import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
+
 @Entity('payments')
-export class PaymentEntity extends DatabaseBaseEntity{
-  
+export class PaymentEntity extends DatabaseBaseEntity {
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;
 
@@ -42,5 +44,3 @@ export class PaymentEntity extends DatabaseBaseEntity{
   @Column({ nullable: true })
   orderId: string;
 }
-
- 

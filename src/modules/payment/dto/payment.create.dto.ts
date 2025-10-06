@@ -1,6 +1,13 @@
-import { CustomIsEnum, CustomIsNotEmpty, CustomIsNumber, CustomIsOptional, CustomIsString, CustomMin } from "src/common/request/validators/custom-validator";
-import { PaymentProviderEnum } from "../constant/payment.constant";
- 
+import {
+  CustomIsEnum,
+  CustomIsNotEmpty,
+  CustomIsNumber,
+  CustomIsOptional,
+  CustomIsString,
+  CustomMin,
+} from 'src/common/request/validators/custom-validator';
+import { PaymentProviderEnum } from '../constant/payment.constant';
+
 export class CreatePaymentDto {
   @CustomIsNotEmpty()
   @CustomIsNumber()

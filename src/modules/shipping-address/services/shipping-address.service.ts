@@ -113,7 +113,10 @@ export class ShippingAddressService {
       address.default = true;
       return await this._shippingAddressRepo._update(address, options);
     } catch (error) {
-      console.error('Error while setting shipping address as default:', error);
+      throw new BadRequestException(
+        'Error while setting shipping address as default:',
+        error,
+      );
       throw error;
     }
   }
