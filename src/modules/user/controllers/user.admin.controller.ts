@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -22,6 +23,7 @@ import { MarketingUserCreateDto } from '../dto/marketing.create.dto';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { DataSource, QueryRunner } from 'typeorm';
+import { ImageService } from 'src/modules/image/services/image.service';
 
 @ApiTags('users')
 @Controller('user')
@@ -29,6 +31,7 @@ export class AdminUserController {
   constructor(
     private readonly _userService: UserService,
     private _connection: DataSource,
+    private readonly _imageService: ImageService,
   ) {}
 
   @Get('/list/marketing')
@@ -44,6 +47,7 @@ export class AdminUserController {
       sortableColumns: ['id', 'firstName', 'lastName', 'createdAt'],
       options: {
         where: { role: 'marketing' },
+        relations: { image: true },
       },
     });
   }
@@ -61,6 +65,7 @@ export class AdminUserController {
       sortableColumns: ['id', 'firstName', 'lastName', 'createdAt'],
       options: {
         where: { role: 'customer' },
+        relations: { image: true },
       },
     });
   }

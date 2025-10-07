@@ -45,16 +45,13 @@ export class OrderItemService {
     });
     if (!product)
       throw new BadRequestException(`Product ${productId} not found`);
-    console.log('product data:', JSON.stringify(product, null, 2));
     if (!variantId) {
       throw new NotFoundException(`Varient ${variantId}  not found`);
     }
-
     const productVarient = await this._productVariantService.getById(
       variantId,
       { options: { relations: { image: true } } },
     );
-    console.log(`product varient data: ${productVarient}`);
     if (!productVarient) {
       {
         throw new NotFoundException(`product varient not found`);

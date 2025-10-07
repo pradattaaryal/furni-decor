@@ -24,7 +24,7 @@ export class WishlistService {
     private readonly _wishlistRepository: WishlistRepository,
     private readonly _userRepository: UserRepository,
     private readonly _productRepository: ProductRepository,
-  ) { }
+  ) {}
 
   async create(
     createData: ICreateWishlist,
@@ -99,22 +99,19 @@ export class WishlistService {
     return wishlist;
   }
 
-async remove(
-  wishlistId: string,
-  options?: IUpdateOptions<WishlistEntity>,
-): Promise<WishlistEntity> {
+  async remove(
+    wishlistId: string,
+    options?: IUpdateOptions<WishlistEntity>,
+  ): Promise<WishlistEntity> {
+    const id = parseInt(wishlistId, 10);
 
-  const id = parseInt(wishlistId, 10);
-   
+    const wishlist = await this.getById(id, options);
+    if (!wishlist) {
+      throw new NotFoundException(`Wishlist entry with ID ${id} not found`);
+    }
 
-  const wishlist = await this.getById(id, options);
-  if (!wishlist) {
-    throw new NotFoundException(`Wishlist entry with ID ${id} not found`);
+    return await this._wishlistRepository._delete(wishlist, options);
   }
-
-  return await this._wishlistRepository._delete(wishlist, options);
-}
-
 
   async delete(
     id: number,

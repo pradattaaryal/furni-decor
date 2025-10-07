@@ -24,13 +24,13 @@ import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decor
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
- import { CategoryEntity } from 'src/modules/category/entities/category.entity';
+import { CategoryEntity } from 'src/modules/category/entities/category.entity';
 import { UpdateWishlistDto } from '../dto/wishlist.update.dto';
 
 @ApiTags('Wishlist')
 @Controller('/wishlist')
 export class WishlistAdminController {
-  constructor(private readonly wishlistService: WishlistService) { }
+  constructor(private readonly wishlistService: WishlistService) {}
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Wishlist Entry' })
@@ -66,23 +66,20 @@ export class WishlistAdminController {
         relations: { product: true },
       },
     });
-
-
   }
-@Delete('/:id')
-@ApiDocs({ operation: 'Remove product from wishlist' })
-@UseGuards(JwtAuthGuard)
-async deleteById(
-  @Param('id') id: string,
-): Promise<IResponse<{ item: WishlistEntity; message: string }>> {
-  const item = await this.wishlistService.remove(id);
+  @Delete('/:id')
+  @ApiDocs({ operation: 'Remove product from wishlist' })
+  @UseGuards(JwtAuthGuard)
+  async deleteById(
+    @Param('id') id: string,
+  ): Promise<IResponse<{ item: WishlistEntity; message: string }>> {
+    const item = await this.wishlistService.remove(id);
 
-  return {
-    data: {
-      item,
-      message: 'Wishlist removed successfully.',
-    },
-  };
-}
-
+    return {
+      data: {
+        item,
+        message: 'Wishlist removed successfully.',
+      },
+    };
+  }
 }

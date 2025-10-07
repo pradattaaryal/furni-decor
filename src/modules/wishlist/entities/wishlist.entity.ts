@@ -14,13 +14,11 @@ import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 
 @Entity({ name: 'wishlists' })
 export class WishlistEntity extends DatabaseBaseEntity {
-
   @Column({ name: 'user_id' })
   userId: number;
-  
+
   @Column({ name: 'product_id' })
   productId: number;
- 
 
   @ManyToOne(() => UserEntity, (user) => user.wishlists, {
     onDelete: 'CASCADE',

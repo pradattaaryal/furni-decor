@@ -34,7 +34,6 @@ export class UserEntity extends BaseUserEntity {
   @JoinColumn({ name: 'cart_id' })
   cart: CartEntity | null;
 
-
   @OneToMany(() => ShippingAddressEntity, (address) => address.user)
   shippingAddresses: ShippingAddressEntity[];
 

@@ -19,6 +19,8 @@ import { ORDER_STATUS } from '../constant/order.constant';
 import { CreateOrderDto } from '../dto/order.create.dto';
 import { OrderEntity } from '../entities/order.entity';
 import { OrderRepository } from '../repositories/order.repository';
+import { CartItemService } from 'src/modules/cart-item/services/cart-item.service';
+import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 
 @Injectable()
 export class OrderService {
@@ -29,6 +31,7 @@ export class OrderService {
     private readonly _cartService: CartService,
     private readonly _orderItemService: OrderItemService,
     private readonly _orderRepo: OrderRepository,
+    private readonly _cartItemService: CartItemService,
   ) {}
 
   async createOrderWithoutItems(
@@ -68,8 +71,17 @@ export class OrderService {
     for (const item of bulkOrderItems) {
       await this._orderItemService.create(item, options);
     }
-    await this._cartService.softDelete(cart);
+    await this.clearCartRecursive(cart);
     return order;
+  }
+  async clearCartRecursive(cart: CartEntity): Promise<void> {
+    if (!cart) return;
+
+    if (cart.items && cart.items.length) {
+      await Promise.all(
+        cart.items.map((item) => this._cartItemService.bulksoftDelete(item)),
+      );
+    }
   }
 
   async getById(

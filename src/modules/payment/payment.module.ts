@@ -1,29 +1,34 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { UserRepositoryModule } from '../user/repositories/user.repostory.module';
+import { CartModule } from '../cart/cart.module';
 import { PaymentEntity } from './entities/payment.entity';
+import { PayPalAdapter } from './adapter/paypal.adapter';
+import { StripeAdapter } from './adapter/stripe.adapter';
 import { PaymentService } from './services/payment.service';
-import { PaymentFactoryService } from './services/payment-factory.service';
-import { StripeProvider } from './provider/stripe.provider';
-import { PaymentRepositoryModule } from './repositories/payment.repository.module';
-// import { PaymentController } from './payment.controller';
-// import { StripeProvider } from './providers/stripe.provider';
-// import { PayPalProvider } from './providers/paypal.provider';
+import { WebhookService } from './services/webhook.service';
+import { PaymentAdapterFactory } from './factories/payment-adapter.factory';
+import { PaymentRepository } from './repositories/payment.repository';
+import { OrderModule } from '../order/order.module';
+import { ProductsModule } from '../products/products.module';
+import { ProductRepositoryModule } from '../products/repositories/product.repository.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PaymentEntity]),
-    ConfigModule,
-    PaymentRepositoryModule,
+    OrderModule,
+    CartModule,
+    ProductsModule,
+    ProductRepositoryModule,
   ],
-  //  controllers: [PaymentController],
   providers: [
     PaymentService,
-    PaymentFactoryService,
-
-    StripeProvider,
-    // PayPalProvider,
+    WebhookService,
+    PaymentRepository,
+    StripeAdapter,
+    PayPalAdapter,
+    PaymentAdapterFactory,
   ],
-  exports: [PaymentService, PaymentFactoryService],
+  exports: [PaymentService, PaymentRepository, WebhookService],
 })
 export class PaymentModule {}

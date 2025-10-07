@@ -10,6 +10,4 @@ export class UpdateWishlistDto {
   @CustomIsNumber()
   @CustomIsNotEmpty()
   wishlistId: number;
-
- 
 }

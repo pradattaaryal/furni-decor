@@ -1,16 +1,38 @@
-import { Column, Entity } from 'typeorm';
-import {
-  PaymentProviderEnum,
-  PaymentStatus,
-} from '../constant/payment.constant';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+
+export enum PaymentStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+  REFUNDED = 'refunded',
+  CANCELLED = 'cancelled',
+}
+
+export enum PaymentProvider {
+  STRIPE = 'stripe',
+  PAYPAL = 'paypal',
+  SQUARE = 'square',
+}
 
 @Entity('payments')
 export class PaymentEntity extends DatabaseBaseEntity {
+  @Column()
+  userId: number;
+
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number;
 
-  @Column({ length: 3 })
+  @Column()
   currency: string;
 
   @Column({
@@ -22,25 +44,22 @@ export class PaymentEntity extends DatabaseBaseEntity {
 
   @Column({
     type: 'enum',
-    enum: PaymentProviderEnum,
+    enum: PaymentProvider,
   })
-  provider: PaymentProviderEnum;
+  provider: PaymentProvider;
 
   @Column({ nullable: true })
   providerTransactionId: string;
 
   @Column({ nullable: true })
-  providerPaymentIntentId: string;
+  providerPaymentId: string;
 
-  @Column('json', { nullable: true })
-  metadata: any;
+  @Column('jsonb', { nullable: true })
+  metadata: Record<string, any>;
 
-  @Column('text', { nullable: true })
+  @Column({ nullable: true })
   description: string;
 
   @Column({ nullable: true })
-  userId: string;
-
-  @Column({ nullable: true })
-  orderId: string;
+  failureReason: string;
 }

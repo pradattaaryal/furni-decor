@@ -3,11 +3,17 @@ import { WishlistRepositoryModule } from './repositories/wishlist.repository.mod
 import { WishlistService } from './services/wishlist.service';
 import { UserModule } from '../user/user.module';
 import { ProductsModule } from '../products/products.module';
- import { ProductRepositoryModule } from '../products/repositories/product.repository.module';
+import { ProductRepositoryModule } from '../products/repositories/product.repository.module';
 import { UserRepositoryModule } from '../user/repositories/user.repostory.module';
 
 @Module({
-  imports: [WishlistRepositoryModule,UserModule,ProductsModule,ProductRepositoryModule,UserRepositoryModule],
+  imports: [
+    WishlistRepositoryModule,
+    UserModule,
+    ProductsModule,
+    ProductRepositoryModule,
+    UserRepositoryModule,
+  ],
   providers: [WishlistService],
   exports: [WishlistService, WishlistRepositoryModule],
 })
