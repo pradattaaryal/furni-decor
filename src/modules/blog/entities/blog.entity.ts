@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
@@ -27,6 +27,9 @@ export class BlogEntity extends DatabaseBaseEntity {
   @Column({ name: 'author_id', type: 'int' })
   authorId: number;
 
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: true })
+  slug: string;
+
   @ManyToOne(() => UserEntity, (user) => user.blogs, {
     onDelete: 'CASCADE',
     eager: false,
@@ -34,10 +37,18 @@ export class BlogEntity extends DatabaseBaseEntity {
   @JoinColumn({ name: 'author_id' })
   author: UserEntity;
 
+  @Column({
+    name: 'name_tsv',
+    type: 'tsvector',
+    nullable: true,
+  })
+  @Index('blog_name_tsv_idx', { synchronize: false })
+  nameTsv: string;
+
   @ManyToOne(() => CategoryEntity, (category) => category.blog, {
-      onDelete: 'SET NULL',
-      nullable: true,
-      eager: false,
+    onDelete: 'SET NULL',
+    nullable: true,
+    eager: false,
   })
   @JoinColumn({ name: 'category_id' })
   category?: CategoryEntity;

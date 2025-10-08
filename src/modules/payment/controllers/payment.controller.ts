@@ -5,7 +5,7 @@ import {
   Post,
   RawBodyRequest,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiDocs } from 'src/common/doc/common-docs';
@@ -45,7 +45,6 @@ export class PaymentController {
     }
   }
 
-   
   @Post('webhooks/stripe')
   async stripeWebhook(
     @Headers('stripe-signature') signature: string,
