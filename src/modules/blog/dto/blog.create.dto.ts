@@ -43,7 +43,7 @@ export class CreateBlogDto {
     required: false,
   })
   @CustomIsNumber()
-  categoryId?: number;
+  categoryId: number;
 
   @ApiProperty({
     description: 'ID of the image',
