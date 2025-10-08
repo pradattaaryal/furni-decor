@@ -15,9 +15,9 @@ import { ImageEntity } from 'src/modules/image/entities/image.entity';
 @Injectable()
 export class OtpService {
   constructor(
-     @InjectRepository(UserEntity)
+    @InjectRepository(UserEntity)
     private _userRepository: Repository<UserEntity>,
-     
+
     private readonly otpRepo: OtpRepository,
     private readonly _userRepo: UserRepository,
     private readonly _cartService: CartService,
@@ -107,7 +107,7 @@ export class OtpService {
 
     const cart = await this._cartService.create({ userId });
     const user = await this._userRepository.findOne({ where: { id: userId } });
-    if(!user) {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
     user.cart = cart;

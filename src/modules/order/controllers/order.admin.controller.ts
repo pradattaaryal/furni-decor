@@ -59,13 +59,14 @@ export class OrderAdminController {
   async create(
     @Body() body: CreateOrderDto,
     @GetUser() user: AccessTokenPayload,
+    @Param() params: IdParamDto,
   ): Promise<IResponse<{ order: OrderEntity; message: string }>> {
     const queryRunner: QueryRunner = this._connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const order = await this._orderService.createOrder(user.sub, body, {
+      const order = await this._orderService.createOrder(user.sub, params.id, {
         entityManager: queryRunner.manager,
       });
       await queryRunner.commitTransaction();

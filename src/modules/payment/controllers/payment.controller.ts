@@ -12,19 +12,16 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
-import { DataSource } from 'typeorm';
-import { CreatePaymentDto } from '../dto/create-payment.dto';
+ import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { PaymentService } from '../services/payment.service';
 import { WebhookService } from '../services/webhook.service';
 
 @Controller('payments')
 export class PaymentController {
-  private _dataSource: any;
-  constructor(
+   constructor(
     private readonly _paymentService: PaymentService,
     private readonly webhookService: WebhookService,
-    private _connection: DataSource,
-  ) {}
+   ) {}
 
   @Post('/create')
   @ApiDocs({ operation: 'Initialize Payment' })

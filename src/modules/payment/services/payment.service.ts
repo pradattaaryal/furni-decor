@@ -6,189 +6,198 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, DataSource } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { PaymentResponseDto } from '../dto/payment-response.dto';
 import { PaymentAdapterFactory } from '../factories/payment-adapter.factory';
 import { CartService } from 'src/modules/cart/services/cart.service';
-import { ProductService } from 'src/modules/products/services/product.service';
+import { ProductRepository } from 'src/modules/products/repositories/product.repository';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
-import { ProductRepository } from 'src/modules/products/repositories/product.repository';
-import { options } from 'joi';
-import { Order } from '@getbrevo/brevo';
 
 @Injectable()
 export class PaymentService {
+  private readonly logger = new Logger(PaymentService.name);
+
   constructor(
     @InjectRepository(PaymentEntity)
     private readonly paymentRepository: Repository<PaymentEntity>,
     private readonly paymentAdapterFactory: PaymentAdapterFactory,
-    private readonly _cartService: CartService,
+    private readonly cartService: CartService,
     private readonly dataSource: DataSource,
-    private readonly _productRepo: ProductRepository,
-    //private readonly _orderRepo:Repository<Order>
+    private readonly productRepo: ProductRepository,
   ) {}
 
-  async createPayment(
-    createPaymentDto: CreatePaymentDto,
-  ): Promise<PaymentResponseDto> {
-    const adapter = this.paymentAdapterFactory.getAdapter(
-      createPaymentDto.provider,
-    );
-    //const shipping =createPaymentDto.shippingaddress
+  async createPayment(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
+    const adapter = this.paymentAdapterFactory.getAdapter(dto.provider);
 
-    const cart = await this._cartService.getById(createPaymentDto.CartId, {
+    const cart = await this.cartService.getById(dto.CartId, {
       options: { relations: ['items'] },
     });
     if (!cart) throw new NotFoundException('Cart not found');
 
     const totalAmount = await this.validateCart(cart);
 
-    return await this.dataSource.transaction(async (manager) => {
-      const payment = await this.createPaymentEntity(
-        createPaymentDto,
-        // cart.userId,
+    // Use transaction to ensure atomicity
+    return this.dataSource.transaction(async (manager) => {
+      const paymentRepo = manager.getRepository(PaymentEntity);
 
+      const payment = await this.createPaymentEntity(
+        dto,
         totalAmount,
-        manager.getRepository(PaymentEntity),
+        paymentRepo,
       );
 
-      return await this.processPaymentAdapter(payment, cart, adapter);
+      try {
+        const result = await adapter.createPayment(payment, dto, cart);
+
+        payment.status = result.success ? result.status : PaymentStatus.FAILED;
+
+        if (result.success) {
+      
+          payment.providerPaymentId = result.paymentId;
+          payment.providerTransactionId = result.transactionId ?? '';
+          payment.metadata = {
+            ...payment.metadata,
+            ...result.metadata,
+          };
+        }
+
+        await paymentRepo.save(payment);
+
+        if (!result.cart) {
+          throw new InternalServerErrorException('Cart data is missing in the payment result.');
+        }
+        return this.mapToResponseDto(
+          result.cart,
+          payment,
+          result.checkoutUrl,
+          'Payment initialized successfully',
+        );
+      } catch (error) {
+        this.logger.error(`Payment processing failed: ${error.message}`);
+        payment.status = PaymentStatus.FAILED;
+        payment.failureReason = error.message;
+        await paymentRepo.save(payment);
+
+        throw new InternalServerErrorException(
+          'Payment processing failed. Please try again later.',
+        );
+      }
     });
   }
 
+  // --------------------- Cart validation ---------------------
   private async validateCart(cart: CartEntity): Promise<number> {
     if (!cart.isActive) throw new BadRequestException('Cart is inactive');
     if (!cart.items?.length) throw new BadRequestException('Cart is empty');
 
-    // Avoid N+1: fetch all products in one query have used batch fetchin for base repo
-    const productIds = cart.items.map((item) => item.productId);
-    const products = await this._productRepo._findByIds(productIds, {
+    const productIds = cart.items.map((i) => i.productId);
+    const products = await this.productRepo._findByIds(productIds, {
       options: { relations: { variants: true } },
     });
     const productMap = new Map(products.map((p) => [p.id, p]));
 
-    let totalAmount = 0;
-
+    let total = 0;
     for (const item of cart.items) {
       const product = productMap.get(item.productId);
       if (!product)
         throw new BadRequestException(`Product ${item.productId} not found`);
 
-      this.ensureProductIsValid(product);
-      const price = this.calculateProductPrice(product);
+      this.validateProduct(product);
+      const price = this.getProductPrice(product);
 
-      if (item.variantId) {
-        this.validateVariant(item, product);
-      }
+      if (item.variantId) this.validateVariant(item, product);
 
-      totalAmount += price * item.quantity;
+      total += price * item.quantity;
     }
 
-    if (totalAmount <= 0)
+    if (total <= 0)
       throw new BadRequestException('Total amount cannot be zero');
-    return totalAmount;
+    return total;
   }
 
-  // --------------------- Private helpers ---------------------
-
-  private ensureProductIsValid(product: ProductEntity) {
-    if (product.price == null || product.price <= 0)
+  private validateProduct(product: ProductEntity) {
+    if (!product.price || product.price <= 0)
       throw new BadRequestException(
         `Invalid price for product ${product.name}`,
       );
   }
 
-  private calculateProductPrice(product: ProductEntity): number {
+  private getProductPrice(product: ProductEntity): number {
     const now = new Date();
     let price = product.price;
-
     if (
       product.discountValue &&
       product.discountStartDate &&
-      product.discountEndDate
+      product.discountEndDate &&
+      now >= product.discountStartDate &&
+      now <= product.discountEndDate
     ) {
-      if (now >= product.discountStartDate && now <= product.discountEndDate) {
-        price -= product.discountValue;
-        if (price < 0)
-          throw new BadRequestException(
-            `Discount exceeds price for product: ${product.name}`,
-          );
-      }
+      price -= product.discountValue;
+      if (price < 0)
+        throw new BadRequestException(
+          `Discount exceeds price for ${product.name}`,
+        );
     }
-
     return price;
   }
-  //for stock valadation remaining
-  private validateVariant(item: any, product: ProductEntity) {
-    console.log('🔍 Checking variant ID match...');
-    console.log(
-      'Product Variants IDs:',
-      product.variants?.map((v) => v.id),
-    );
-    console.log('Item Variant ID:', item.variantId);
-    //const variant = product.variants?.find((v) => v.id === item.variantId);
-    //if (!variant) throw new BadRequestException(`Invalid variant for product: ${product.name}`);
-    // const variant = product.variants?.find((v) => v.id === item.variantId);
-    // if (!variant) throw new BadRequestException(`Invalid variant for product: ${product.name}`);
 
-    // if (variant.quantity < item.quantity)
-    //   throw new BadRequestException(
-    //   `Not enough stock for variant ${variant.id}. Available: ${variant.quantity}`,
-    //   );
+  private validateVariant(item: any, product: ProductEntity) {
+    const variant = product.variants?.find((v) => v.id === item.variantId);
+    if (!variant)
+      throw new BadRequestException(
+        `Invalid variant for product ${product.name}`,
+      );
+    if (variant.quantity < item.quantity)
+      throw new BadRequestException(
+        `Not enough stock for variant ${variant.id}`,
+      );
   }
+
+  // --------------------- Helpers ---------------------
 
   private async createPaymentEntity(
     dto: CreatePaymentDto,
-    totalAmount: number,
-    paymentRepo: Repository<PaymentEntity>,
-  ): Promise<PaymentEntity> {
-    const payment = paymentRepo.create({
+    amount: number,
+    repo: Repository<PaymentEntity>,
+  ) {
+    const payment = repo.create({
       userId: dto.userId,
-      amount: totalAmount,
+      amount,
       currency: dto.currency,
       provider: dto.provider,
       description: dto.description,
       status: PaymentStatus.PENDING,
-      metadata: dto.metadata,
+      metadata: dto.metadata ?? {},
     });
-
-    return await paymentRepo.save(payment);
+    return repo.save(payment);
   }
 
-  private async processPaymentAdapter(
-    payment: PaymentEntity,
+  private mapToResponseDto(
     cart: CartEntity,
-    adapter: any,
-  ): Promise<PaymentResponseDto> {
-    try {
-      const result = await adapter.createPayment({ ...payment }, cart);
-
-      payment.status = result.success ? result.status : PaymentStatus.FAILED;
-      if (result.success) {
-        payment.providerPaymentId = result.paymentId;
-        payment.providerTransactionId = result.transactionId ?? '';
-        if (result.metadata)
-          payment.metadata = { ...payment.metadata, ...result.metadata };
-      } else {
-        throw new BadRequestException(result.errorMessage);
-      }
-
-      await this.paymentRepository.save(payment);
-
-      return {
-        ...payment,
-        id: payment.id.toString(),
-        userId: payment.userId.toString(),
-        checkoutUrl: result.checkoutUrl,
-      };
-    } catch (error) {
-      payment.status = PaymentStatus.FAILED;
-      payment.failureReason = error.message;
-      await this.paymentRepository.save(payment);
-      throw new InternalServerErrorException(error.message);
-    }
+    payment: PaymentEntity,
+    
+    checkoutUrl?: string,
+    message?: string,
+  ): PaymentResponseDto {
+    return {
+      cart,
+      id: payment.id.toString(),
+      userId: payment.userId.toString(),
+      amount: payment.amount,
+      currency: payment.currency,
+      status: payment.status,
+      provider: payment.provider,
+      providerPaymentId: payment.providerPaymentId,
+      providerTransactionId: payment.providerTransactionId,
+      checkoutUrl,
+      description: payment.description,
+      metadata: payment.metadata,
+      createdAt: payment.createdAt,
+      updatedAt: payment.updatedAt,
+      message,
+    };
   }
 }

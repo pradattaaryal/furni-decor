@@ -20,7 +20,6 @@ export class DatabaseBaseEntity extends BaseEntity {
   })
   id: number;
 
-  @Exclude()
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createdAt: Date;
 

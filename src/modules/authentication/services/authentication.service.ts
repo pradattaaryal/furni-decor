@@ -141,10 +141,9 @@ export class AuthenticationService {
       } as UserCreateDto);
 
       user = await this.userService.getById(user.id);
-      const cart=await this._cartService.create({ userId: user.id });
-          user.cart = cart;
-       await this._userRepository.save(user);
-
+      const cart = await this._cartService.create({ userId: user.id });
+      user.cart = cart;
+      await this._userRepository.save(user);
     }
 
     if (!user?.id) {
