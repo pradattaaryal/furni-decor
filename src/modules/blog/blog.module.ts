@@ -5,11 +5,13 @@ import { CartModule } from '../cart/cart.module';
 import { BlogEntity } from './entities/blog.entity';
 import { BlogRepository } from './repositories/blog.repository';
 import { BlogService } from './services/blog.service';
+import { CategoryModule } from '../category/category.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([BlogEntity]),
-    UserRepositoryModule,
+    UserRepositoryModule,CategoryModule,
+    
     forwardRef(() => CartModule),
   ],
   providers: [BlogService, BlogRepository],
