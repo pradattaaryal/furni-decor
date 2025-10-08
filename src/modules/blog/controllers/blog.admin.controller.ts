@@ -124,7 +124,7 @@ export class BlogAdminController {
       throw new BadRequestException('Blog not found');
     }
 
-     if (blog.authorId !== user.sub) {
+    if (blog.authorId !== user.sub) {
       throw new BadRequestException('Unauthorized to update this blog');
     }
 
@@ -154,7 +154,7 @@ export class BlogAdminController {
       };
     }
 
-     if (blog.authorId !== user.sub) {
+    if (blog.authorId !== user.sub) {
       throw new BadRequestException('Unauthorized to delete this blog');
     }
 
@@ -179,7 +179,7 @@ export class BlogAdminController {
       throw new BadRequestException('Blog not found');
     }
 
-     if (blog.authorId !== user.sub) {
+    if (blog.authorId !== user.sub) {
       throw new BadRequestException('Unauthorized to delete this blog');
     }
 

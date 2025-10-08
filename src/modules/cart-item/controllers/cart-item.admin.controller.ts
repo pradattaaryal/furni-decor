@@ -8,6 +8,7 @@ import {
   Delete,
   NotFoundException,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CartItemService } from '../services/cart-item.service';
@@ -24,6 +25,9 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { CartItemQuantityDto } from '../dto/cart-item.increment.dto';
+import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
+import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
 
 @ApiTags('Cart Items')
 @Controller('/cart-items')
@@ -33,16 +37,19 @@ export class CartItemAdminController {
     private _connection: DataSource,
   ) {}
   @Post('/create')
+  @UseGuards(JwtAuthGuard)
   @ApiDocs({ operation: 'Add Product to Cart' })
   async create(
     @Body() body: CreateCartItemDto,
+    @GetUser() user: AccessTokenPayload,
   ): Promise<IResponse<{ item: CartItemEntity; message: string }>> {
     const queryRunner: QueryRunner = this._connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const item = await this.cartItemService.create(body, {
+      const userId = user.sub;
+      const item = await this.cartItemService.create(userId, body, {
         entityManager: queryRunner.manager,
       });
 

@@ -6,10 +6,6 @@ import {
 import { ICartItemCreateDto } from '../interfaces/cart-item.create.dto.interface';
 
 export class CreateCartItemDto implements ICartItemCreateDto {
-  @ApiProperty({ example: 1, description: 'Cart ID' })
-  @CustomIsNumber()
-  cartId: number;
-
   @ApiProperty({ example: 1, description: 'Product ID' })
   @CustomIsNumber()
   productId: number;
