@@ -65,11 +65,9 @@ export class OrderAdminController {
     await queryRunner.startTransaction();
 
     try {
-      const order = await this._orderService.createOrder(
-        user.sub,
-        body,
-        { entityManager: queryRunner.manager },
-      );
+      const order = await this._orderService.createOrder(user.sub, body, {
+        entityManager: queryRunner.manager,
+      });
       await queryRunner.commitTransaction();
       return {
         data: {

@@ -26,13 +26,12 @@ export class StripeAdapter implements PaymentAdapterInterface {
     });
   }
 
-
   async createPayment(
     payment: PaymentEntity,
     cart: CartEntity,
   ): Promise<PaymentResult> {
     try {
-      const totalamount = payment.amount
+      const totalamount = payment.amount;
       const currency = payment.currency || 'usd';
 
       const paymentIntent = await this.stripe.paymentIntents.create({
@@ -42,7 +41,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
           cartId: cart.id.toString(),
           userId: cart.userId?.toString() || '',
         },
-          // idempotencyKey: `${orderId}-${userId}`,
+        // idempotencyKey: `${orderId}-${userId}`,
       });
 
       return {
@@ -67,14 +66,17 @@ export class StripeAdapter implements PaymentAdapterInterface {
 
   async getPaymentStatus(paymentId: string): Promise<PaymentStatus> {
     try {
-      const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentId);
+      const paymentIntent =
+        await this.stripe.paymentIntents.retrieve(paymentId);
       return this.mapStripeStatus(paymentIntent.status);
     } catch (error) {
-      this.logger.error(`Failed to fetch payment status for ${paymentId}`, error);
+      this.logger.error(
+        `Failed to fetch payment status for ${paymentId}`,
+        error,
+      );
       throw new BadRequestException('Unable to retrieve payment status');
     }
   }
-
 
   async refundPayment(
     paymentId: string,
@@ -104,7 +106,6 @@ export class StripeAdapter implements PaymentAdapterInterface {
     }
   }
 
-
   async cancelPayment(paymentId: string): Promise<boolean> {
     try {
       await this.stripe.paymentIntents.cancel(paymentId);
@@ -115,11 +116,13 @@ export class StripeAdapter implements PaymentAdapterInterface {
     }
   }
 
-
   verifyWebhook(payload: Buffer, signature: string): boolean {
     try {
-      const endpointSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET');
-      if (!endpointSecret) throw new Error('Stripe webhook secret not configured');
+      const endpointSecret = this.configService.get<string>(
+        'STRIPE_WEBHOOK_SECRET',
+      );
+      if (!endpointSecret)
+        throw new Error('Stripe webhook secret not configured');
 
       this.stripe.webhooks.constructEvent(payload, signature, endpointSecret);
       return true;

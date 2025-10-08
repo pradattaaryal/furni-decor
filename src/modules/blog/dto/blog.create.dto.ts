@@ -7,16 +7,20 @@ import {
   MaxLength,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
-import { CustomIsBoolean, CustomIsNumber, CustomIsOptional, CustomIsString, CustomMax } from 'src/common/request/validators/custom-validator';
+import {
+  CustomIsBoolean,
+  CustomIsNumber,
+  CustomIsOptional,
+  CustomIsString,
+  CustomMax,
+} from 'src/common/request/validators/custom-validator';
 
 export class CreateBlogDto {
   @ApiProperty({
     description: 'Title of the blog',
-    example: faker.lorem.words(5),
-    maxLength: 200,
+    example: 'Title of the blog',
   })
   @CustomIsString()
-  @CustomMax(200)
   title: string;
 
   @ApiProperty({
@@ -54,8 +58,8 @@ export class CreateBlogDto {
   @CustomIsNumber()
   imageId?: number;
 
-  @CustomIsNumber()
-  authorId: number;
+  // @CustomIsNumber()
+  // authorId: number;
 
   @ApiProperty({
     description: 'Is the blog active?',

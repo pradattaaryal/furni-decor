@@ -10,8 +10,9 @@ import { CategoryModule } from '../category/category.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([BlogEntity]),
-    UserRepositoryModule,CategoryModule,
-    
+    UserRepositoryModule,
+    CategoryModule,
+
     forwardRef(() => CartModule),
   ],
   providers: [BlogService, BlogRepository],

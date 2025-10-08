@@ -48,5 +48,4 @@ export class UserEntity extends BaseUserEntity {
     cascade: true,
   })
   blogs: BlogEntity[];
-
 }

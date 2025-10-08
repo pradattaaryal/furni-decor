@@ -3,17 +3,23 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { EntityManager, MoreThan } from 'typeorm';
+import { EntityManager, MoreThan, Repository } from 'typeorm';
 import { OtpRepository } from '../repositories/otp.repository';
 import { UserRepository } from '../../user/repositories/user.repository';
 import { OtpEntity } from '../entities/otp.entity';
 import { CartService } from 'src/modules/cart/services/cart.service';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ImageEntity } from 'src/modules/image/entities/image.entity';
 
 @Injectable()
 export class OtpService {
   constructor(
+     @InjectRepository(UserEntity)
+    private _userRepository: Repository<UserEntity>,
+     
     private readonly otpRepo: OtpRepository,
-    private readonly userRepo: UserRepository,
+    private readonly _userRepo: UserRepository,
     private readonly _cartService: CartService,
   ) {}
 
@@ -37,7 +43,7 @@ export class OtpService {
       throw new BadRequestException('Invalid userId');
     }
 
-    const user = await this.userRepo._findOne({
+    const user = await this._userRepo._findOne({
       entityManager: manager,
       options: {
         where: {
@@ -99,8 +105,13 @@ export class OtpService {
 
     ///create cart for user//
 
-    await this._cartService.create({ userId });
-
+    const cart = await this._cartService.create({ userId });
+    const user = await this._userRepository.findOne({ where: { id: userId } });
+    if(!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.cart = cart;
+    await this._userRepository.save(user);
     /////////////////////////
     return true;
   }

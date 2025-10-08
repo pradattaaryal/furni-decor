@@ -15,6 +15,8 @@ import { UserService } from 'src/modules/user/services/user.service';
 import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.interface';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { CartService } from 'src/modules/cart/services/cart.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 export type AccessTokenPayload = { sub: number; roles: UserRole };
 export type TokenPayloadForCredentialReset = { sub: number; email: string };
@@ -22,6 +24,8 @@ export type TokenPayloadForCredentialReset = { sub: number; email: string };
 @Injectable()
 export class AuthenticationService {
   constructor(
+    @InjectRepository(UserEntity)
+    private _userRepository: Repository<UserEntity>,
     private readonly userService: UserService,
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
@@ -137,7 +141,10 @@ export class AuthenticationService {
       } as UserCreateDto);
 
       user = await this.userService.getById(user.id);
-      await this._cartService.create({ userId: user.id });
+      const cart=await this._cartService.create({ userId: user.id });
+          user.cart = cart;
+       await this._userRepository.save(user);
+
     }
 
     if (!user?.id) {

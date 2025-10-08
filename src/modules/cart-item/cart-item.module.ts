@@ -16,6 +16,7 @@ import { ProductsModule } from '../products/products.module';
     ProductVariantsModule,
     CartModule,
     ProductsModule,
+    UserModule,
   ],
   providers: [CartItemService],
   exports: [CartItemService],
