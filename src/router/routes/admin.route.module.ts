@@ -28,10 +28,13 @@ import { WishlistModule } from 'src/modules/wishlist/wishlist.module';
 import { WishlistAdminController } from 'src/modules/wishlist/controllers/wishlist.admin.controller';
 import { PaymentModule } from 'src/modules/payment/payment.module';
 import { PaymentController } from 'src/modules/payment/controllers/payment.controller';
+import { BlogAdminController } from 'src/modules/blog/controllers/blog.admin.controller';
+import { BlogModule } from 'src/modules/blog/blog.module';
 
 @Module({
   imports: [
     UserModule,
+    BlogModule,
     AuthenticationModule,
     OtpModule,
     CategoryModule,
@@ -48,6 +51,7 @@ import { PaymentController } from 'src/modules/payment/controllers/payment.contr
     WishlistModule,
   ],
   controllers: [
+    BlogAdminController,
     AdminUserController,
     AuthAdminController,
     CategoryAdminController,

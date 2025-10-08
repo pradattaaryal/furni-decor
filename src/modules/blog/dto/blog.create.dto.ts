@@ -54,10 +54,6 @@ export class CreateBlogDto {
   @CustomIsNumber()
   imageId?: number;
 
-  @ApiProperty({
-    description: 'ID of the author (user)',
-    example: faker.datatype.number({ min: 1, max: 50 }),
-  })
   @CustomIsNumber()
   authorId: number;
 

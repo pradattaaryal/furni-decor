@@ -34,13 +34,13 @@ export class BlogEntity extends DatabaseBaseEntity {
   @JoinColumn({ name: 'author_id' })
   author: UserEntity;
 
-  // @ManyToOne(() => CategoryEntity, (category) => category.blogs, {
-  //     onDelete: 'SET NULL',
-  //     nullable: true,
-  //     eager: false,
-  // })
-  // @JoinColumn({ name: 'category_id' })
-  // category?: CategoryEntity;
+  @ManyToOne(() => CategoryEntity, (category) => category.blog, {
+      onDelete: 'SET NULL',
+      nullable: true,
+      eager: false,
+  })
+  @JoinColumn({ name: 'category_id' })
+  category?: CategoryEntity;
 
   @ManyToOne(() => ImageEntity, (image) => image.blogs, {
     onDelete: 'SET NULL',
