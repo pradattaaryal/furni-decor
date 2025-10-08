@@ -7,12 +7,14 @@ import { OrderModule } from '../order/order.module';
 import { ProductsModule } from '../products/products.module';
 import { ProductVariantsModule } from '../product-variants/product-variants.module';
 import { OrderItemService } from './services/order-item.service';
+import { ImageModule } from '../image/image.module';
 
 @Module({
   providers: [OrderItemService],
   exports: [OrderItemService],
   controllers: [],
   imports: [
+    ImageModule,
     forwardRef(() => OrderModule),
     ProductsModule,
     ProductVariantsModule,

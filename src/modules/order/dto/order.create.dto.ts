@@ -8,15 +8,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto extends DatabaseBaseEntity {
   @ApiProperty({
-    description: 'Cart Id for order',
-    example: '1',
-    required: true,
-  })
-  @CustomIsNotEmpty()
-  @CustomIsNumber()
-  CartId: number;
-
-  @ApiProperty({
     description: 'Shipping Address for order',
     example: '1',
     required: true,

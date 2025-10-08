@@ -15,7 +15,6 @@ export class ProductRepository extends BaseRepository<ProductEntity> {
     super(productRepo);
   }
   async createProduct(createProductDto: ProductCreateDto) {
-    console.log(createProductDto);
     const product = this.productRepo.create({
       ...createProductDto,
       images: createProductDto.images.map((imageId) => ({ id: imageId })),
@@ -34,5 +33,4 @@ export class ProductRepository extends BaseRepository<ProductEntity> {
   getRepo(): Repository<ProductEntity> {
     return this.productRepo;
   }
-
 }

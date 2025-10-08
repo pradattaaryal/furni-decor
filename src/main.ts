@@ -4,25 +4,26 @@ import { NestApplication, NestFactory, Reflector } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
 import swaggerInit from './swagger';
+import { json, raw } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
-    // rawBody: true,
+    rawBody: true,
     // logger: false, // disables all logs
   });
 
-  // app.use(
-  //   '/backend/api/stripe/webhook',
-  //   raw({
-  //     type: 'application/json',
-  //     verify: (req, res, buf) => {
-  //       (req as any).rawBody = buf;
-  //     },
-  //   }),
-  // );
+  app.use(
+    '/backend/api/stripe/webhook',
+    raw({
+      type: 'application/json',
+      verify: (req, res, buf) => {
+        (req as any).rawBody = buf;
+      },
+    }),
+  );
 
   // Other JSON endpoints use the normal JSON parser
-  //  app.use(json());
+  app.use(json());
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await swaggerInit(app);

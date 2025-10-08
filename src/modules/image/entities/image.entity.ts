@@ -12,12 +12,14 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { FILE_ASSOCIATION_TYPE } from '../constants/association-type.enum';
 import { IImageInterface } from '../interfaces/image.interfaces';
 import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
+import { BlogEntity } from 'src/modules/blog/entities/blog.entity';
 
 export const IMAGE_TABLE_NAME = 'image';
 
@@ -56,4 +58,11 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
   })
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
+
+
+  @OneToMany(() => BlogEntity, (blog) => blog.image, {
+    cascade: false,
+  })
+  blogs: BlogEntity[];
+
 }

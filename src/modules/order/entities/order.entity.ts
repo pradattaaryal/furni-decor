@@ -34,8 +34,6 @@ export class OrderEntity extends DatabaseBaseEntity {
   })
   status: ORDER_STATUS;
 
-  ///////////////Realtions/////////////////
-
   @ManyToOne(() => UserEntity, (user) => user.orders)
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;

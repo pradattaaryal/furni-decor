@@ -316,4 +316,13 @@ export class CartItemService {
     await this.recalculateCartTotal(entity, options);
     return await this._cartItemRepo._delete(entity, options);
   }
+
+  async bulksoftDelete(
+    cartitem: CartItemEntity,
+    options?: IUpdateOptions<CartItemEntity>,
+  ) {
+    return await this._cartItemRepo._softDeleteRaw({
+      where: { cartId: cartitem.cartId },
+    });
+  }
 }
