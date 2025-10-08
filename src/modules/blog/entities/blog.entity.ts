@@ -27,12 +27,12 @@ export class BlogEntity extends DatabaseBaseEntity {
   @Column({ name: 'author_id', type: 'int' })
   authorId: number;
 
-  // @ManyToOne(() => UserEntity, (user) => user.blogs, {
-  //     onDelete: 'CASCADE',
-  //     eager: false,
-  // })
-  // @JoinColumn({ name: 'author_id' })
-  // author: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.blogs, {
+    onDelete: 'CASCADE',
+    eager: false,
+  })
+  @JoinColumn({ name: 'author_id' })
+  author: UserEntity;
 
   // @ManyToOne(() => CategoryEntity, (category) => category.blogs, {
   //     onDelete: 'SET NULL',
@@ -42,11 +42,11 @@ export class BlogEntity extends DatabaseBaseEntity {
   // @JoinColumn({ name: 'category_id' })
   // category?: CategoryEntity;
 
-  // @ManyToOne(() => ImageEntity, (image) => image.blogs, {
-  //     onDelete: 'SET NULL',
-  //     nullable: true,
-  //     eager: false,
-  // })
-  // @JoinColumn({ name: 'image_id' })
-  // image?: ImageEntity;
+  @ManyToOne(() => ImageEntity, (image) => image.blogs, {
+    onDelete: 'SET NULL',
+    nullable: true,
+    eager: false,
+  })
+  @JoinColumn({ name: 'image_id' })
+  image?: ImageEntity;
 }

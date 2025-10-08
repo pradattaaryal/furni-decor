@@ -34,7 +34,7 @@ export class OrderService {
     private readonly _cartItemService: CartItemService,
   ) {}
 
-  async createOrderWithoutItems(
+  async createOrder(
     user_id,
     dto: CreateOrderDto,
     options?: { entityManager?: EntityManager },

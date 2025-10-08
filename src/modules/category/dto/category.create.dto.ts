@@ -13,7 +13,7 @@ import { ICategoryCreateDto } from '../interfaces/category.create.dto.interface'
 
 export class CategoryCreateDto implements ICategoryCreateDto {
   @ApiProperty({
-    example: faker.commerce.department(),
+    example: faker.commerce.product.name,
     description: 'Category name',
   })
   @CustomIsNotEmpty()
@@ -36,7 +36,7 @@ export class CategoryCreateDto implements ICategoryCreateDto {
   parent_id?: number;
 
   @ApiProperty({
-    example: 'faker.product.description()',
+    example: faker.lorem.paragraphs(),
     description: 'category description',
     required: false,
   })

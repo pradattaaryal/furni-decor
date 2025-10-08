@@ -7,6 +7,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
+import { CustomIsBoolean, CustomIsNumber, CustomIsOptional, CustomIsString, CustomMax } from 'src/common/request/validators/custom-validator';
 
 export class CreateBlogDto {
   @ApiProperty({
@@ -14,8 +15,8 @@ export class CreateBlogDto {
     example: faker.lorem.words(5),
     maxLength: 200,
   })
-  @IsString()
-  @MaxLength(200)
+  @CustomIsString()
+  @CustomMax(200)
   title: string;
 
   @ApiProperty({
@@ -23,8 +24,8 @@ export class CreateBlogDto {
     example: faker.lorem.sentence(),
     required: false,
   })
-  @IsOptional()
-  @IsString()
+  @CustomIsOptional()
+  @CustomIsString()
   description?: string;
 
   @ApiProperty({
@@ -32,8 +33,8 @@ export class CreateBlogDto {
     example: faker.lorem.paragraphs(3),
     required: false,
   })
-  @IsOptional()
-  @IsString()
+  @CustomIsOptional()
+  @CustomIsString()
   content?: string;
 
   @ApiProperty({
@@ -41,8 +42,7 @@ export class CreateBlogDto {
     example: faker.datatype.number({ min: 1, max: 10 }),
     required: false,
   })
-  @IsOptional()
-  @IsInt()
+  @CustomIsNumber()
   categoryId?: number;
 
   @ApiProperty({
@@ -50,15 +50,15 @@ export class CreateBlogDto {
     example: faker.datatype.number({ min: 1, max: 100 }),
     required: false,
   })
-  @IsOptional()
-  @IsInt()
+  @CustomIsOptional()
+  @CustomIsNumber()
   imageId?: number;
 
   @ApiProperty({
     description: 'ID of the author (user)',
     example: faker.datatype.number({ min: 1, max: 50 }),
   })
-  @IsInt()
+  @CustomIsNumber()
   authorId: number;
 
   @ApiProperty({
@@ -66,7 +66,7 @@ export class CreateBlogDto {
     example: true,
     required: false,
   })
-  @IsOptional()
-  @IsBoolean()
+  @CustomIsOptional()
+  @CustomIsBoolean()
   active?: boolean;
 }

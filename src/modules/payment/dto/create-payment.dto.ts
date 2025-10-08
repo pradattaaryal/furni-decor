@@ -13,12 +13,12 @@ import { CustomIsNumber } from 'src/common/request/validators/custom-validator';
 export class CreatePaymentDto {
   userId: number;
 
-  // @ApiProperty({
-  //   description: 'Order ID associated with the payment',
-  //   example: 6,
-  // })
-  // @IsNumber()
-  // orderId: number;
+  @ApiProperty({
+    description: 'shippingaddress ID associated with the payment',
+    example: 6,
+  })
+  @IsNumber()
+  shippingaddress: number;
   @ApiProperty({
     description: 'Cart ID associated with the payment',
     example: 6,

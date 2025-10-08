@@ -65,7 +65,7 @@ export class OrderAdminController {
     await queryRunner.startTransaction();
 
     try {
-      const order = await this._orderService.createOrderWithoutItems(
+      const order = await this._orderService.createOrder(
         user.sub,
         body,
         { entityManager: queryRunner.manager },

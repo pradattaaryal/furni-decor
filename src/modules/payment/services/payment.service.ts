@@ -17,6 +17,7 @@ import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
 import { options } from 'joi';
+import { Order } from '@getbrevo/brevo';
 
 @Injectable()
 export class PaymentService {
@@ -28,6 +29,7 @@ export class PaymentService {
     private readonly _cartService: CartService,
     private readonly dataSource: DataSource,
     private readonly _productRepo: ProductRepository,
+    //private readonly _orderRepo:Repository<Order>
   ) {}
 
   async createPayment(
@@ -36,6 +38,9 @@ export class PaymentService {
     const adapter = this.paymentAdapterFactory.getAdapter(
       createPaymentDto.provider,
     );
+//const shipping =createPaymentDto.shippingaddress
+
+
 
     const cart = await this._cartService.getById(createPaymentDto.CartId, {
       options: { relations: ['items'] },
