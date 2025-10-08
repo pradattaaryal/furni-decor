@@ -1,29 +1,29 @@
 import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Patch,
-  Param,
-  Get,
-  Query,
-  Delete,
-  BadRequestException,
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { BlogService } from '../services/blog.service';
-import { CreateBlogDto } from '../dto/blog.create.dto';
-import { BlogEntity } from '../entities/blog.entity';
-import {
-  IResponse,
-  IResponsePaging,
-} from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
-import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
+import { IdParamDto } from 'src/common/dto/id-param.dto';
+import {
+    IResponse,
+    IResponsePaging,
+} from 'src/common/response/interfaces/response.interface';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
-import { IdParamDto } from 'src/common/dto/id-param.dto';
-import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
+import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { CreateBlogDto } from '../dto/blog.create.dto';
+import { BlogEntity } from '../entities/blog.entity';
+import { BlogService } from '../services/blog.service';
 
 @ApiTags('Blog')
 @Controller('/blogs')

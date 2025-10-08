@@ -1,29 +1,21 @@
 import {
-  Controller,
-  Post,
-  Get,
-  Patch,
   Body,
-  Param,
-  Query,
+  Controller,
   Headers,
+  Post,
   RawBodyRequest,
-  UseGuards,
   Req,
+  UseGuards
 } from '@nestjs/common';
 import { Request } from 'express';
-import { PaymentService } from '../services/payment.service';
-import { WebhookService } from '../services/webhook.service';
-import { CreatePaymentDto } from '../dto/create-payment.dto';
-import { RefundPaymentDto } from '../dto/refund-payment.dto';
-import { PaymentResponseDto } from '../dto/payment-response.dto';
+import { ApiDocs } from 'src/common/doc/common-docs';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
-import { ApiDocs } from 'src/common/doc/common-docs';
-import { DataSource, QueryRunner } from 'typeorm';
-import { PaymentEntity } from '../entities/payment.entity';
-import { IResponse } from 'src/common/response/interfaces/response.interface';
+import { DataSource } from 'typeorm';
+import { CreatePaymentDto } from '../dto/create-payment.dto';
+import { PaymentService } from '../services/payment.service';
+import { WebhookService } from '../services/webhook.service';
 
 @Controller('payments')
 export class PaymentController {
