@@ -18,15 +18,22 @@ import { BlogEntity } from '../entities/blog.entity';
 import { IBlogUpdateDto } from '../interfaces/blog.update.dto.interface';
 import { ICreateBlogDto } from '../interfaces/blog.create.dto.interface';
 import { CategoryRepository } from 'src/modules/category/repositories/category.repository';
-
+ 
 @Injectable()
 export class BlogService {
-  constructor(private readonly _blogRepo: BlogRepository,private readonly _categoryRepo:CategoryRepository) {}
+  constructor(private readonly _blogRepo: BlogRepository, private readonly _categoryRepo: CategoryRepository) { }
 
   async create(
     createDto: ICreateBlogDto,
     options?: ICreateOptions,
   ): Promise<BlogEntity> {
+
+   
+    if (createDto.categoryId === undefined) {
+      throw new Error('Category ID is required');
+    }
+    const blog = await this._blogRepo._findOneById(createDto.categoryId);
+
     const data = await this._blogRepo._create(createDto, options);
     return data;
   }
@@ -77,17 +84,17 @@ export class BlogService {
   }
 
   async softDelete(
-    category: BlogEntity,
+    blog: BlogEntity,
     options?: IUpdateOptions<BlogEntity>,
   ): Promise<BlogEntity> {
-    return await this._blogRepo._softDelete(category, options);
+    return await this._blogRepo._softDelete(blog, options);
   }
 
   async delete(
-    category: BlogEntity,
+    blog: BlogEntity,
     options?: IDeleteOptions<BlogEntity>,
   ): Promise<BlogEntity> {
-    return await this._blogRepo._delete(category, options);
+    return await this._blogRepo._delete(blog, options);
   }
 
   async restore(
@@ -97,10 +104,21 @@ export class BlogService {
   }
 
   async update(
-    category: BlogEntity,
+    blog: BlogEntity,
     updateData: IBlogUpdateDto,
     options?: IUpdateOptions<BlogEntity>,
   ) {
-    return await this._blogRepo._update(category, options);
+
+    if (updateData.categoryId === undefined) {
+      throw new Error('Category ID is required');
+    }
+    const category = await this._blogRepo._findOneById(updateData.categoryId);
+
+    if (!category) {
+      throw new Error(`Category of id ${updateData.categoryId} not found`);
+    }
+
+
+    return await this._blogRepo._update(blog, options);
   }
 }
