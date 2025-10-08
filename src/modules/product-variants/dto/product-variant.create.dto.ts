@@ -20,7 +20,7 @@ export class ProductVariantCreateDto implements IProductVariantCreateDto {
     description: 'Variant dimensions',
   })
   @CustomIsNotEmpty()
-  dimensions: Record<number, any>;
+  dimensions: Record<string, number>;
 
   @ApiProperty({ example: 'red', description: 'Variant color' })
   @CustomIsNotEmpty()

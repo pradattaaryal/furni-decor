@@ -68,8 +68,6 @@ export class ProductService {
       images: imageIds,
     });
 
-    console.log({ fromProductService: product });
-
     // Create variants if any
     if (variants?.length) {
       const variantDtos = plainToInstance(
@@ -240,7 +238,7 @@ export class ProductService {
         },
       },
     });
-    console.log(product);
+
     if (!product) {
       throw new NotFoundException(`Product with slug "${slug}" not found`);
     }

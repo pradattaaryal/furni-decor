@@ -41,7 +41,6 @@ export class ProductVariantService {
     variant.quantity = createDto.quantity;
     variant.image = image;
     variant.product = { id: createDto.productId } as ProductEntity;
-    console.log(`createDto at product varient service `, createDto);
     return await this._variantRepo._create(variant, options);
   }
 

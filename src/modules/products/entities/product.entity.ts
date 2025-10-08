@@ -17,6 +17,7 @@ import { ProductVariantEntity } from 'src/modules/product-variants/entities/prod
 import { ProductRatingEntity } from 'src/modules/product-rating/entities/product-rating.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import slugify from 'slugify';
+import { WishlistEntity } from 'src/modules/wishlist/entities/wishlist.entity';
 
 @Entity({ name: 'products' })
 export class ProductEntity
@@ -87,8 +88,6 @@ export class ProductEntity
   adjustableHeadrest?: boolean;
   @Column({ name: 'max_load', type: 'int', nullable: true })
   maxLoad?: number;
-
-  // ================= Additional Product Specifications End =================
 
   @Column({
     name: 'sales_package',
@@ -178,18 +177,6 @@ export class ProductEntity
   @OneToMany(() => ProductRatingEntity, (rating) => rating.product)
   ratings: ProductRatingEntity[];
 
-  // @AfterInsert()
-  // async generateSlug(): Promise<void> {
-  //   if (!this.name) return;
-
-  //   const slug = slugify(`${this.name}-${this.id}`, {
-  //     lower: true,
-  //     strict: true,
-  //     replacement: '-'
-  //   });
-
-  //   this.slug=slug
-
-  //   return
-  // }
+  @OneToMany(() => WishlistEntity, (wishlist) => wishlist.product)
+  wishlists: WishlistEntity[];
 }

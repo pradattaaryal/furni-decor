@@ -56,7 +56,7 @@ export class OrderItemAdminController {
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ item: OrderItemEntity | null; message: string }>> {
     const item = await this.orderItemService.getById(params.id, {
-      relations: { order: true, product: true, variant: true },
+      relations: { order: true },
     });
     return {
       data: {
@@ -79,7 +79,7 @@ export class OrderItemAdminController {
         data: { item: null, message: 'Order Item not found' },
       };
     }
-    const deleted = await this.orderItemService.delete(item);
+    const deleted = await this.orderItemService.softdelete(item);
     return {
       data: { item: deleted, message: 'Order Item deleted successfully' },
     };

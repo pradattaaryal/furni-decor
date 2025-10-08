@@ -98,7 +98,6 @@ export class CategoryAdminController {
   ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
     const found = await this.categoryService.getById(id);
     if (!found) throw new NotFoundException('Cannot find Category');
-
     const updated = await this.categoryService.update(
       found,
       updateCategoryData,

@@ -7,6 +7,7 @@ import {
   FindManyOptions,
   FindOptionsRelations,
   ILike,
+  In,
   InsertResult,
   Raw,
   Repository,
@@ -72,12 +73,6 @@ export abstract class BaseRepository<T extends DatabaseBaseEntity> {
     return await this._entityRepo.save(entity);
   }
 
-  /**
-   * create bulk record at once and return array of id
-   * @param createDto array of entity
-   * @param options
-   * @returns [number] - array of id
-   */
   async _createBulk(
     createDto: QueryDeepPartialEntity<T>[],
     options?: ICreateOptions,
@@ -176,6 +171,23 @@ export abstract class BaseRepository<T extends DatabaseBaseEntity> {
       return await options.entityManager.findOne(this._entityRepo.target, find);
     }
     return await this._entityRepo.findOne(find);
+  }
+  async _findByIds(ids: number[], options?: IFindOneOptions<T>): Promise<T[]> {
+    if (!ids?.length) return [];
+
+    const find: any = options?.options ?? {};
+    if (options?.transaction) find.transaction = true;
+    if (options?.withDeleted) find.withDeleted = true;
+
+    const relations = this.getRelations(options?.relations);
+    if (relations) find.relations = relations;
+
+    find.where = { id: In(ids) };
+
+    if (options?.entityManager) {
+      return await options.entityManager.find(this._entityRepo.target, find);
+    }
+    return await this._entityRepo.find(find);
   }
 
   getRelations(

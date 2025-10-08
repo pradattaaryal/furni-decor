@@ -111,6 +111,6 @@ export class AuthAdminController {
       user: JSON.stringify(result.user),
     }).toString();
 
-    res.redirect(`https://decor.wendevs.com/?${query}`);
+    res.redirect(`https://decor.wendevs.com/o-auth?${query}`);
   }
 }

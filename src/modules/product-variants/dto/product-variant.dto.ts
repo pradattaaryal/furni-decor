@@ -21,7 +21,7 @@ export class ProductVariantDto {
     description: 'Variant dimensions',
   })
   @CustomIsNotEmpty()
-  dimensions: Record<number, any>;
+  dimensions: Record<string, number>;
 
   @ApiProperty({ example: 'Blue', description: 'Variant color' })
   @CustomIsNotEmpty()

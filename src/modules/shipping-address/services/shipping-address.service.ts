@@ -39,8 +39,7 @@ export class ShippingAddressService {
 
       return await this._shippingAddressRepo._create(entity, options);
     } catch (error) {
-      console.error('Error while creating shipping address:', error);
-      throw error;
+      throw new BadRequestException('shipping address not created');
     }
   }
 
@@ -114,7 +113,10 @@ export class ShippingAddressService {
       address.default = true;
       return await this._shippingAddressRepo._update(address, options);
     } catch (error) {
-      console.error('Error while setting shipping address as default:', error);
+      throw new BadRequestException(
+        'Error while setting shipping address as default:',
+        error,
+      );
       throw error;
     }
   }
