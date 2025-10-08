@@ -6,10 +6,11 @@ import { OtpRepository } from './repositories/otp.repository';
 import { OtpEntity } from './entities/otp.entity';
 import { UserRepositoryModule } from '../user/repositories/user.repostory.module';
 import { CartModule } from '../cart/cart.module';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OtpEntity]),
+    TypeOrmModule.forFeature([OtpEntity,UserEntity]),
     UserRepositoryModule,
     forwardRef(() => CartModule),
   ],

@@ -11,9 +11,12 @@ import { JwtKeysService } from 'src/modules/authentication/services/jwt-token.se
 import { ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { CartModule } from '../cart/cart.module';
+import { UserEntity } from '../user/entities/user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([UserEntity]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],

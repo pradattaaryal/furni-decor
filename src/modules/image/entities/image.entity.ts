@@ -59,10 +59,8 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
   @JoinColumn({ name: 'product_id' })
   product: ProductEntity;
 
-
   @OneToMany(() => BlogEntity, (blog) => blog.image, {
     cascade: false,
   })
   blogs: BlogEntity[];
-
 }

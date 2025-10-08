@@ -26,7 +26,6 @@ export class CreatePaymentDto {
   @IsNumber()
   CartId: number;
 
-  
   @ApiProperty({
     description: 'Payment amount to be charged',
     example: 99.99,

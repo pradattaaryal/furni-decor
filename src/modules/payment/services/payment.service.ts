@@ -21,7 +21,6 @@ import { Order } from '@getbrevo/brevo';
 
 @Injectable()
 export class PaymentService {
- 
   constructor(
     @InjectRepository(PaymentEntity)
     private readonly paymentRepository: Repository<PaymentEntity>,
@@ -38,9 +37,7 @@ export class PaymentService {
     const adapter = this.paymentAdapterFactory.getAdapter(
       createPaymentDto.provider,
     );
-//const shipping =createPaymentDto.shippingaddress
-
-
+    //const shipping =createPaymentDto.shippingaddress
 
     const cart = await this._cartService.getById(createPaymentDto.CartId, {
       options: { relations: ['items'] },
@@ -52,8 +49,8 @@ export class PaymentService {
     return await this.dataSource.transaction(async (manager) => {
       const payment = await this.createPaymentEntity(
         createPaymentDto,
-       // cart.userId,
-         
+        // cart.userId,
+
         totalAmount,
         manager.getRepository(PaymentEntity),
       );
@@ -191,7 +188,7 @@ export class PaymentService {
       payment.status = PaymentStatus.FAILED;
       payment.failureReason = error.message;
       await this.paymentRepository.save(payment);
-       throw new InternalServerErrorException(error.message);
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

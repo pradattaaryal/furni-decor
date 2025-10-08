@@ -21,6 +21,8 @@ import { CartService } from 'src/modules/cart/services/cart.service';
 import { ICartItemEntity } from '../interfaces/cart-item.entity.interface';
 import { CartItemQuantityDto } from '../dto/cart-item.increment.dto';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
+import { UserService } from 'src/modules/user/services/user.service';
+import { use } from 'passport';
 
 @Injectable()
 export class CartItemService {
@@ -29,20 +31,32 @@ export class CartItemService {
     private readonly _productVariantService: ProductVariantService,
     private readonly _productService: ProductService,
     private readonly _cartService: CartService,
+    private readonly _userService: UserService,
   ) {}
 
   async create(
+    userId: number,
     createDto: CreateCartItemDto,
     options?: ICreateOptions,
   ): Promise<CartItemEntity> {
     try {
-      const { cartId, productId, variantId, quantity } = createDto;
+      const { productId, variantId, quantity } = createDto;
 
-      const cart = await this._cartService.getById(cartId);
-      if (!cart) {
-        throw new BadRequestException(`Cart with ID ${cartId} not found`);
+      const user = await this._userService.getById(userId, {
+        options: { relations: { cart: true } },
+      });
+      console.log(user);
+      if (!user) {
+        throw new NotFoundException('User not found');
       }
-
+      if (!user.cart?.id) {
+        throw new BadRequestException('Cart ID is undefined');
+      }
+      const cart = await this._cartService.getById(user.cart.id);
+      if (!cart) {
+        throw new BadRequestException(`Cart with ID ${user.cart.id} not found`);
+      }
+      console.log(cart);
       const product = await this._productService.getById(productId);
       if (!product) {
         throw new BadRequestException(`Product with ID ${productId} not found`);

@@ -1,22 +1,22 @@
 import {
-    BadRequestException,
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Patch,
-    Post,
-    Query,
-    UseGuards,
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
 import {
-    IResponse,
-    IResponsePaging,
+  IResponse,
+  IResponsePaging,
 } from 'src/common/response/interfaces/response.interface';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
@@ -29,6 +29,25 @@ import { BlogService } from '../services/blog.service';
 @Controller('/blogs')
 export class BlogAdminController {
   constructor(private readonly blogService: BlogService) {}
+  @Get('/list-all')
+  @ApiDocs({ operation: 'List All Blogs' })
+  @UseGuards(JwtAuthGuard)
+  async listAll(
+    @Query() paginateQueryDto: PaginateQueryDto,
+  ): Promise<IResponsePaging<BlogEntity>> {
+    if (paginateQueryDto.searchBy == 'name') {
+      paginateQueryDto.searchBy = '@@nameTsv';
+    }
+    return this.blogService.paginatedGet({
+      ...paginateQueryDto,
+      options: {
+        withDeleted: false,
+        relations: { author: true, category: true, image: true },
+      },
+      searchableColumns: ['@@nameTsv'],
+      defaultSearchColumns: ['@@nameTsv'],
+    });
+  }
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Blog' })
@@ -39,7 +58,7 @@ export class BlogAdminController {
   ): Promise<IResponse<{ item: BlogEntity; message: string }>> {
     const newBlog = {
       ...createDto,
-      authorId: user.sub, 
+      authorId: user.sub,
     };
 
     const item = await this.blogService.create(newBlog);
@@ -52,28 +71,17 @@ export class BlogAdminController {
     };
   }
 
-  @Get('/listByAuthor')
+  @Get('/list-by-author/:id')
   @ApiDocs({ operation: 'List Blogs for Logged-in Author' })
-  @UseGuards(JwtAuthGuard)
   async listByAuthor(
-    @Query() paginateQuery: PaginateQueryDto,
-    @GetUser() user: AccessTokenPayload,
+    @Param() params: IdParamDto,
   ): Promise<IResponsePaging<BlogEntity>> {
     return this.blogService.paginatedGet({
-      ...paginateQuery,
-      options: { where: { authorId: user.sub }, withDeleted: false },
-    });
-  }
-
-  @Get('/listAll')
-  @ApiDocs({ operation: 'List All Blogs' })
-  @UseGuards(JwtAuthGuard)
-  async listAll(
-    @Query() paginateQuery: PaginateQueryDto,
-  ): Promise<IResponsePaging<BlogEntity>> {
-    return this.blogService.paginatedGet({
-      ...paginateQuery,
-      options: { withDeleted: false },
+      options: {
+        where: { authorId: params.id },
+        withDeleted: false,
+        relations: { author: true, category: true, image: true },
+      },
     });
   }
 
@@ -83,7 +91,9 @@ export class BlogAdminController {
   async getById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ item: BlogEntity | null; message: string }>> {
-    const blog = await this.blogService.getById(params.id);
+    const blog = await this.blogService.getById(params.id, {
+      options: { relations: { author: true, category: true, image: true } },
+    });
     if (!blog) {
       return {
         data: {
@@ -114,7 +124,6 @@ export class BlogAdminController {
       throw new BadRequestException('Blog not found');
     }
 
-    // Ensure the user is authorized to update the blog
     if (blog.authorId !== user.sub) {
       throw new BadRequestException('Unauthorized to update this blog');
     }
@@ -145,7 +154,6 @@ export class BlogAdminController {
       };
     }
 
-    // Ensure the user is authorized to delete the blog
     if (blog.authorId !== user.sub) {
       throw new BadRequestException('Unauthorized to delete this blog');
     }
@@ -171,7 +179,6 @@ export class BlogAdminController {
       throw new BadRequestException('Blog not found');
     }
 
-    // Ensure the user is authorized to delete the blog
     if (blog.authorId !== user.sub) {
       throw new BadRequestException('Unauthorized to delete this blog');
     }
