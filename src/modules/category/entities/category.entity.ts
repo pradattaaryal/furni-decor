@@ -15,6 +15,7 @@ export const CATEGORY_DATABASE_TABLE_NAME = 'categories';
 
 import slugify from 'slugify';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
+import { BlogEntity } from 'src/modules/blog/entities/blog.entity';
 
 @Entity({ name: CATEGORY_DATABASE_TABLE_NAME })
 @Index(['name', 'parent_id'])
@@ -53,6 +54,9 @@ export class CategoryEntity
 
   @OneToMany(() => ProductEntity, (product) => product.category)
   products: ProductEntity[];
+
+  @OneToMany(() => BlogEntity, (blog) => blog.category)
+  blog: BlogEntity[];
   // ======================
   // Hooks =================
   // ======================
