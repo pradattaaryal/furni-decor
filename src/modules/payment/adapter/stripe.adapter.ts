@@ -9,57 +9,88 @@ import {
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import Stripe from 'stripe';
 import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
+import { OrderService } from 'src/modules/order/services/order.service';
+import { CreatePaymentDto } from '../dto/create-payment.dto';
+ 
 
 @Injectable()
 export class StripeAdapter implements PaymentAdapterInterface {
   private readonly stripe: Stripe;
   private readonly logger = new Logger(StripeAdapter.name);
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly _orderService: OrderService,
+    // private readonly _cartService: CartService,
+  ) {
     const secretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     if (!secretKey) {
       throw new Error('Stripe secret key is not configured');
     }
 
-    this.stripe = new Stripe(secretKey, {
-      apiVersion: '2025-08-27.basil',
-    });
+    this.stripe = new Stripe(secretKey);
   }
 
   async createPayment(
     payment: PaymentEntity,
+    dto: CreatePaymentDto,
     cart: CartEntity,
   ): Promise<PaymentResult> {
     try {
-      const totalamount = payment.amount;
-      const currency = payment.currency || 'usd';
+      const { amount, currency = 'usd' } = payment;
+      const userId = cart.userId;
 
-      const paymentIntent = await this.stripe.paymentIntents.create({
-        amount: Math.round(totalamount * 100),
+       const order = await this._orderService.createOrder(
+        userId,
+        dto.shippingaddress,
+      );
+      if (!order) {
+        throw new BadRequestException('Order creation failed');
+      }
+
+      const paymentIntentData = {
+        amount: Math.round(amount * 100), 
         currency,
+        payment_method_types: ['card'],
+        description: 'Purchase from Furni Decor',
         metadata: {
-          cartId: cart.id.toString(),
-          userId: cart.userId?.toString() || '',
+          cartId: String(cart.id),
+          userId: String(userId),
+          orderId: String(order.id),
         },
-        // idempotencyKey: `${orderId}-${userId}`,
-      });
+      };
+      const idempotencyKey = `${order.id}-${userId}`;
+
+      const paymentIntent = await this.stripe.paymentIntents.create(
+        paymentIntentData,
+        { idempotencyKey },
+      );
 
       return {
+ 
         success: true,
         paymentId: paymentIntent.id,
         transactionId: paymentIntent.id,
+        cart: cart,
         status: this.mapStripeStatus(paymentIntent.status),
         metadata: {
           clientSecret: paymentIntent.client_secret,
         },
       };
     } catch (error) {
-      this.logger.error('Stripe payment creation failed', error);
+      this.logger.error(
+        'Stripe payment creation failed',
+        error.stack || error.message,
+      );
+
       return {
         success: false,
         paymentId: '',
         status: PaymentStatus.FAILED,
-        errorMessage: error.message,
+        errorMessage:
+          error instanceof BadRequestException
+            ? error.message
+            : 'Payment creation failed. Please try again later.',
       };
     }
   }

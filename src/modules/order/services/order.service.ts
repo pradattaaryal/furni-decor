@@ -35,13 +35,12 @@ export class OrderService {
   ) {}
 
   async createOrder(
-    user_id,
-    dto: CreateOrderDto,
+    user_id: number,
+    ShippingAddressId: number,
     options?: { entityManager?: EntityManager },
   ): Promise<OrderEntity> {
-    const shippingAddress = await this._shippingAddressService.getById(
-      dto.shippingAddress,
-    );
+    const shippingAddress =
+      await this._shippingAddressService.getById(ShippingAddressId);
     if (!shippingAddress) {
       throw new NotFoundException('Shipping address not found');
     }
@@ -49,7 +48,7 @@ export class OrderService {
     const cart = await this._cartService.findByUserId(user_id);
 
     if (!cart) {
-      throw new NotFoundException('Cart not aaaaaaaa found');
+      throw new NotFoundException(`Cart of user id ${user_id} not found`);
     }
     if (!cart.items || cart.items.length === 0) {
       throw new BadRequestException('Cart is empty, cannot create order');
@@ -71,18 +70,18 @@ export class OrderService {
     for (const item of bulkOrderItems) {
       await this._orderItemService.create(item, options);
     }
-    await this.clearCartRecursive(cart);
+   // await this.clearCartRecursive(cart);
     return order;
   }
-  async clearCartRecursive(cart: CartEntity): Promise<void> {
-    if (!cart) return;
+  // async clearCartRecursive(cart: CartEntity): Promise<void> {
+  //   if (!cart) return;
 
-    if (cart.items && cart.items.length) {
-      await Promise.all(
-        cart.items.map((item) => this._cartItemService.bulksoftDelete(item)),
-      );
-    }
-  }
+  //   if (cart.items && cart.items.length) {
+  //     await Promise.all(
+  //       cart.items.map((item) => this._cartItemService.bulksoftDelete(item)),
+  //     );
+  //   }
+  // }
 
   async getById(
     id: number,

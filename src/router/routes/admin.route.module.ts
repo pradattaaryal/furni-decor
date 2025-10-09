@@ -30,7 +30,7 @@ import { PaymentModule } from 'src/modules/payment/payment.module';
 import { PaymentController } from 'src/modules/payment/controllers/payment.controller';
 import { BlogAdminController } from 'src/modules/blog/controllers/blog.admin.controller';
 import { BlogModule } from 'src/modules/blog/blog.module';
-
+ 
 @Module({
   imports: [
     UserModule,
@@ -49,7 +49,7 @@ import { BlogModule } from 'src/modules/blog/blog.module';
     OrderItemModule,
     PaymentModule,
     WishlistModule,
-  ],
+   ],
   controllers: [
     BlogAdminController,
     AdminUserController,
@@ -66,6 +66,6 @@ import { BlogModule } from 'src/modules/blog/blog.module';
     OrderItemAdminController,
     WishlistAdminController,
     PaymentController,
-  ],
+   ],
 })
 export class AdminRouterModule {}
