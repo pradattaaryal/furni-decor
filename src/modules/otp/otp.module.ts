@@ -10,7 +10,7 @@ import { UserEntity } from '../user/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OtpEntity,UserEntity]),
+    TypeOrmModule.forFeature([OtpEntity, UserEntity]),
     UserRepositoryModule,
     forwardRef(() => CartModule),
   ],

@@ -6,6 +6,7 @@ import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 
 export interface PaymentResult {
   success: boolean;
+  cart?: CartEntity;
   paymentId: string;
   transactionId?: string;
   status: PaymentStatus;
@@ -25,6 +26,7 @@ export interface RefundResult {
 export interface PaymentAdapterInterface {
   createPayment(
     data: PaymentEntity,
+    createPaymentDto: CreatePaymentDto,
     CartData: CartEntity,
   ): Promise<PaymentResult>;
   getPaymentStatus(paymentId: string): Promise<PaymentStatus>;

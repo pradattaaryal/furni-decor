@@ -84,7 +84,8 @@ export class OrderItemEntity extends DatabaseBaseEntity {
   domesticWarranty?: string;
 
   // ====== Images ======
-  @OneToOne(() => ImageEntity, {
+  // ====== Images ======
+  @ManyToOne(() => ImageEntity, {
     cascade: true,
     onDelete: 'SET NULL',
     nullable: true,
@@ -92,7 +93,7 @@ export class OrderItemEntity extends DatabaseBaseEntity {
   @JoinColumn({ name: 'product_image_id' })
   productImage: ImageEntity | null;
 
-  @OneToOne(() => ImageEntity, {
+  @ManyToOne(() => ImageEntity, {
     cascade: true,
     onDelete: 'SET NULL',
     nullable: true,
