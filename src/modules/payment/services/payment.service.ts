@@ -39,7 +39,7 @@ export class PaymentService {
 
     const totalAmount = await this.validateCart(cart);
 
-    // Use transaction to ensure atomicity
+  
     return this.dataSource.transaction(async (manager) => {
       const paymentRepo = manager.getRepository(PaymentEntity);
 
@@ -178,7 +178,6 @@ export class PaymentService {
   private mapToResponseDto(
     cart: CartEntity,
     payment: PaymentEntity,
-    
     checkoutUrl?: string,
     message?: string,
   ): PaymentResponseDto {

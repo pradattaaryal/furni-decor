@@ -11,8 +11,7 @@ import Stripe from 'stripe';
 import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
 import { OrderService } from 'src/modules/order/services/order.service';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
-import { object } from 'joi';
-import { CartService } from 'src/modules/cart/services/cart.service';
+ 
 
 @Injectable()
 export class StripeAdapter implements PaymentAdapterInterface {
@@ -29,9 +28,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
       throw new Error('Stripe secret key is not configured');
     }
 
-    this.stripe = new Stripe(secretKey, {
-      apiVersion: '2025-08-27.basil',
-    });
+    this.stripe = new Stripe(secretKey);
   }
 
   async createPayment(
@@ -51,7 +48,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
         throw new BadRequestException('Order creation failed');
       }
 
-       const paymentIntentData = {
+      const paymentIntentData = {
         amount: Math.round(amount * 100), 
         currency,
         payment_method_types: ['card'],
@@ -62,7 +59,6 @@ export class StripeAdapter implements PaymentAdapterInterface {
           orderId: String(order.id),
         },
       };
-      console.log(Object.keys(paymentIntentData));
       const idempotencyKey = `${order.id}-${userId}`;
 
       const paymentIntent = await this.stripe.paymentIntents.create(

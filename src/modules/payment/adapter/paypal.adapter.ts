@@ -9,18 +9,31 @@ import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { OrderService } from 'src/modules/order/services/order.service';
-import { CartService } from 'src/modules/cart/services/cart.service';
 
 @Injectable()
 export class PayPalAdapter implements PaymentAdapterInterface {
   private readonly logger = new Logger(PayPalAdapter.name);
+  private readonly useMock: boolean;
+  private readonly apiBase: string;
+  private readonly clientId?: string;
+  private readonly clientSecret?: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly _orderService: OrderService,
-    private readonly _cartService: CartService,
   ) {
     this.logger.log('PayPal adapter initialized');
+    this.useMock = this.configService.get<boolean>('PAYPAL_MOCK') ?? false;
+    this.apiBase =
+ 
+      this.configService.get<string>('PAYPAL_API_BASE') ||
+      'https://api-m.sandbox.paypal.com';
+    this.clientId =
+      
+      this.configService.get<string>('PAYPAL_CLIENT_ID');
+    this.clientSecret =
+      
+      this.configService.get<string>('PAYPAL_CLIENT_SECRET');
   }
 
   async createPayment(
@@ -32,35 +45,49 @@ export class PayPalAdapter implements PaymentAdapterInterface {
       const { amount, currency = 'USD' } = payment;
       const userId = cart.userId;
 
-      // 🧾 Create order in your database before initiating payment
+      
       const order = await this._orderService.createOrder(
         userId,
         dto.shippingaddress,
       );
       if (!order) throw new BadRequestException('Order creation failed');
 
-      // ⚙️ Mock PayPal order creation (replace this with PayPal SDK/API call)
-      const orderResponse = {
-        id: `PAYPAL-${Date.now()}`,
-        status: 'CREATED',
-        links: [
-          {
-            rel: 'approve',
-            href: `https://www.sandbox.paypal.com/checkoutnow?token=${Date.now()}`,
-          },
-        ],
-      };
+      if (this.useMock) {
+        const mockId = `PAYPAL-${Date.now()}`;
+        const mockApproveUrl = `https://www.sandbox.paypal.com/checkoutnow?token=${mockId}`;
+        return {
+          success: true,
+          paymentId: mockId,
+          transactionId: mockId,
+          cart,
+          status: this.mapPayPalStatus('CREATED'),
+          checkoutUrl: mockApproveUrl,
+        };
+      }
 
-      // ✅ Unified response structure — same as StripeAdapter
+      const createOrder = await this.createOrderLive({
+        amount,
+        currency,
+        returnUrl: dto.returnUrl,
+        cancelUrl: dto.cancelUrl,
+        cart,
+        userId,
+        orderId: order.id,
+        description: payment.description,
+      });
+
+      const approveUrl = this.extractLink(createOrder, 'approve');
+      if (!approveUrl) {
+        throw new BadRequestException('PayPal approve URL not found');
+      }
+
       return {
         success: true,
-        paymentId: orderResponse.id,
-        transactionId: orderResponse.id,
+        paymentId: createOrder.id,
+        transactionId: createOrder.id,
         cart,
-        status: this.mapPayPalStatus(orderResponse.status),
-        metadata: {
-          checkoutUrl: orderResponse.links[0].href, // different from Stripe’s clientSecret
-        },
+        status: this.mapPayPalStatus(createOrder.status),
+        checkoutUrl: approveUrl,
       };
     } catch (error) {
       this.logger.error(
@@ -130,7 +157,8 @@ export class PayPalAdapter implements PaymentAdapterInterface {
   }
 
   verifyWebhook(payload: any, signature: string): boolean {
-    // Implement real webhook verification using PayPal SDK if needed
+    // Note: Proper PayPal webhook verification requires multiple headers and webhookId
+    // For now, return true as a permissive fallback; production should verify against PayPal API
     return true;
   }
 
@@ -144,5 +172,80 @@ export class PayPalAdapter implements PaymentAdapterInterface {
     };
 
     return map[status] || PaymentStatus.FAILED;
+  }
+
+  private async getAccessToken(): Promise<string> {
+    if (!this.clientId || !this.clientSecret) {
+      throw new BadRequestException('PayPal credentials not configured');
+    }
+    const basic = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
+    const res = await fetch(`${this.apiBase}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${basic}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials',
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      this.logger.error(`PayPal token error: ${res.status} ${text}`);
+      throw new BadRequestException('Failed to authenticate with PayPal');
+    }
+    const data = (await res.json()) as { access_token: string };
+    return data.access_token;
+  }
+
+  private async createOrderLive(params: {
+    amount: number;
+    currency: string;
+    returnUrl?: string;
+    cancelUrl?: string;
+    description?: string;
+    cart: CartEntity;
+    userId: number;
+    orderId: number;
+  }): Promise<any> {
+    const token = await this.getAccessToken();
+    const body = {
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          amount: {
+            currency_code: params.currency || 'USD',
+            value: params.amount.toFixed(2),
+          },
+          description: params.description || 'Furni Decor order',
+          custom_id: String(params.orderId),
+        },
+      ],
+      application_context: {
+        brand_name: 'Furni Decor',
+        user_action: 'PAY_NOW',
+        return_url: params.returnUrl || 'https://example.com/payment/success',
+        cancel_url: params.cancelUrl || 'https://example.com/payment/cancel',
+      },
+    };
+
+    const res = await fetch(`${this.apiBase}/v2/checkout/orders`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    const text = await res.text();
+    if (!res.ok) {
+      this.logger.error(`PayPal create order error: ${res.status} ${text}`);
+      throw new BadRequestException('Failed to create PayPal order');
+    }
+    return JSON.parse(text);
+  }
+
+  private extractLink(order: any, rel: string): string | undefined {
+    if (!order?.links) return undefined;
+    const link = order.links.find((l: any) => l.rel === rel);
+    return link?.href;
   }
 }

@@ -70,18 +70,18 @@ export class OrderService {
     for (const item of bulkOrderItems) {
       await this._orderItemService.create(item, options);
     }
-    await this.clearCartRecursive(cart);
+   // await this.clearCartRecursive(cart);
     return order;
   }
-  async clearCartRecursive(cart: CartEntity): Promise<void> {
-    if (!cart) return;
+  // async clearCartRecursive(cart: CartEntity): Promise<void> {
+  //   if (!cart) return;
 
-    if (cart.items && cart.items.length) {
-      await Promise.all(
-        cart.items.map((item) => this._cartItemService.bulksoftDelete(item)),
-      );
-    }
-  }
+  //   if (cart.items && cart.items.length) {
+  //     await Promise.all(
+  //       cart.items.map((item) => this._cartItemService.bulksoftDelete(item)),
+  //     );
+  //   }
+  // }
 
   async getById(
     id: number,
