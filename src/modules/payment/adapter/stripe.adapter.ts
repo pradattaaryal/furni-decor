@@ -11,7 +11,6 @@ import Stripe from 'stripe';
 import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
 import { OrderService } from 'src/modules/order/services/order.service';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
- 
 
 @Injectable()
 export class StripeAdapter implements PaymentAdapterInterface {
@@ -40,7 +39,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
       const { amount, currency = 'usd' } = payment;
       const userId = cart.userId;
 
-       const order = await this._orderService.createOrder(
+      const order = await this._orderService.createOrder(
         userId,
         dto.shippingaddress,
       );
@@ -49,7 +48,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
       }
 
       const paymentIntentData = {
-        amount: Math.round(amount * 100), 
+        amount: Math.round(amount * 100),
         currency,
         payment_method_types: ['card'],
         description: 'Purchase from Furni Decor',
@@ -67,7 +66,6 @@ export class StripeAdapter implements PaymentAdapterInterface {
       );
 
       return {
- 
         success: true,
         paymentId: paymentIntent.id,
         transactionId: paymentIntent.id,

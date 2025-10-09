@@ -31,14 +31,13 @@ export class BlogAdminController {
   constructor(private readonly blogService: BlogService) {}
   @Get('/list-all')
   @ApiDocs({ operation: 'List All Blogs' })
-  @UseGuards(JwtAuthGuard)
   async listAll(
     @Query() paginateQueryDto: PaginateQueryDto,
   ): Promise<IResponsePaging<BlogEntity>> {
-    if (paginateQueryDto.searchBy == 'name') {
+    if (paginateQueryDto.searchBy == 'title') {
       paginateQueryDto.searchBy = '@@nameTsv';
     }
-    return this.blogService.paginatedGet({
+    const data = await this.blogService.paginatedGet({
       ...paginateQueryDto,
       options: {
         withDeleted: false,
@@ -47,6 +46,7 @@ export class BlogAdminController {
       searchableColumns: ['@@nameTsv'],
       defaultSearchColumns: ['@@nameTsv'],
     });
+    return data;
   }
 
   @Post('/create')
@@ -87,7 +87,6 @@ export class BlogAdminController {
 
   @Get('/:id')
   @ApiDocs({ operation: 'Get Blog by ID' })
-  @UseGuards(JwtAuthGuard)
   async getById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ item: BlogEntity | null; message: string }>> {

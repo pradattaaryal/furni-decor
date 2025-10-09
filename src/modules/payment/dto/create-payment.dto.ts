@@ -19,7 +19,7 @@ export class CreatePaymentDto {
   })
   @IsNumber()
   shippingaddress: number;
-  
+
   @ApiProperty({
     description: 'Cart ID associated with the payment',
     example: 6,

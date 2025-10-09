@@ -4,8 +4,8 @@ import { NestApplication, NestFactory, Reflector } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
 import swaggerInit from './swagger';
-import { json, raw } from 'express';
-
+import { json, raw, urlencoded } from 'express';
+import * as bodyParser from 'body-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
     rawBody: true,
@@ -13,7 +13,7 @@ async function bootstrap() {
   });
 
   app.use(
-    '/backend/api/stripe/webhook',
+    '/backend/api/admin/payment/xxx',
     raw({
       type: 'application/json',
       verify: (req, res, buf) => {
@@ -21,10 +21,8 @@ async function bootstrap() {
       },
     }),
   );
-
   // Other JSON endpoints use the normal JSON parser
   app.use(json());
-
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await swaggerInit(app);
   app.use(helmet());

@@ -25,15 +25,10 @@ export class PayPalAdapter implements PaymentAdapterInterface {
     this.logger.log('PayPal adapter initialized');
     this.useMock = this.configService.get<boolean>('PAYPAL_MOCK') ?? false;
     this.apiBase =
- 
       this.configService.get<string>('PAYPAL_API_BASE') ||
       'https://api-m.sandbox.paypal.com';
-    this.clientId =
-      
-      this.configService.get<string>('PAYPAL_CLIENT_ID');
-    this.clientSecret =
-      
-      this.configService.get<string>('PAYPAL_CLIENT_SECRET');
+    this.clientId = this.configService.get<string>('PAYPAL_CLIENT_ID');
+    this.clientSecret = this.configService.get<string>('PAYPAL_CLIENT_SECRET');
   }
 
   async createPayment(
@@ -45,7 +40,6 @@ export class PayPalAdapter implements PaymentAdapterInterface {
       const { amount, currency = 'USD' } = payment;
       const userId = cart.userId;
 
-      
       const order = await this._orderService.createOrder(
         userId,
         dto.shippingaddress,
@@ -178,7 +172,9 @@ export class PayPalAdapter implements PaymentAdapterInterface {
     if (!this.clientId || !this.clientSecret) {
       throw new BadRequestException('PayPal credentials not configured');
     }
-    const basic = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
+    const basic = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString(
+      'base64',
+    );
     const res = await fetch(`${this.apiBase}/v1/oauth2/token`, {
       method: 'POST',
       headers: {

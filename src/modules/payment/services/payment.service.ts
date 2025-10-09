@@ -39,7 +39,6 @@ export class PaymentService {
 
     const totalAmount = await this.validateCart(cart);
 
-  
     return this.dataSource.transaction(async (manager) => {
       const paymentRepo = manager.getRepository(PaymentEntity);
 
@@ -55,7 +54,6 @@ export class PaymentService {
         payment.status = result.success ? result.status : PaymentStatus.FAILED;
 
         if (result.success) {
-      
           payment.providerPaymentId = result.paymentId;
           payment.providerTransactionId = result.transactionId ?? '';
           payment.metadata = {
@@ -67,7 +65,9 @@ export class PaymentService {
         await paymentRepo.save(payment);
 
         if (!result.cart) {
-          throw new InternalServerErrorException('Cart data is missing in the payment result.');
+          throw new InternalServerErrorException(
+            'Cart data is missing in the payment result.',
+          );
         }
         return this.mapToResponseDto(
           result.cart,
