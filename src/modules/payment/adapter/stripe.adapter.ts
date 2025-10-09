@@ -140,24 +140,22 @@ export class StripeAdapter implements PaymentAdapterInterface {
       await this.stripe.paymentIntents.cancel(paymentId);
       return true;
     } catch (error) {
-      this.logger.error(`Failed to cancel payment ${paymentId}`, error);
-      return false;
+      throw new BadRequestException(`Failed to cancel payment ${paymentId}`, error);
+      
     }
   }
 
-  verifyWebhook(payload: Buffer, signature: string): boolean {
+  verifyWebhook(payload: Buffer, signature: string) :Stripe.Event {
     try {
-      const endpointSecret = this.configService.get<string>(
-        'STRIPE_WEBHOOK_SECRET',
-      );
+      const endpointSecret = 'whsec_00b0811384baf145ffad28a2513a7081ab6d3a23d396580a31ba11cbe41142b7'
       if (!endpointSecret)
         throw new Error('Stripe webhook secret not configured');
 
-      this.stripe.webhooks.constructEvent(payload, signature, endpointSecret);
-      return true;
+      const event=this.stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+      return event;
     } catch (error) {
       this.logger.warn('Webhook verification failed', error);
-      return false;
+       throw new BadRequestException('Invalid webhook signature');
     }
   }
 

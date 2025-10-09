@@ -67,26 +67,18 @@ export class PaymentController {
     console.log('🟢 [Stripe Webhook] Incoming request');
 
     const rawBody = req.rawBody; // this must be a Buffer
-    console.log('Signature:', signature);
-    console.log('Raw body type:', typeof rawBody);
-    console.log('Raw body length:', rawBody?.length);
-    console.log('Webhook secret:', this.webhookSecret);
+    
 
     if (!signature) throw new BadRequestException('Missing Stripe signature');
     if (!rawBody) throw new BadRequestException('Missing raw body');
 
     try {
       const event = this.stripe.webhooks.constructEvent(
-        rawBody, // must be Buffer or string of raw JSON
+        rawBody, 
         signature,
         'whsec_00b0811384baf145ffad28a2513a7081ab6d3a23d396580a31ba11cbe41142b7',
-      );
-
-      console.log('✅ Stripe event received:', event.type);
-      console.log('📦 Event data:', JSON.stringify(event.data.object, null, 2));
-
-      // Optionally forward to webhookService
-      //await this.webhookService.handleStripeWebhook(event);
+      ); 
+       await this.webhookService.handleStripeWebhook(rawBody, signature);
 
       return { received: true };
     } catch (err) {

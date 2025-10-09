@@ -29,12 +29,8 @@ export const addBlogNameTsvTriggers = async (queryRunner: QueryRunner) => {
   `);
 
   // 2️⃣ Drop existing triggers to avoid conflicts
-  await queryRunner.query(
-    `DROP TRIGGER IF EXISTS before_insert_blog ON blogs;`,
-  );
-  await queryRunner.query(
-    `DROP TRIGGER IF EXISTS before_update_blog ON blogs;`,
-  );
+  await queryRunner.query(`DROP TRIGGER IF EXISTS before_insert_blog ON blogs;`);
+  await queryRunner.query(`DROP TRIGGER IF EXISTS before_update_blog ON blogs;`);
 
   // 3️⃣ Create BEFORE INSERT trigger
   await queryRunner.query(`
@@ -45,11 +41,20 @@ export const addBlogNameTsvTriggers = async (queryRunner: QueryRunner) => {
   `);
 
   // 4️⃣ Create BEFORE UPDATE trigger
-  //   await queryRunner.query(`
-  //     CREATE TRIGGER before_update_blog
-  //     BEFORE UPDATE ON blogs
-  //     FOR EACH ROW
-  //     WHEN (OLD.title IS DISTINCT FROM NEW.title)
-  //     EXECUTE FUNCTION update_blog_title_tsv();
-  //   `);
+  await queryRunner.query(`
+    CREATE TRIGGER before_update_blog
+    BEFORE UPDATE ON blogs
+    FOR EACH ROW
+    WHEN (OLD.title IS DISTINCT FROM NEW.title)
+    EXECUTE FUNCTION update_blog_title_tsv();
+  `);
+};
+export const removeNameTsvTriggers = async (queryRunner: QueryRunner) => {
+  await queryRunner.query(
+    `DROP TRIGGER IF EXISTS before_insert_blog ON blogs;`,
+  );
+  await queryRunner.query(
+    `DROP TRIGGER IF EXISTS before_update_blog ON blogs;`,
+  );
+  await queryRunner.query(`DROP FUNCTION IF EXISTS update_blog_title_tsv;`);
 };

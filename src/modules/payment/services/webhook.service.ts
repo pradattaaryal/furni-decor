@@ -16,34 +16,39 @@ export class WebhookService {
     @InjectRepository(PaymentEntity)
     private paymentRepository: Repository<PaymentEntity>,
     private paymentAdapterFactory: PaymentAdapterFactory,
-  ) {}
+  ) { }
 
   async handleStripeWebhook(payload: any, signature: string): Promise<void> {
     const adapter = this.paymentAdapterFactory.getAdapter(
       PaymentProvider.STRIPE,
     );
 
-    if (!adapter.verifyWebhook(payload, signature)) {
+
+    const event = adapter.verifyWebhook(payload, signature);
+    if (!event) {
+
       throw new BadRequestException('Invalid webhook signature');
     }
-
-    this.logger.log(`Processing Stripe webhook: ${payload.type}`);
-
-    switch (payload.type) {
+    const paymentIntent = event.data.object;
+    console.log(`Stripe payment ID: ${paymentIntent.id}`);
+    switch (event.type) {
       case 'payment_intent.succeeded':
+        console.log(`======================================payment sucess=========================================`);
         await this.handlePaymentSuccess(
-          payload.data.object.id,
-          PaymentProvider.STRIPE,
+          paymentIntent.id,
+           PaymentProvider.STRIPE,
         );
         break;
 
-      //   case 'payment_intent.payment_failed':
-      //     await this.handlePaymentFailure(
-      //       payload.data.object.id,
-      //       payload.data.object.last_payment_error?.message,
-      //       PaymentProvider.STRIPE
-      //     );
-      //     break;
+      case 'payment_intent.payment_failed':
+        console.log(`======================================payment failed=========================================`);
+
+        // await this.handlePaymentFailure(
+        //   payload.data.object.id,
+        //   payload.data.object.last_payment_error?.message,
+        //   PaymentProvider.STRIPE
+        // );
+        break;
 
       //   case 'payment_intent.canceled':
       //     await this.handlePaymentCancellation(
@@ -61,7 +66,7 @@ export class WebhookService {
       //     break;
 
       default:
-        this.logger.log(`Unhandled Stripe event type: ${payload.type}`);
+        this.logger.log(`event type: ${event.type}`);
     }
   }
 
@@ -94,6 +99,9 @@ export class WebhookService {
     provider: PaymentProvider,
   ): Promise<void> {
     try {
+      console.log(` payment success handler${providerPaymentId}`);
+      console.log(` payment provider${provider}`);
+
       const payment = await this.paymentRepository.findOne({
         where: { providerPaymentId, provider },
       });

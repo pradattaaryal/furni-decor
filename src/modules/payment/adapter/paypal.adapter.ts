@@ -150,7 +150,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
     }
   }
 
-  verifyWebhook(payload: any, signature: string): boolean {
+  verifyWebhook(payload: any, signature: string)  {
     // Note: Proper PayPal webhook verification requires multiple headers and webhookId
     // For now, return true as a permissive fallback; production should verify against PayPal API
     return true;
