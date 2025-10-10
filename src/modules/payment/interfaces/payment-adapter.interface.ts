@@ -3,6 +3,8 @@ import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
 import { CartItemEntity } from 'src/modules/cart-item/entities/cart-item.entity';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
+import Stripe from 'stripe';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
 
 export interface PaymentResult {
   success: boolean;
@@ -25,6 +27,7 @@ export interface RefundResult {
 
 export interface PaymentAdapterInterface {
   createPayment(
+    user: UserEntity,
     data: PaymentEntity,
     createPaymentDto: CreatePaymentDto,
     CartData: CartEntity,
@@ -32,5 +35,5 @@ export interface PaymentAdapterInterface {
   getPaymentStatus(paymentId: string): Promise<PaymentStatus>;
   refundPayment(paymentId: string, amount?: number): Promise<RefundResult>;
   cancelPayment(paymentId: string): Promise<boolean>;
-  verifyWebhook(payload: any, signature: string): boolean;
+  verifyWebhook(payload: Buffer, signature: string);
 }
