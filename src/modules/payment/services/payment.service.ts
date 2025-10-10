@@ -15,6 +15,7 @@ import { CartService } from 'src/modules/cart/services/cart.service';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
+import { UserService } from 'src/modules/user/services/user.service';
 
 @Injectable()
 export class PaymentService {
@@ -27,11 +28,12 @@ export class PaymentService {
     private readonly cartService: CartService,
     private readonly dataSource: DataSource,
     private readonly productRepo: ProductRepository,
+    private readonly _userService: UserService,
   ) {}
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
     const adapter = this.paymentAdapterFactory.getAdapter(dto.provider);
-
+    const user = await this._userService.getById(dto.userId);
     const cart = await this.cartService.getById(dto.CartId, {
       options: { relations: ['items'] },
     });
@@ -49,7 +51,7 @@ export class PaymentService {
       );
 
       try {
-        const result = await adapter.createPayment(payment, dto, cart);
+        const result = await adapter.createPayment(user, payment, dto, cart);
 
         payment.status = result.success ? result.status : PaymentStatus.FAILED;
 

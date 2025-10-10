@@ -11,6 +11,8 @@ import Stripe from 'stripe';
 import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
 import { OrderService } from 'src/modules/order/services/order.service';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { UserService } from 'src/modules/user/services/user.service';
 
 @Injectable()
 export class StripeAdapter implements PaymentAdapterInterface {
@@ -20,7 +22,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
   constructor(
     private readonly configService: ConfigService,
     private readonly _orderService: OrderService,
-    // private readonly _cartService: CartService,
+    private readonly _userService: UserService,
   ) {
     const secretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     if (!secretKey) {
@@ -31,55 +33,100 @@ export class StripeAdapter implements PaymentAdapterInterface {
   }
 
   async createPayment(
+    user: UserEntity,
     payment: PaymentEntity,
     dto: CreatePaymentDto,
     cart: CartEntity,
   ): Promise<PaymentResult> {
     try {
-      const { amount, currency = 'usd' } = payment;
-      const userId = cart.userId;
-
-      const order = await this._orderService.createOrder(
-        userId,
-        dto.shippingaddress,
-      );
-      if (!order) {
-        throw new BadRequestException('Order creation failed');
+      // --- Basic validations ---
+      if (cart.userId !== user.id) {
+        throw new BadRequestException('Cart does not belong to user.');
       }
 
-      const paymentIntentData = {
-        amount: Math.round(amount * 100),
-        currency,
-        payment_method_types: ['card'],
-        description: 'Purchase from Furni Decor',
-        metadata: {
-          cartId: String(cart.id),
-          userId: String(userId),
-          orderId: String(order.id),
-        },
-      };
-      const idempotencyKey = `${order.id}-${userId}`;
+      const { amount, currency = 'usd' } = payment;
+      if (!amount || amount <= 0) {
+        throw new BadRequestException('Invalid payment amount.');
+      }
 
+      const { paymentMethodId } = dto;
+
+      if (!paymentMethodId) {
+        throw new BadRequestException('Payment method is required.');
+      }
+
+      // --- 1. Create or get Stripe Customer ---
+      let customerId = user.stripeCustomerId;
+
+      if (!customerId) {
+        const customer = await this.stripe.customers.create({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+        });
+        customerId = customer.id;
+        await this._userService.updateStripeCustomerId(user.id, customerId);
+      }
+
+      // --- 2. Attach Payment Method ---
+      await this.stripe.paymentMethods.attach(paymentMethodId, {
+        customer: customerId,
+      });
+
+      await this.stripe.customers.update(customerId, {
+        invoice_settings: { default_payment_method: paymentMethodId },
+      });
+
+      // --- 3. Create Order ---
+      const order = await this._orderService.createOrder(
+        user.id,
+        dto.shippingaddress,
+      );
+      if (!order) throw new BadRequestException('Order creation failed');
+
+      // --- 4. Create Payment Intent ---
       const paymentIntent = await this.stripe.paymentIntents.create(
-        paymentIntentData,
-        { idempotencyKey },
+        {
+          amount: Math.round(amount * 100), // amount in cents
+          currency,
+          customer: customerId,
+          automatic_payment_methods: {
+            enabled: true,
+            allow_redirects: 'never',
+          },
+          payment_method: paymentMethodId,
+          //confirm: true, // Confirm immediately
+          // return_url:'https://decor.wendevs.com/',
+          description: 'Purchase from Furni Decor',
+          metadata: {
+            cartId: String(cart.id),
+            userId: String(user.id),
+            orderId: String(order.id),
+          },
+        },
+        {
+          idempotencyKey: `order_${order.id}_user_${user.id}`,
+        },
       );
 
+      // --- 5. Return Payment Result ---
       return {
         success: true,
         paymentId: paymentIntent.id,
         transactionId: paymentIntent.id,
-        cart: cart,
+        cart,
         status: this.mapStripeStatus(paymentIntent.status),
         metadata: {
           clientSecret: paymentIntent.client_secret,
         },
       };
-    } catch (error) {
-      this.logger.error(
-        'Stripe payment creation failed',
-        error.stack || error.message,
-      );
+    } catch (error: any) {
+      // --- Enhanced Stripe Error Logging ---
+      this.logger.error('Stripe payment creation failed', {
+        message: error.message,
+        type: error.type,
+        raw: error.raw,
+        stack: error.stack,
+      });
 
       return {
         success: false,
@@ -140,22 +187,29 @@ export class StripeAdapter implements PaymentAdapterInterface {
       await this.stripe.paymentIntents.cancel(paymentId);
       return true;
     } catch (error) {
-      throw new BadRequestException(`Failed to cancel payment ${paymentId}`, error);
-      
+      throw new BadRequestException(
+        `Failed to cancel payment ${paymentId}`,
+        error,
+      );
     }
   }
 
-  verifyWebhook(payload: Buffer, signature: string) :Stripe.Event {
+  verifyWebhook(payload: Buffer, signature: string): Stripe.Event {
     try {
-      const endpointSecret = 'whsec_00b0811384baf145ffad28a2513a7081ab6d3a23d396580a31ba11cbe41142b7'
+      const endpointSecret =
+        'whsec_00b0811384baf145ffad28a2513a7081ab6d3a23d396580a31ba11cbe41142b7';
       if (!endpointSecret)
         throw new Error('Stripe webhook secret not configured');
 
-      const event=this.stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+      const event = this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        endpointSecret,
+      );
       return event;
     } catch (error) {
       this.logger.warn('Webhook verification failed', error);
-       throw new BadRequestException('Invalid webhook signature');
+      throw new BadRequestException('Invalid webhook signature');
     }
   }
 

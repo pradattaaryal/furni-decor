@@ -16,32 +16,34 @@ export class WebhookService {
     @InjectRepository(PaymentEntity)
     private paymentRepository: Repository<PaymentEntity>,
     private paymentAdapterFactory: PaymentAdapterFactory,
-  ) { }
+  ) {}
 
   async handleStripeWebhook(payload: any, signature: string): Promise<void> {
     const adapter = this.paymentAdapterFactory.getAdapter(
       PaymentProvider.STRIPE,
     );
 
-
     const event = adapter.verifyWebhook(payload, signature);
     if (!event) {
-
       throw new BadRequestException('Invalid webhook signature');
     }
     const paymentIntent = event.data.object;
     console.log(`Stripe payment ID: ${paymentIntent.id}`);
     switch (event.type) {
       case 'payment_intent.succeeded':
-        console.log(`======================================payment sucess=========================================`);
+        console.log(
+          `======================================payment sucess=========================================`,
+        );
         await this.handlePaymentSuccess(
           paymentIntent.id,
-           PaymentProvider.STRIPE,
+          PaymentProvider.STRIPE,
         );
         break;
 
       case 'payment_intent.payment_failed':
-        console.log(`======================================payment failed=========================================`);
+        console.log(
+          `======================================payment failed=========================================`,
+        );
 
         // await this.handlePaymentFailure(
         //   payload.data.object.id,

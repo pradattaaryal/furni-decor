@@ -21,6 +21,9 @@ export class UserEntity extends BaseUserEntity {
   @Column({ name: 'last_name', type: 'varchar', nullable: false })
   lastName: string | null;
 
+  @Column({ name: 'stripe_customer_id', type: 'varchar', nullable: true })
+  stripeCustomerId?: string | null;
+
   @OneToMany(() => ProductRatingEntity, (rating) => rating.user)
   productRatings: ProductRatingEntity[];
 

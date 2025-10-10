@@ -44,7 +44,10 @@ export class BlogAdminController {
         relations: { author: true, category: true, image: true },
       },
       searchableColumns: ['@@nameTsv'],
+       sortableColumns: ['id', 'createdAt'],
       defaultSearchColumns: ['@@nameTsv'],
+       defaultSortColumn: 'createdAt',
+      defaultSortOrder: 'DESC',
     });
     return data;
   }

@@ -9,6 +9,7 @@ import { PaymentEntity, PaymentStatus } from '../entities/payment.entity';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { OrderService } from 'src/modules/order/services/order.service';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
 
 @Injectable()
 export class PayPalAdapter implements PaymentAdapterInterface {
@@ -32,6 +33,8 @@ export class PayPalAdapter implements PaymentAdapterInterface {
   }
 
   async createPayment(
+    user: UserEntity,
+
     payment: PaymentEntity,
     dto: CreatePaymentDto,
     cart: CartEntity,
@@ -150,7 +153,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
     }
   }
 
-  verifyWebhook(payload: any, signature: string)  {
+  verifyWebhook(payload: any, signature: string) {
     // Note: Proper PayPal webhook verification requires multiple headers and webhookId
     // For now, return true as a permissive fallback; production should verify against PayPal API
     return true;

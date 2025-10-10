@@ -56,6 +56,23 @@ export class UserService {
     return user;
   }
 
+  async updateStripeCustomerId(
+    userId: number,
+    stripeCustomerId: string,
+  ): Promise<void> {
+    if (!userId || !stripeCustomerId) {
+      throw new BadRequestException(
+        'User ID and Stripe Customer ID are required',
+      );
+    }
+
+    const user = await this.userRepo._findOneById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    user.stripeCustomerId = stripeCustomerId;
+    await this.userRepo._update(user);
+  }
   async register(
     registerDto: UserCreateDto,
     options?: ICreateOptions,
