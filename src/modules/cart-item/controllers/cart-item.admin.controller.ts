@@ -35,9 +35,7 @@ export class CartItemAdminController {
   constructor(
     private readonly cartItemService: CartItemService,
     private _connection: DataSource,
-  ) { }
-
-
+  ) {}
 
   @Get('/user-cart-items')
   @UseGuards(JwtAuthGuard)
@@ -45,23 +43,23 @@ export class CartItemAdminController {
   async getCartByUserId(
     @Query() paginateQueryDto: PaginateQueryDto,
     @GetUser() user: AccessTokenPayload,
-  ): Promise<IResponse<{ data: CartItemEntity[]  ; message: string }>> {
+  ): Promise<IResponse<{ data: CartItemEntity[]; message: string }>> {
     const paginatedCartItems = await this.cartItemService.paginatedGet({
       ...paginateQueryDto,
       options: {
         where: { cart: { userId: user.sub } },
         withDeleted: false,
         relations: {
-          product: true,
-          variant: true,
+          product: { images: true },
+          variant: { image: true },
         },
       },
-        sortableColumns: ['id', 'createdAt'],
-        defaultSortColumn: 'createdAt',
-        defaultSortOrder: 'DESC',
+      sortableColumns: ['id', 'createdAt'],
+      defaultSortColumn: 'createdAt',
+      defaultSortOrder: 'DESC',
     });
- 
-     return {
+
+    return {
       data: {
         data: paginatedCartItems.data,
         message: 'Cart fetched successfully',
@@ -69,7 +67,6 @@ export class CartItemAdminController {
     };
   }
 
-  
   @Post('/create')
   @UseGuards(JwtAuthGuard)
   @ApiDocs({ operation: 'Add Product to Cart' })
@@ -247,6 +244,4 @@ export class CartItemAdminController {
       await queryRunner.release();
     }
   }
-
-
 }

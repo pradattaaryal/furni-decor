@@ -29,7 +29,7 @@ import { IsNull } from 'typeorm';
 @ApiTags('Blog')
 @Controller('/blogs')
 export class BlogAdminController {
-  constructor(private readonly blogService: BlogService) { }
+  constructor(private readonly blogService: BlogService) {}
   @Get('/list-all')
   @ApiDocs({ operation: 'List All Blogs' })
   async listAll(
@@ -75,9 +75,6 @@ export class BlogAdminController {
     };
   }
 
-
-
-
   @Get('/slug/:slug')
   @ApiDocs({ operation: 'Get Blog by Slug' })
   async getBySLug(
@@ -99,22 +96,10 @@ export class BlogAdminController {
     return {
       data: {
         blog,
-        message: 'Blog retrieved successfully'
+        message: 'Blog retrieved successfully',
       },
     };
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
   @Get('/list-by-author/:id')
   @ApiDocs({ operation: 'List Blogs for Logged-in Author' })
