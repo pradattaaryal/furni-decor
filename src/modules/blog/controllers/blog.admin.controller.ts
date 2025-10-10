@@ -24,11 +24,12 @@ import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { CreateBlogDto } from '../dto/blog.create.dto';
 import { BlogEntity } from '../entities/blog.entity';
 import { BlogService } from '../services/blog.service';
+import { IsNull } from 'typeorm';
 
 @ApiTags('Blog')
 @Controller('/blogs')
 export class BlogAdminController {
-  constructor(private readonly blogService: BlogService) {}
+  constructor(private readonly blogService: BlogService) { }
   @Get('/list-all')
   @ApiDocs({ operation: 'List All Blogs' })
   async listAll(
@@ -44,9 +45,9 @@ export class BlogAdminController {
         relations: { author: true, category: true, image: true },
       },
       searchableColumns: ['@@nameTsv'],
-       sortableColumns: ['id', 'createdAt'],
+      sortableColumns: ['id', 'createdAt'],
       defaultSearchColumns: ['@@nameTsv'],
-       defaultSortColumn: 'createdAt',
+      defaultSortColumn: 'createdAt',
       defaultSortOrder: 'DESC',
     });
     return data;
@@ -73,6 +74,47 @@ export class BlogAdminController {
       },
     };
   }
+
+
+
+
+  @Get('/slug/:slug')
+  @ApiDocs({ operation: 'Get Blog by Slug' })
+  async getBySLug(
+    @Param('slug') slug: string,
+  ): Promise<IResponse<{ blog: BlogEntity | null; message: string }>> {
+    const blog = await this.blogService.getOne({
+      options: {
+        where: {
+          slug: slug,
+          deletedAt: IsNull(),
+        },
+        relations: {
+          category: { parent: true, children: true },
+          image: true,
+        },
+      },
+    });
+
+    return {
+      data: {
+        blog,
+        message: 'Blog retrieved successfully'
+      },
+    };
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
   @Get('/list-by-author/:id')
   @ApiDocs({ operation: 'List Blogs for Logged-in Author' })
