@@ -17,6 +17,7 @@ import {
 import { IProductCreateDto } from '../interfaces/product.create.dto.interface';
 import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/product-variant.create.dto';
 
 export class ProductCreateDto implements IProductCreateDto {
   @ApiProperty({
@@ -29,6 +30,25 @@ export class ProductCreateDto implements IProductCreateDto {
   @CustomMaxLength(100)
   @Transform(({ value }: { value: string }) => value.trim())
   name: string;
+
+  @ApiProperty({
+    example: {
+      height: '80cm',
+      width: '120cm',
+      depth: '75cm',
+      seatHeight: '45cm',
+      weight: '25kg',
+    },
+    description: 'Variant dimensions',
+  })
+  @CustomIsNotEmpty()
+  dimensions: Record<string, number>;
+
+  @ApiProperty({ example: 50, description: 'Available stock  quantity' })
+  @CustomIsOptional()
+  @CustomIsNumber()
+  @Transform(({ value }: { value: any }) => parseInt(value))
+  quantity: number;
 
   @ApiProperty({
     example: faker.commerce.productDescription(),
@@ -44,31 +64,15 @@ export class ProductCreateDto implements IProductCreateDto {
   @ApiProperty({
     example: [
       {
-        dimensions: {
-          height: 80,
-          width: 120,
-          depth: 75,
-          seatHeight: 45,
-          weight: 25,
-        },
-        color: 'Blue',
-        quantity: 20,
-        imageId: 1,
+        colorId: 1,
+        imageId: 2,
       },
       {
-        dimensions: {
-          height: 85,
-          width: 140,
-          depth: 80,
-          seatHeight: 46,
-          weight: 28,
-        },
-        color: 'Blue',
-        quantity: 20,
-        imageId: 1,
+        colorId: 3,
+        imageId: 4,
       },
     ],
-    description: 'Product variants',
+    description: 'Product variants array',
     type: [ProductVariantDto],
     required: false,
   })

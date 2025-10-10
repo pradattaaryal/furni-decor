@@ -21,11 +21,12 @@ import { CategoryRepository } from 'src/modules/category/repositories/category.r
 import { CategoryService } from 'src/modules/category/services/category.service';
 import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
+import { BlogCategoryService } from 'src/modules/blog-category/services/blog-category.service';
 @Injectable()
 export class BlogService {
   constructor(
     private readonly _blogRepo: BlogRepository,
-    private readonly _categoryService: CategoryService,
+    private readonly _blogcategoryService: BlogCategoryService,
     @InjectRepository(BlogEntity)
     private productRepo: Repository<BlogEntity>,
   ) {}
@@ -37,7 +38,7 @@ export class BlogService {
     if (createDto.categoryId === undefined) {
       throw new Error('Category ID is required');
     }
-    const category = await this._categoryService.getById(createDto.categoryId);
+    const category = await this._blogcategoryService.getById(createDto.categoryId);
     if (!category) {
       throw new Error(`Category of id ${createDto.categoryId} not found`);
     }
@@ -128,7 +129,7 @@ export class BlogService {
     if (updateData.categoryId === undefined) {
       throw new Error('Category ID is required');
     }
-    const category = await this._categoryService.getById(updateData.categoryId);
+    const category = await this._blogcategoryService.getById(updateData.categoryId);
 
     if (!category) {
       throw new Error(`Category of id ${updateData.categoryId} not found`);

@@ -4,9 +4,7 @@ export interface IProductVariantEntity {
   updatedAt: Date;
   deletedAt?: Date | null;
   productId: number;
-  dimensions: Record<string, number>;
-  color: string;
-  quantity?: number | null;
+  colorId: number;
 
   imageId?: number | null;
 }

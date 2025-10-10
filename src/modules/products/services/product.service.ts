@@ -57,11 +57,7 @@ export class ProductService {
       }
     }
 
-    // Create the product
-    // const product = await this._productRepo._create(
-    //   { ...productData, images },
-    //   options,
-    // );
+ 
 
     const product = await this._productRepo.createProduct({
       ...productData,
@@ -94,7 +90,7 @@ export class ProductService {
     return this._productRepo._findOneById(id, {
       options: {
         select: {
-          variants: { id: true, color: true, dimensions: true },
+          variants: { id: true, color: true },
         },
         relations: {
           category: {

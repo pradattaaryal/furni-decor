@@ -33,6 +33,12 @@ export class ProductEntity
   @Column({ name: 'category_id' })
   categoryId: number;
 
+  @Column({ type: 'int', nullable: false })
+  quantity: number;
+
+  @Column({ type: 'jsonb', nullable: false })
+  dimensions: Record<string, number>;
+
   @Column({
     name: 'model_number',
     type: 'varchar',

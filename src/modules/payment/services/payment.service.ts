@@ -110,8 +110,6 @@ export class PaymentService {
       this.validateProduct(product);
       const price = this.getProductPrice(product);
 
-      if (item.variantId) this.validateVariant(item, product);
-
       total += price * item.quantity;
     }
 
@@ -144,18 +142,6 @@ export class PaymentService {
         );
     }
     return price;
-  }
-
-  private validateVariant(item: any, product: ProductEntity) {
-    const variant = product.variants?.find((v) => v.id === item.variantId);
-    if (!variant)
-      throw new BadRequestException(
-        `Invalid variant for product ${product.name}`,
-      );
-    if (variant.quantity < item.quantity)
-      throw new BadRequestException(
-        `Not enough stock for variant ${variant.id}`,
-      );
   }
 
   // --------------------- Helpers ---------------------

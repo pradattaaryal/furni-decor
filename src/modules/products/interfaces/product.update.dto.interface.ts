@@ -1,4 +1,5 @@
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/product-variant.create.dto';
 import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
 
 export interface IProductUpdateDto {
