@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
 import { DataSource } from 'typeorm';
 import { addNameTsvTriggers } from 'src/database/triggers/product-name-tsv.trigger';
+import { addBlogNameTsvTriggers } from 'src/database/triggers/blog-name-tsc.trigger';
 
 @Injectable()
 export class TriggerCommand {
@@ -16,6 +17,7 @@ export class TriggerCommand {
     await queryRunner.startTransaction();
     try {
       await addNameTsvTriggers(queryRunner);
+      await addBlogNameTsvTriggers(queryRunner);
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();

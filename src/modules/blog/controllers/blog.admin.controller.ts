@@ -24,29 +24,33 @@ import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { CreateBlogDto } from '../dto/blog.create.dto';
 import { BlogEntity } from '../entities/blog.entity';
 import { BlogService } from '../services/blog.service';
+import { IsNull } from 'typeorm';
 
 @ApiTags('Blog')
 @Controller('/blogs')
 export class BlogAdminController {
-  constructor(private readonly blogService: BlogService) {}
+  constructor(private readonly blogService: BlogService) { }
   @Get('/list-all')
   @ApiDocs({ operation: 'List All Blogs' })
-  @UseGuards(JwtAuthGuard)
   async listAll(
     @Query() paginateQueryDto: PaginateQueryDto,
   ): Promise<IResponsePaging<BlogEntity>> {
-    if (paginateQueryDto.searchBy == 'name') {
+    if (paginateQueryDto.searchBy == 'title') {
       paginateQueryDto.searchBy = '@@nameTsv';
     }
-    return this.blogService.paginatedGet({
+    const data = await this.blogService.paginatedGet({
       ...paginateQueryDto,
       options: {
         withDeleted: false,
         relations: { author: true, category: true, image: true },
       },
       searchableColumns: ['@@nameTsv'],
+      sortableColumns: ['id', 'createdAt'],
       defaultSearchColumns: ['@@nameTsv'],
+      defaultSortColumn: 'createdAt',
+      defaultSortOrder: 'DESC',
     });
+    return data;
   }
 
   @Post('/create')
@@ -71,6 +75,47 @@ export class BlogAdminController {
     };
   }
 
+
+
+
+  @Get('/slug/:slug')
+  @ApiDocs({ operation: 'Get Blog by Slug' })
+  async getBySLug(
+    @Param('slug') slug: string,
+  ): Promise<IResponse<{ blog: BlogEntity | null; message: string }>> {
+    const blog = await this.blogService.getOne({
+      options: {
+        where: {
+          slug: slug,
+          deletedAt: IsNull(),
+        },
+        relations: {
+          category: { parent: true, children: true },
+          image: true,
+        },
+      },
+    });
+
+    return {
+      data: {
+        blog,
+        message: 'Blog retrieved successfully'
+      },
+    };
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
   @Get('/list-by-author/:id')
   @ApiDocs({ operation: 'List Blogs for Logged-in Author' })
   async listByAuthor(
@@ -87,7 +132,6 @@ export class BlogAdminController {
 
   @Get('/:id')
   @ApiDocs({ operation: 'Get Blog by ID' })
-  @UseGuards(JwtAuthGuard)
   async getById(
     @Param() params: IdParamDto,
   ): Promise<IResponse<{ item: BlogEntity | null; message: string }>> {

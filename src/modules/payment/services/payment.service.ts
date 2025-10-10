@@ -15,6 +15,7 @@ import { CartService } from 'src/modules/cart/services/cart.service';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
+import { UserService } from 'src/modules/user/services/user.service';
 
 @Injectable()
 export class PaymentService {
@@ -27,11 +28,12 @@ export class PaymentService {
     private readonly cartService: CartService,
     private readonly dataSource: DataSource,
     private readonly productRepo: ProductRepository,
+    private readonly _userService: UserService,
   ) {}
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
     const adapter = this.paymentAdapterFactory.getAdapter(dto.provider);
-
+    const user = await this._userService.getById(dto.userId);
     const cart = await this.cartService.getById(dto.CartId, {
       options: { relations: ['items'] },
     });
@@ -39,7 +41,6 @@ export class PaymentService {
 
     const totalAmount = await this.validateCart(cart);
 
-  
     return this.dataSource.transaction(async (manager) => {
       const paymentRepo = manager.getRepository(PaymentEntity);
 
@@ -50,12 +51,11 @@ export class PaymentService {
       );
 
       try {
-        const result = await adapter.createPayment(payment, dto, cart);
+        const result = await adapter.createPayment(user, payment, dto, cart);
 
         payment.status = result.success ? result.status : PaymentStatus.FAILED;
 
         if (result.success) {
-      
           payment.providerPaymentId = result.paymentId;
           payment.providerTransactionId = result.transactionId ?? '';
           payment.metadata = {
@@ -67,7 +67,9 @@ export class PaymentService {
         await paymentRepo.save(payment);
 
         if (!result.cart) {
-          throw new InternalServerErrorException('Cart data is missing in the payment result.');
+          throw new InternalServerErrorException(
+            'Cart data is missing in the payment result.',
+          );
         }
         return this.mapToResponseDto(
           result.cart,

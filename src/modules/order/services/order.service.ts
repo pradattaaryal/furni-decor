@@ -70,7 +70,7 @@ export class OrderService {
     for (const item of bulkOrderItems) {
       await this._orderItemService.create(item, options);
     }
-   // await this.clearCartRecursive(cart);
+    // await this.clearCartRecursive(cart);
     return order;
   }
   // async clearCartRecursive(cart: CartEntity): Promise<void> {

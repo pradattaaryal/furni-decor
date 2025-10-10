@@ -22,7 +22,7 @@ import { CartEntity } from '../entities/cart.entity';
 import { CartService } from '../services/cart.service';
 import { UserService } from 'src/modules/user/services/user.service';
 import { UpdateCartDto } from '../dto/cart.update.dto';
-import { object } from 'joi';
+import { object, optional } from 'joi';
 import { IPaginateFindOption } from 'src/common/database/interfaces/findOption.interface';
 import { CartRepository } from '../repositories/cart.repository';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
@@ -80,19 +80,6 @@ export class CartAdminController {
     };
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiDocs({ operation: 'Get Cart by User ID ' })
-  async getCartByUseId(
-    @GetUser() user: AccessTokenPayload,
-  ): Promise<IResponse<{ cart: CartEntity | null; message: string }>> {
-    const cart = await this._cartService.findByUserId(user.sub);
 
-    return {
-      data: {
-        cart,
-        message: cart ? 'Cart retrieved successfully' : 'Cart not found',
-      },
-    };
-  }
+
 }

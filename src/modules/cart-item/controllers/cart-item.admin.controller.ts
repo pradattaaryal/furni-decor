@@ -35,7 +35,41 @@ export class CartItemAdminController {
   constructor(
     private readonly cartItemService: CartItemService,
     private _connection: DataSource,
-  ) {}
+  ) { }
+
+
+
+  @Get('/user-cart-items')
+  @UseGuards(JwtAuthGuard)
+  @ApiDocs({ operation: 'Get Cart by User ID' })
+  async getCartByUserId(
+    @Query() paginateQueryDto: PaginateQueryDto,
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<IResponse<{ data: CartItemEntity[]  ; message: string }>> {
+    const paginatedCartItems = await this.cartItemService.paginatedGet({
+      ...paginateQueryDto,
+      options: {
+        where: { cart: { userId: user.sub } },
+        withDeleted: false,
+        relations: {
+          product: true,
+          variant: true,
+        },
+      },
+        sortableColumns: ['id', 'createdAt'],
+        defaultSortColumn: 'createdAt',
+        defaultSortOrder: 'DESC',
+    });
+ 
+     return {
+      data: {
+        data: paginatedCartItems.data,
+        message: 'Cart fetched successfully',
+      },
+    };
+  }
+
+  
   @Post('/create')
   @UseGuards(JwtAuthGuard)
   @ApiDocs({ operation: 'Add Product to Cart' })
@@ -213,4 +247,6 @@ export class CartItemAdminController {
       await queryRunner.release();
     }
   }
+
+
 }
