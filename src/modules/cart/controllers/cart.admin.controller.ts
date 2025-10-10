@@ -79,7 +79,4 @@ export class CartAdminController {
       },
     };
   }
-
-
-
 }
