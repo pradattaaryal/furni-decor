@@ -29,9 +29,7 @@ import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 @Controller('/billing-address')
 @UseGuards(JwtAuthGuard)
 export class BillingAddressAdminController {
-  constructor(
-    private readonly billingAddressService: BillingAddressService,
-  ) {}
+  constructor(private readonly billingAddressService: BillingAddressService) {}
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Billing Address' })

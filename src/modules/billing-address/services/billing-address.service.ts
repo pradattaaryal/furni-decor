@@ -22,9 +22,7 @@ import { UpdateResult } from 'typeorm';
 
 @Injectable()
 export class BillingAddressService {
-  constructor(
-    private readonly _billingAddressRepo: BillingAddressRepository,
-  ) {}
+  constructor(private readonly _billingAddressRepo: BillingAddressRepository) {}
 
   async create(
     createData: IBillingAddressEntity,

@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { OrderEntity } from 'src/modules/order/entities/order.entity';
