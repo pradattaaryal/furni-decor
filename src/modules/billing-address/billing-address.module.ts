@@ -6,7 +6,6 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [BillingAddressRepositoryModule, UserModule],
-  controllers: [BillingAddressAdminController],
   providers: [BillingAddressService],
   exports: [BillingAddressService, BillingAddressRepositoryModule],
 })
