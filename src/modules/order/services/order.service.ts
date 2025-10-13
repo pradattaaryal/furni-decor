@@ -21,6 +21,7 @@ import { OrderEntity } from '../entities/order.entity';
 import { OrderRepository } from '../repositories/order.repository';
 import { CartItemService } from 'src/modules/cart-item/services/cart-item.service';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
+import { BillingAddressService } from 'src/modules/billing-address/services/billing-address.service';
 
 @Injectable()
 export class OrderService {
@@ -28,6 +29,8 @@ export class OrderService {
     @InjectRepository(OrderEntity)
     private readonly _orderBaseRepo: Repository<OrderEntity>,
     private readonly _shippingAddressService: ShippingAddressService,
+    private readonly _billingAddressService: BillingAddressService,
+
     private readonly _cartService: CartService,
     private readonly _orderItemService: OrderItemService,
     private readonly _orderRepo: OrderRepository,
@@ -36,14 +39,17 @@ export class OrderService {
 
   async createOrder(
     user_id: number,
-    ShippingAddressId: number,
+    body: CreateOrderDto,
+    total_price: number,
     options?: { entityManager?: EntityManager },
   ): Promise<OrderEntity> {
-    const shippingAddress =
-      await this._shippingAddressService.getById(ShippingAddressId);
-    if (!shippingAddress) {
-      throw new NotFoundException('Shipping address not found');
-    }
+    const shippingAddress = await this._shippingAddressService.getById(
+      body.shippingAddress,
+    );
+
+    const BillingAddress = await this._billingAddressService.getById(
+      body.BillingAddress,
+    );
 
     const cart = await this._cartService.findByUserId(user_id);
 
@@ -56,8 +62,9 @@ export class OrderService {
 
     const order = this._orderBaseRepo.create({
       userId: user_id,
-      totalPrice: cart.totalPrice,
-      shippingAddress,
+      totalPrice: total_price,
+      shippingAddress: shippingAddress,
+      billingAddress: BillingAddress,
     });
     await this._orderBaseRepo.save(order);
     const bulkOrderItems = cart.items.map((item) => ({
@@ -66,12 +73,11 @@ export class OrderService {
       variantId: item.variantId,
       quantity: item.quantity,
       price: item.product?.price,
-    }));
+     }));
     for (const item of bulkOrderItems) {
       await this._orderItemService.create(item, options);
     }
-    // await this.clearCartRecursive(cart);
-    return order;
+     return order;
   }
   // async clearCartRecursive(cart: CartEntity): Promise<void> {
   //   if (!cart) return;
@@ -97,6 +103,22 @@ export class OrderService {
   ): Promise<OrderEntity> {
     return this._orderRepo._softDelete(entity, options);
   }
+async getAllByUserId(userId: number): Promise<OrderEntity[]> {
+  const { data: orders } = await this._orderRepo._paginateFind({options:{
+    where: { userId },
+    relations: {
+      items: {
+        productImage: true,
+        varientImage: true,
+      },
+      shippingAddress: true,
+      billingAddress: true,
+    },
+    order: { createdAt: 'DESC' },
+  }});
+
+  return orders;
+}
 
   async paginatedGet(options?: IPaginateFindOption<OrderEntity>): Promise<{
     data: OrderEntity[];

@@ -59,7 +59,4 @@ export class OrderEntity extends DatabaseBaseEntity {
   })
   @JoinColumn({ name: 'billing_address_id' })
   billingAddress: BillingAddressEntity;
-
-  @Column({ name: 'billing_address_id', type: 'int', nullable: true })
-  billingAddressId: number;
 }

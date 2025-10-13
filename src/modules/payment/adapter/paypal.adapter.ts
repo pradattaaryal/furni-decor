@@ -10,6 +10,7 @@ import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { OrderService } from 'src/modules/order/services/order.service';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { CreateOrderDto } from 'src/modules/order/dto/order.create.dto';
 
 @Injectable()
 export class PayPalAdapter implements PaymentAdapterInterface {
@@ -42,10 +43,14 @@ export class PayPalAdapter implements PaymentAdapterInterface {
     try {
       const { amount, currency = 'USD' } = payment;
       const userId = cart.userId;
-
+      const orderData = new CreateOrderDto();
+      orderData.BillingAddress = dto.shippingaddress;
+      orderData.shippingAddress = dto.shippingaddress;
+      const totalprice = 1000;
       const order = await this._orderService.createOrder(
         userId,
-        dto.shippingaddress,
+        orderData,
+        totalprice,
       );
       if (!order) throw new BadRequestException('Order creation failed');
 

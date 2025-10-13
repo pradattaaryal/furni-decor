@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { SelectQueryBuilder, UpdateResult } from 'typeorm';
+import { DataSource, QueryRunner, SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { ProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../entities/product.entity';
 import { ProductCreateDto } from '../dto/product.create.dto';
@@ -30,15 +30,18 @@ import { CategoryEntity } from 'src/modules/category/entities/category.entity';
 import slugify from 'slugify';
 import { Option } from 'nestjs-command';
 import { CategoryService } from 'src/modules/category/services/category.service';
+import { ProductUpdateDto } from '../dto/product.update.dto';
 
 @Injectable()
 export class ProductService {
+  private _dataSource: any;
   constructor(
+    private _connection: DataSource,
     private readonly _productRepo: ProductRepository,
     private readonly _variantService: ProductVariantService,
     private readonly _imageService: ImageService,
     private readonly _categoryService: CategoryService,
-  ) {}
+  ) { }
   async create(
     createDto: ProductCreateDto,
     options?: ICreateOptions,
@@ -165,50 +168,152 @@ export class ProductService {
   ): Promise<UpdateResult | null> {
     return await this._productRepo._restoreRaw(options);
   }
-  async update(
-    product: ProductEntity,
-    updateData: IProductUpdateDto,
-    options?: IUpdateOptions<ProductEntity>,
-  ): Promise<ProductEntity> {
-    const { variants, images: imageIds, ...productData } = updateData;
 
-    // Validate and fetch images if provided
-    if (imageIds?.length) {
+
+  async update(
+  id: number,
+  updateData: ProductUpdateDto,
+): Promise<ProductEntity> {
+    const queryRunner: QueryRunner = this._connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    
+    const product = await this._productRepo._findOneById(id, {
+      entityManager: queryRunner.manager,
+      options: { relations: ['images', 'variants', 'category'] },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+   
+    if (updateData.categoryId) {
+      const category = await this._categoryService.getById(updateData.categoryId, {
+        options: { relations: ['children', 'parent'] },
+        entityManager: queryRunner.manager,
+      });
+
+      if (!category) {
+        throw new NotFoundException('Category not found');
+      }
+
+      product.category = category;
+    }
+
+  
+    if (updateData.images?.length) {
       const images: ImageEntity[] = [];
-      for (const id of imageIds) {
-        const image = await this._imageService.getById(id, options);
+
+      for (const imageId of updateData.images) {
+        const image = await this._imageService.getById(imageId, {
+          entityManager: queryRunner.manager,
+        });
+
         if (!image) {
-          throw new BadRequestException(`Image with ID ${id} not found`);
+          throw new BadRequestException(`Image with ID ${imageId} not found`);
         }
+
         images.push(image);
       }
+
       product.images = images;
     }
 
-    // Update product data
-    Object.assign(product, productData);
+ 
+    if (updateData.variants?.length) {
+ 
+      await this._variantService.deleteById(product.id, {
+        entityManager: queryRunner.manager,
+      });
 
-    // Save updated product
-    const updatedProduct = await this._productRepo._update(product, options);
-
-    // Handle variants if provided
-    if (variants?.length) {
-      // Optionally, delete existing variants (depending on requirements)
-      // await this._variantService.deleteByProductId(product.id, options);
-
-      // Create new variants
+ 
       const variantDtos = plainToInstance(
         ProductVariantCreateDto,
-        variants.map((v) => ({ ...v, productId: product.id })),
+        updateData.variants.map((v) => ({ ...v, productId: product.id })),
       );
 
       for (const dto of variantDtos) {
-        await this._variantService.create(dto, options);
+        await this._variantService.create(dto, {
+          entityManager: queryRunner.manager,
+        });
       }
     }
+ 
+    Object.assign(product, this.filterUpdateData(updateData));
+
+    const updatedProduct = await this._productRepo._update(product, {
+      entityManager: queryRunner.manager,
+    });
+
+ 
+    await queryRunner.commitTransaction();
 
     return updatedProduct;
+  } catch (error) {
+ 
+    await queryRunner.rollbackTransaction();
+    throw error;
+  } finally {
+   
+    await queryRunner.release();
   }
+}
+
+
+  private filterUpdateData(updateData: ProductUpdateDto): Partial<ProductEntity> {
+    const { variants, images, ...productData } = updateData;
+    return productData;
+  }
+
+
+
+  // async update(
+  //   product: ProductEntity,
+  //   updateData: IProductUpdateDto,
+  //   options?: IUpdateOptions<ProductEntity>,
+  // ): Promise<ProductEntity> {
+  //   const { variants, images: imageIds, ...productData } = updateData;
+
+  //   // Validate and fetch images if provided
+  //   if (imageIds?.length) {
+  //     const images: ImageEntity[] = [];
+  //     for (const id of imageIds) {
+  //       const image = await this._imageService.getById(id, options);
+  //       if (!image) {
+  //         throw new BadRequestException(`Image with ID ${id} not found`);
+  //       }
+  //       images.push(image);
+  //     }
+  //     product.images = images;
+  //   }
+
+  //   // Update product data
+  //   Object.assign(product, productData);
+
+  //   // Save updated product
+  //   const updatedProduct = await this._productRepo._update(product, options);
+
+  //   // Handle variants if provided
+  //   if (variants?.length) {
+  //     // Optionally, delete existing variants (depending on requirements)
+  //     // await this._variantService.deleteByProductId(product.id, options);
+
+  //     // Create new variants
+  //     const variantDtos = plainToInstance(
+  //       ProductVariantCreateDto,
+  //       variants.map((v) => ({ ...v, productId: product.id })),
+  //     );
+
+  //     for (const dto of variantDtos) {
+  //       await this._variantService.create(dto, options);
+  //     }
+  //   }
+
+  //   return updatedProduct;
+  // }
 
   // ProductService.ts
   async getBySlug(slug: string): Promise<ProductEntity> {

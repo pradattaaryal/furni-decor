@@ -13,6 +13,7 @@ import { OrderService } from 'src/modules/order/services/order.service';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { UserService } from 'src/modules/user/services/user.service';
+import { CreateOrderDto } from 'src/modules/order/dto/order.create.dto';
 
 @Injectable()
 export class StripeAdapter implements PaymentAdapterInterface {
@@ -39,8 +40,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
     cart: CartEntity,
   ): Promise<PaymentResult> {
     try {
-      // --- Basic validations ---
-      if (cart.userId !== user.id) {
+       if (cart.userId !== user.id) {
         throw new BadRequestException('Cart does not belong to user.');
       }
 
@@ -55,8 +55,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
         throw new BadRequestException('Payment method is required.');
       }
 
-      // --- 1. Create or get Stripe Customer ---
-      let customerId = user.stripeCustomerId;
+       let customerId = user.stripeCustomerId;
 
       if (!customerId) {
         const customer = await this.stripe.customers.create({
@@ -67,8 +66,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
         await this._userService.updateStripeCustomerId(user.id, customerId);
       }
 
-      // --- 2. Attach Payment Method ---
-      await this.stripe.paymentMethods.attach(paymentMethodId, {
+       await this.stripe.paymentMethods.attach(paymentMethodId, {
         customer: customerId,
       });
 
@@ -76,15 +74,19 @@ export class StripeAdapter implements PaymentAdapterInterface {
         invoice_settings: { default_payment_method: paymentMethodId },
       });
 
-      // --- 3. Create Order ---
-      const order = await this._orderService.createOrder(
+      const orderData = new CreateOrderDto();
+      orderData.BillingAddress = dto.shippingaddress;
+      orderData.shippingAddress = dto.shippingaddress;
+     
+
+       const order = await this._orderService.createOrder(
         user.id,
-        dto.shippingaddress,
+        orderData,
+        amount,
       );
       if (!order) throw new BadRequestException('Order creation failed');
 
-      // --- 4. Create Payment Intent ---
-      const paymentIntent = await this.stripe.paymentIntents.create(
+       const paymentIntent = await this.stripe.paymentIntents.create(
         {
           amount: Math.round(amount * 100), // amount in cents
           currency,

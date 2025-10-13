@@ -13,7 +13,7 @@ export const addNameTsvTriggers = async (queryRunner: QueryRunner) => {
         ELSE
           NEW.name_tsv := to_tsvector('english', NEW.name);
         END IF;
-        -- Update the timestamp to match the manual update behavior
+        -- Update the timestamp to match the manual update zbehavior
         NEW.updated_at := CURRENT_TIMESTAMP;
         RAISE NOTICE 'Trigger executed: %', NEW.name;
         RETURN NEW;

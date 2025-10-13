@@ -13,11 +13,12 @@ import { ProductService } from 'src/modules/products/services/product.service';
 import { ProductVariantService } from 'src/modules/product-variants/services/product-variant.service';
 import { OrderService } from 'src/modules/order/services/order.service';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
-import { IFindOneOptions } from 'src/common/database/interfaces/findOption.interface';
+import { IFindOneOptions, IPaginateFindOption } from 'src/common/database/interfaces/findOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { EntityManager } from 'typeorm';
 import { ImageService } from 'src/modules/image/services/image.service';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 
 @Injectable()
 export class OrderItemService {
@@ -48,25 +49,14 @@ export class OrderItemService {
     if (!variantId) {
       throw new NotFoundException(`Varient ${variantId}  not found`);
     }
-    const productVarient = await this._productVariantService.getById(
-      variantId,
-      { options: { relations: { image: true } } },
-    );
-    if (!productVarient) {
-      {
-        throw new NotFoundException(`product varient not found`);
-      }
-    }
+    const variant = variantId
+      ? await this._productVariantService.getById(variantId, {
+          options: { relations: { color: true, image: true } },
+        })
+      : null;
 
-    const productImage = await this.getImageById(
-      product.images?.[0]?.id,
-      `Product ${product.id}`,
-    );
-    const variantImage = await this.getImageById(
-      productVarient?.image?.id,
-      `Variant ${productVarient?.id}`,
-    );
-
+    const productImage = product.images?.[0] ?? null;
+    const variantImage = variant?.image ?? null;
     const price = product.price * quantity;
 
     const orderItemData: Partial<OrderItemEntity> = {
@@ -74,6 +64,7 @@ export class OrderItemService {
       orderId: order.id,
       productId: dto.productId,
       variantId: dto.variantId,
+      color: variant?.color?.name ?? undefined,
       productName: product.name ?? 'Unknown Product',
       model: product.modelNumber ?? 'Unknown Model',
       dimensions: product.dimensions ?? {},
@@ -117,6 +108,16 @@ export class OrderItemService {
   ): Promise<OrderItemEntity> {
     return this._orderItemRepo._softDelete(entity, options);
   }
+
+  async paginatedGet(options?: IPaginateFindOption<OrderItemEntity>): Promise<{
+    data: OrderItemEntity[];
+    _pagination: IPaginationMeta;
+  }> {
+    return await this._orderItemRepo._paginateFind(options);
+  }
+
+
+
   async bulkCreateFromRepo(
     items: Partial<OrderItemEntity>[],
     options?: { entityManager?: EntityManager },
