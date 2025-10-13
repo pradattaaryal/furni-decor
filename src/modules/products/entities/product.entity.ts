@@ -19,7 +19,9 @@ import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import slugify from 'slugify';
 import { WishlistEntity } from 'src/modules/wishlist/entities/wishlist.entity';
 
-@Entity({ name: 'products' })
+export const PRODUCT_DATABASE_TABLE_NAME = 'products';
+
+@Entity({ name: PRODUCT_DATABASE_TABLE_NAME })
 export class ProductEntity
   extends DatabaseBaseEntity
   implements IProductEntity

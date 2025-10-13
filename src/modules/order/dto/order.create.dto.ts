@@ -15,7 +15,7 @@ export class CreateOrderDto extends DatabaseBaseEntity {
   @CustomIsNotEmpty()
   @CustomIsNumber()
   shippingAddress: number;
-   @ApiProperty({
+  @ApiProperty({
     description: 'Billing Address for order',
     example: '1',
     required: true,
