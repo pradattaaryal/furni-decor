@@ -3,6 +3,7 @@ import { UserEntity } from 'src/modules/user/entities/user.entity';
 import { CategoryEntity } from 'src/modules/category/entities/category.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
+import { BlogCategoryEntity } from 'src/modules/blog-category/entities/blog-category.entity';
 
 @Entity({ name: 'blogs' })
 export class BlogEntity extends DatabaseBaseEntity {
@@ -45,13 +46,13 @@ export class BlogEntity extends DatabaseBaseEntity {
   @Index('blog_name_tsv_idx', { synchronize: false })
   nameTsv: string;
 
-  @ManyToOne(() => CategoryEntity, (category) => category.blog, {
+  @ManyToOne(() => BlogCategoryEntity, (category) => category.blog, {
     onDelete: 'SET NULL',
     nullable: true,
     eager: false,
   })
   @JoinColumn({ name: 'category_id' })
-  category?: CategoryEntity;
+  category?: BlogCategoryEntity;
 
   @ManyToOne(() => ImageEntity, (image) => image.blogs, {
     onDelete: 'SET NULL',

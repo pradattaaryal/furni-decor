@@ -1,8 +1,5 @@
 export interface IProductVariantUpdateDto {
-  id?: number;
-  dimensions?: Record<string, any>;
-  color?: string;
+  colorId?: number ;
   productId?: number;
-  quantity?: number;
-  imageId?: number;
+  imageId?: number ;
 }

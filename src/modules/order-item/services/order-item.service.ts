@@ -57,11 +57,6 @@ export class OrderItemService {
         throw new NotFoundException(`product varient not found`);
       }
     }
-    if (productVarient.quantity < quantity) {
-      throw new BadRequestException(
-        `Insufficient stock for variant ${variantId}`,
-      );
-    }
 
     const productImage = await this.getImageById(
       product.images?.[0]?.id,
@@ -78,11 +73,10 @@ export class OrderItemService {
       order,
       orderId: order.id,
       productId: dto.productId,
-      color: productVarient.color,
       variantId: dto.variantId,
       productName: product.name ?? 'Unknown Product',
       model: product.modelNumber ?? 'Unknown Model',
-      dimensions: productVarient?.dimensions ?? {},
+      dimensions: product.dimensions ?? {},
       warrantyServiceType: product.warrantyServiceType ?? '',
       warrantySummary: product.warrantySummary ?? '',
       coveredInWarranty: product.coveredInWarranty ?? '',

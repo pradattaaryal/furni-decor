@@ -15,8 +15,10 @@ import { IUpdateOptions } from 'src/common/database/interfaces/updateOption.inte
 
 import { UserRepository } from 'src/modules/user/repositories/user.repository';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
+import { ProductVariantRepository } from 'src/modules/product-variants/repositories/product-variant.repository';
 import { ICreateWishlist } from '../interfaces/wishlist.create.dto.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
+import { ProductVariantEntity } from 'src/modules/product-variants/entities/product-variant.entity';
 
 @Injectable()
 export class WishlistService {
@@ -24,6 +26,7 @@ export class WishlistService {
     private readonly _wishlistRepository: WishlistRepository,
     private readonly _userRepository: UserRepository,
     private readonly _productRepository: ProductRepository,
+    private readonly _productVariantRepository: ProductVariantRepository,
   ) {}
 
   async create(
@@ -31,7 +34,7 @@ export class WishlistService {
     options?: ICreateOptions,
   ): Promise<WishlistEntity> {
     try {
-      const { userId, productId } = createData;
+      const { userId, productId, variantId } = createData;
 
       // Validate user existence
       const user = await this._userRepository._findOneById(userId);
@@ -45,14 +48,29 @@ export class WishlistService {
         throw new NotFoundException(`Product with ID ${productId} not found`);
       }
 
+ 
+       const variant = variantId
+         ? await this._productVariantRepository._findOneById(variantId)
+         : null;
+        if (!variant) {
+          throw new NotFoundException(`Product variant with ID ${variantId} not found`);
+        }
+    
       // Check for existing wishlist entry
+      const whereCondition: any = { user, product };
+      if (variantId) {
+        whereCondition.variant = variant;
+      } else {
+        whereCondition.variant = null;
+      }
+
       const existingWishlist = await this.getOne({
         options: {
-          where: { user, product },
+          where: whereCondition,
         },
       });
       if (existingWishlist) {
-        throw new BadRequestException('Product already in wishlist');
+        throw new BadRequestException('Product (with variant) already in wishlist');
       }
 
       const entity: Partial<WishlistEntity> = {
@@ -60,10 +78,15 @@ export class WishlistService {
         product,
         userId: user.id,
         productId: product.id,
+        variantId: variantId  ,
+        variant: variant || null,
       };
 
       return await this._wishlistRepository._create(entity, options);
     } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
       throw new BadRequestException('Failed to add product to wishlist');
     }
   }

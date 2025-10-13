@@ -30,6 +30,10 @@ import { PaymentModule } from 'src/modules/payment/payment.module';
 import { PaymentController } from 'src/modules/payment/controllers/payment.controller';
 import { BlogAdminController } from 'src/modules/blog/controllers/blog.admin.controller';
 import { BlogModule } from 'src/modules/blog/blog.module';
+import { BlogCategoryModule } from 'src/modules/blog-category/blog-category.module';
+import { BlogCategoryAdminController } from 'src/modules/blog-category/controllers/blog-category.admin.controller';
+import { ColorModule } from 'src/modules/color/color.module';
+import { ColorAdminController } from 'src/modules/color/controllers/color.admin.controller';
 
 @Module({
   imports: [
@@ -49,8 +53,12 @@ import { BlogModule } from 'src/modules/blog/blog.module';
     OrderItemModule,
     PaymentModule,
     WishlistModule,
+    BlogCategoryModule,
+    ColorModule,
   ],
   controllers: [
+    ColorAdminController,
+    BlogCategoryAdminController,
     BlogAdminController,
     AdminUserController,
     AuthAdminController,

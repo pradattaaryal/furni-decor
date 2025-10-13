@@ -30,6 +30,5 @@ export class BlogCategoryCreateDto implements IBlogCategoryCreateDto {
   @CustomIsOptional()
   @CustomIsString()
   @CustomMaxLength(1000)
-  @Transform(({ value }: { value: string }) => value?.trim())
-  description?: string;
+   description?: string;
 }

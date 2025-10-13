@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Init1759894989158 implements MigrationInterface {
-  name = 'Init1759894989158';
+export class Init1760091327397 implements MigrationInterface {
+  name = 'Init1760091327397';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -20,7 +20,7 @@ export class Init1759894989158 implements MigrationInterface {
       `CREATE INDEX "IDX_dfac6399a9b7b8134c350af0b9" ON "image" ("type", "deleted_at") WHERE type = 'product_variants' AND deleted_at IS NULL`,
     );
     await queryRunner.query(
-      `CREATE TABLE "blogs" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "active" boolean NOT NULL DEFAULT true, "title" character varying(200) NOT NULL, "description" text, "content" text, "category_id" integer, "image_id" integer, "author_id" integer NOT NULL, CONSTRAINT "PK_e113335f11c926da929a625f118" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "blogs" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "active" boolean NOT NULL DEFAULT true, "title" character varying(200) NOT NULL, "description" text, "content" text, "category_id" integer, "image_id" integer, "author_id" integer NOT NULL, "slug" character varying(255), "name_tsv" tsvector, CONSTRAINT "UQ_7b18faaddd461656ff66f32e2d7" UNIQUE ("slug"), CONSTRAINT "PK_e113335f11c926da929a625f118" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_aaacd28c70b0183d8b3345b080" ON "blogs" ("id") WHERE "deleted_at" IS NULL`,
@@ -41,7 +41,7 @@ export class Init1759894989158 implements MigrationInterface {
       `CREATE INDEX "IDX_1084464054fa259ee8a0279b60" ON "categories" ("name", "parent_id") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "product_variants" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "dimensions" jsonb NOT NULL, "color" character varying(20) NOT NULL, "quantity" integer NOT NULL, "image_id" integer, "product_id" integer, CONSTRAINT "REL_80810e665ba660ed25412c5b8a" UNIQUE ("image_id"), CONSTRAINT "PK_281e3f2c55652d6a22c0aa59fd7" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "product_variants" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "color" character varying(20) NOT NULL, "image_id" integer, "product_id" integer, CONSTRAINT "REL_80810e665ba660ed25412c5b8a" UNIQUE ("image_id"), CONSTRAINT "PK_281e3f2c55652d6a22c0aa59fd7" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_155c01468f41e508b5db2c5de1" ON "product_variants" ("id") WHERE "deleted_at" IS NULL`,
@@ -53,7 +53,7 @@ export class Init1759894989158 implements MigrationInterface {
       `CREATE INDEX "IDX_281e3f2c55652d6a22c0aa59fd" ON "product_variants" ("id") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "products" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "name" character varying(100) NOT NULL, "description" character varying(200) NOT NULL, "category_id" integer NOT NULL, "model_number" character varying(100), "secondary_material" character varying(100), "configuration" character varying(100), "upholstery_material" character varying(100), "upholstery_color" character varying(50), "filling_material" character varying(100), "finish_type" character varying(50), "adjustable_headrest" boolean, "max_load" integer, "sales_package" character varying(200), "origin_of_manufacture" character varying(30), "discountValue" numeric(10,2), "discount_start_date" TIMESTAMP, "discount_end_date" TIMESTAMP, "warranty_summary" text, "warranty_service_type" text, "covered_in_warranty" text, "not_covered_in_warranty" text, "domestic_warranty" text, "slug" character varying(255), "price" numeric(10,2), "name_tsv" tsvector, CONSTRAINT "UQ_464f927ae360106b783ed0b4106" UNIQUE ("slug"), CONSTRAINT "PK_0806c755e0aca124e67c0cf6d7d" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "products" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "name" character varying(100) NOT NULL, "description" character varying(200) NOT NULL, "category_id" integer NOT NULL, "quantity" integer NOT NULL, "dimensions" jsonb NOT NULL, "model_number" character varying(100), "secondary_material" character varying(100), "configuration" character varying(100), "upholstery_material" character varying(100), "upholstery_color" character varying(50), "filling_material" character varying(100), "finish_type" character varying(50), "adjustable_headrest" boolean, "max_load" integer, "sales_package" character varying(200), "origin_of_manufacture" character varying(30), "discountValue" numeric(10,2), "discount_start_date" TIMESTAMP, "discount_end_date" TIMESTAMP, "warranty_summary" text, "warranty_service_type" text, "covered_in_warranty" text, "not_covered_in_warranty" text, "domestic_warranty" text, "slug" character varying(255), "price" numeric(10,2), "name_tsv" tsvector, CONSTRAINT "UQ_464f927ae360106b783ed0b4106" UNIQUE ("slug"), CONSTRAINT "PK_0806c755e0aca124e67c0cf6d7d" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_490cf2092412d5647d15316c9f" ON "products" ("id") WHERE "deleted_at" IS NULL`,
@@ -89,7 +89,7 @@ export class Init1759894989158 implements MigrationInterface {
       `CREATE INDEX "IDX_b968f19060a9af62784eb327fe" ON "cart" ("id", "created_at") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "order_items" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "order_id" integer NOT NULL, "product_id" integer NOT NULL, "variant_id" integer, "product_name" character varying NOT NULL, "product_color" character varying NOT NULL, "model" character varying NOT NULL, "dimensions" jsonb NOT NULL DEFAULT '{}', "quantity" integer NOT NULL DEFAULT '1', "price" numeric(10,2) NOT NULL DEFAULT '0', "warranty_summary" text DEFAULT '', "warranty_service_type" text DEFAULT '', "covered_in_warranty" text DEFAULT '', "not_covered_in_warranty" text DEFAULT '', "domestic_warranty" text DEFAULT '', "product_image_id" integer, "varient_image_id" integer, CONSTRAINT "REL_e98ae2ca9cf03e3ce24aa471b0" UNIQUE ("product_image_id"), CONSTRAINT "REL_192e8ac226b4a1a8b591757eb6" UNIQUE ("varient_image_id"), CONSTRAINT "PK_005269d8574e6fac0493715c308" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "order_items" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "order_id" integer NOT NULL, "product_id" integer NOT NULL, "variant_id" integer, "product_name" character varying NOT NULL, "product_color" character varying NOT NULL, "model" character varying NOT NULL, "dimensions" jsonb NOT NULL DEFAULT '{}', "quantity" integer NOT NULL DEFAULT '1', "price" numeric(10,2) NOT NULL DEFAULT '0', "warranty_summary" text DEFAULT '', "warranty_service_type" text DEFAULT '', "covered_in_warranty" text DEFAULT '', "not_covered_in_warranty" text DEFAULT '', "domestic_warranty" text DEFAULT '', "product_image_id" integer, "varient_image_id" integer, CONSTRAINT "PK_005269d8574e6fac0493715c308" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_93da2ba8b760a219b7803815df" ON "order_items" ("id") WHERE "deleted_at" IS NULL`,
@@ -122,7 +122,7 @@ export class Init1759894989158 implements MigrationInterface {
       `CREATE TYPE "public"."users_role_enum" AS ENUM('admin', 'marketing', 'customer')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "users" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "email" character varying(100) NOT NULL, "password" text NOT NULL, "verified" boolean NOT NULL DEFAULT false, "role" "public"."users_role_enum" NOT NULL DEFAULT 'customer', "password_changed_at" TIMESTAMP WITH TIME ZONE, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "image_id" integer, "cart_id" integer, CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "REL_b1aae736b7c5d6925efa856352" UNIQUE ("image_id"), CONSTRAINT "REL_cbfb19ddc0218b26522f9fea2e" UNIQUE ("cart_id"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "users" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "email" character varying(100) NOT NULL, "password" text NOT NULL, "verified" boolean NOT NULL DEFAULT false, "role" "public"."users_role_enum" NOT NULL DEFAULT 'customer', "password_changed_at" TIMESTAMP WITH TIME ZONE, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "stripe_customer_id" character varying, "image_id" integer, "cart_id" integer, CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "REL_b1aae736b7c5d6925efa856352" UNIQUE ("image_id"), CONSTRAINT "REL_cbfb19ddc0218b26522f9fea2e" UNIQUE ("cart_id"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_5661370756cd7553e25cc1a0be" ON "users" ("id") WHERE "deleted_at" IS NULL`,
@@ -165,6 +165,30 @@ export class Init1759894989158 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_67864fbd954691fc86cf4e4602" ON "otp_entity" ("id", "created_at") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "colors" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "name" character varying(255) NOT NULL, "slug" character varying(255) NOT NULL, "hexCode" character varying(7) NOT NULL, "description" text, CONSTRAINT "UQ_cf12321fa0b7b9539e89c7dfeb7" UNIQUE ("name"), CONSTRAINT "UQ_ba32257c064779ed6afad3f9946" UNIQUE ("slug"), CONSTRAINT "PK_3a62edc12d29307872ab1777ced" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_10bc9e2aa7c01881cd1f02ec16" ON "colors" ("id") WHERE "deleted_at" IS NULL`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_61fb9349aae5a0b689f94a8db3" ON "colors" ("id", "created_at") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_cf12321fa0b7b9539e89c7dfeb" ON "colors" ("name") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "blog_categories" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "name" character varying(255) NOT NULL, "slug" character varying(255) NOT NULL, "description" text, CONSTRAINT "UQ_adc3bc773ccf2fb6f073193fcf6" UNIQUE ("name"), CONSTRAINT "UQ_903a6ea496e83ba9bec10af5835" UNIQUE ("slug"), CONSTRAINT "PK_1056d6faca26b9957f5d26e6572" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_a176b739100e057522a10e36e0" ON "blog_categories" ("id") WHERE "deleted_at" IS NULL`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_2c324bc456e89e48f9f2464d85" ON "blog_categories" ("id", "created_at") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_adc3bc773ccf2fb6f073193fcf" ON "blog_categories" ("name") `,
     );
     await queryRunner.query(
       `ALTER TABLE "image" ADD CONSTRAINT "FK_e6a9e829e17fc47fc17d695af8e" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE NO ACTION`,
@@ -313,6 +337,26 @@ export class Init1759894989158 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "image" DROP CONSTRAINT "FK_e6a9e829e17fc47fc17d695af8e"`,
     );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_adc3bc773ccf2fb6f073193fcf"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_2c324bc456e89e48f9f2464d85"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_a176b739100e057522a10e36e0"`,
+    );
+    await queryRunner.query(`DROP TABLE "blog_categories"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_cf12321fa0b7b9539e89c7dfeb"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_61fb9349aae5a0b689f94a8db3"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_10bc9e2aa7c01881cd1f02ec16"`,
+    );
+    await queryRunner.query(`DROP TABLE "colors"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_67864fbd954691fc86cf4e4602"`,
     );
