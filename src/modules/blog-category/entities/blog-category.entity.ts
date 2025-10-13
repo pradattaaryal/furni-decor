@@ -31,7 +31,7 @@ export class BlogCategoryEntity
 
   @OneToMany(() => BlogEntity, (blog) => blog.category)
   blogs: BlogEntity[];
- @OneToMany(() => BlogEntity, (blog) => blog.category)
+  @OneToMany(() => BlogEntity, (blog) => blog.category)
   blog: BlogEntity[];
   @BeforeInsert()
   @BeforeUpdate()

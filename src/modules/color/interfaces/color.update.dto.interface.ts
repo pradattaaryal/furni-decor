@@ -3,4 +3,3 @@ export interface IColorUpdateDto {
   hexCode?: string;
   description?: string;
 }
-

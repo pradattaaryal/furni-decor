@@ -17,12 +17,20 @@ export class ProductVariantCreateDto implements IProductVariantCreateDto {
   @ApiProperty({ example: 1, description: 'Variant color id', required: false })
   @CustomIsOptional()
   @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => (value !== undefined ? parseInt(value) : undefined))
-  colorId?: number  ;
+  @Transform(({ value }: { value: any }) =>
+    value !== undefined ? parseInt(value) : undefined,
+  )
+  colorId?: number;
 
-  @ApiProperty({ example: 12, description: 'Image ID for variant', required: false })
+  @ApiProperty({
+    example: 12,
+    description: 'Image ID for variant',
+    required: false,
+  })
   @CustomIsOptional()
   @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => (value !== undefined ? parseInt(value) : undefined))
-  imageId?: number  ;
+  @Transform(({ value }: { value: any }) =>
+    value !== undefined ? parseInt(value) : undefined,
+  )
+  imageId?: number;
 }

@@ -108,4 +108,3 @@ export class ColorService {
     return await this._colorRepo._update(color, options);
   }
 }
-

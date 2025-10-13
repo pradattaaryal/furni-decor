@@ -3,4 +3,3 @@ export interface IColorCreateDto {
   hexCode: string;
   description?: string;
 }
-
