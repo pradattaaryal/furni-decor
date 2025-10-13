@@ -52,8 +52,8 @@ export class ProductAdminController {
     if (paginateQueryDto.categoryId !== undefined) {
       where.category = { id: paginateQueryDto.categoryId };
     }
-    if (paginateQueryDto.color) {
-      where.variants = { color: paginateQueryDto.color };
+    if (paginateQueryDto.colorId) {
+      where.variants = { color: paginateQueryDto.colorId };
     }
 
     if (paginateQueryDto.searchBy == 'name') {
@@ -62,17 +62,21 @@ export class ProductAdminController {
     delete paginateQueryDto.minPrice;
     delete paginateQueryDto.maxPrice;
     delete paginateQueryDto.categoryId;
-    delete paginateQueryDto.color;
+    delete paginateQueryDto.colorId;
 
     const data = await this._productService.paginatedGet({
       ...paginateQueryDto,
       options: {
         relations: {
           category: { parent: true, children: true },
-          variants: { image: true ,color:true},
+          variants: { image: true, color: true },
           images: true,
         },
-        where,
+        // where:{
+        // variants:{
+        //   color:coloeId
+        // }
+        // },
       },
       searchableColumns: ['@@nameTsv'],
       defaultSearchColumns: ['@@nameTsv'],
@@ -156,11 +160,11 @@ export class ProductAdminController {
     IResponse<{ product: ProductResponseDto | null; message: string }>
   > {
     const product = await this._productService.getById(params.id, {
-     relations: {
-          category: { parent: true, children: true },
-          variants: { image: true ,color:true},
-          images: true,
-        },
+      relations: {
+        category: { parent: true, children: true },
+        variants: { image: true, color: true },
+        images: true,
+      },
     });
     let productDto: ProductResponseDto | null = null;
     if (product) {
@@ -179,55 +183,55 @@ export class ProductAdminController {
   async updateById(
     @Param() params: IdParamDto,
     @Body() updateProductData: ProductUpdateDto,
-  )/*: Promise<IResponse<{ product: ProductEntity; message: string }>>*/ {
+  ) /*: Promise<IResponse<{ product: ProductEntity; message: string }>>*/ {
     const queryRunner: QueryRunner = this._connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    // try {
-    //   // Validate product existence
-    //   const existingProduct = await this._productService.getById(params.id, {
-    //     entityManager: queryRunner.manager,
-    //   });
-    //   if (!existingProduct) {
-    //     throw new NotFoundException('Product not found');
-    //   }
+    try {
+      // Validate product existence
+      const existingProduct = await this._productService.getById(params.id, {
+        entityManager: queryRunner.manager,
+      });
+      if (!existingProduct) {
+        throw new NotFoundException('Product not found');
+      }
 
-    //   // Validate category if provided in update
-    //   if (updateProductData.categoryId) {
-    //     const category = await this._categoryService.getById(
-    //       updateProductData.categoryId,
-    //       {
-    //         options: { relations: ['children', 'parent'] },
-    //         entityManager: queryRunner.manager,
-    //       },
-    //     );
-    //     if (!category) {
-    //       throw new NotFoundException('Cannot find Category');
-    //     }
-    //   }
+      // Validate category if provided in update
+      if (updateProductData.categoryId) {
+        const category = await this._categoryService.getById(
+          updateProductData.categoryId,
+          {
+            options: { relations: ['children', 'parent'] },
+            entityManager: queryRunner.manager,
+          },
+        );
+        if (!category) {
+          throw new NotFoundException('Cannot find Category');
+        }
+      }
 
-    //   // Update product
-    //   const updatedProduct = await this._productService.update(
-    //     existingProduct,
-    //     updateProductData,
-    //     { entityManager: queryRunner.manager },
-    //   );
+      // Update product
+      const updatedProduct = await this._productService.update(
+        existingProduct,
+        updateProductData,
+        { entityManager: queryRunner.manager },
+      );
 
-    //   await queryRunner.commitTransaction();
+      await queryRunner.commitTransaction();
 
-    //   return {
-    //     data: {
-    //       product: updatedProduct,
-    //       message: 'Product updated successfully',
-    //     },
-    //   };
-    // } catch (error) {
-    //   await queryRunner.rollbackTransaction();
-    //   throw error;
-    // } finally {
-    //   await queryRunner.release();
-    // }
+      return {
+        data: {
+          product: updatedProduct,
+          message: 'Product updated successfully',
+        },
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   @Delete('soft-delete/:id')

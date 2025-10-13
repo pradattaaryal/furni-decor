@@ -10,4 +10,3 @@ import { ColorRepository } from './color.repository';
   imports: [TypeOrmModule.forFeature([ColorEntity])],
 })
 export class ColorRepositoryModule {}
-

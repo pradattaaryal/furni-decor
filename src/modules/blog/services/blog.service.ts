@@ -38,7 +38,9 @@ export class BlogService {
     if (createDto.categoryId === undefined) {
       throw new Error('Category ID is required');
     }
-    const category = await this._blogcategoryService.getById(createDto.categoryId);
+    const category = await this._blogcategoryService.getById(
+      createDto.categoryId,
+    );
     if (!category) {
       throw new Error(`Category of id ${createDto.categoryId} not found`);
     }
@@ -129,7 +131,9 @@ export class BlogService {
     if (updateData.categoryId === undefined) {
       throw new Error('Category ID is required');
     }
-    const category = await this._blogcategoryService.getById(updateData.categoryId);
+    const category = await this._blogcategoryService.getById(
+      updateData.categoryId,
+    );
 
     if (!category) {
       throw new Error(`Category of id ${updateData.categoryId} not found`);

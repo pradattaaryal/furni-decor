@@ -18,13 +18,12 @@ export const PRODUCT_VARIANT_DATABASE_TABLE_NAME = 'product_variants';
 @Entity({ name: PRODUCT_VARIANT_DATABASE_TABLE_NAME })
 @Index(['id'])
 export class ProductVariantEntity extends DatabaseBaseEntity {
-@ManyToOne(() => ColorEntity, (color) => color.variants, {
-  nullable: true,
-  onDelete: 'SET NULL',
-})
-@JoinColumn({ name: 'color_id' })
-color: ColorEntity | null;
-
+  @ManyToOne(() => ColorEntity, (color) => color.variants, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'color_id' })
+  color: ColorEntity | null;
 
   @OneToOne(() => ImageEntity, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'image_id' })

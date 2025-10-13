@@ -34,6 +34,8 @@ import { BlogCategoryModule } from 'src/modules/blog-category/blog-category.modu
 import { BlogCategoryAdminController } from 'src/modules/blog-category/controllers/blog-category.admin.controller';
 import { ColorModule } from 'src/modules/color/color.module';
 import { ColorAdminController } from 'src/modules/color/controllers/color.admin.controller';
+import { BillingAddressModule } from 'src/modules/billing-address/billing-address.module';
+import { BillingAddressAdminController } from 'src/modules/billing-address/controllers/billing-address.admin.controller';
 
 @Module({
   imports: [
@@ -55,25 +57,28 @@ import { ColorAdminController } from 'src/modules/color/controllers/color.admin.
     WishlistModule,
     BlogCategoryModule,
     ColorModule,
+    BillingAddressModule
   ],
   controllers: [
-    ColorAdminController,
-    BlogCategoryAdminController,
-    BlogAdminController,
-    AdminUserController,
-    AuthAdminController,
-    CategoryAdminController,
-    ProductAdminController,
-    ProductRatingAdminController,
-    ProductVarientsAdminController,
-    ImageAdminController,
-    OrderAdminController,
-    CartAdminController,
-    CartItemAdminController,
-    ShippingAddressAdminController,
-    OrderItemAdminController,
-    WishlistAdminController,
-    PaymentController,
-  ],
+  AdminUserController,
+  AuthAdminController,
+  BillingAddressAdminController,
+  BlogAdminController,
+  BlogCategoryAdminController,
+  CartAdminController,
+  CartItemAdminController,
+  CategoryAdminController,
+  ColorAdminController,
+  ImageAdminController,
+  OrderAdminController,
+  OrderItemAdminController,
+  PaymentController,
+  ProductAdminController,
+  ProductRatingAdminController,
+  ProductVarientsAdminController,
+  ShippingAddressAdminController,
+  WishlistAdminController,
+]
+,
 })
 export class AdminRouterModule {}

@@ -5,4 +5,3 @@ import { IColorUpdateDto } from '../interfaces/color.update.dto.interface';
 export class ColorUpdateDto
   extends PartialType(ColorCreateDto)
   implements IColorUpdateDto {}
-

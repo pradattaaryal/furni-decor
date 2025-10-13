@@ -12,4 +12,3 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [ColorRepositoryModule, TypeOrmModule.forFeature([ColorEntity])],
 })
 export class ColorModule {}
-

@@ -3,4 +3,3 @@ export interface IColorEntity {
   hexCode: string;
   description?: string | null;
 }
-

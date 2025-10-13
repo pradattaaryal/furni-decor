@@ -41,6 +41,5 @@ export class ColorCreateDto implements IColorCreateDto {
   @CustomIsOptional()
   @CustomIsString()
   @CustomMaxLength(1000)
-   description?: string;
+  description?: string;
 }
-

@@ -9,9 +9,9 @@ import {
 export class ProductVariantDto {
   @ApiProperty({ example: 1, description: 'Variant ID' })
   id: number;
- 
+
   @ApiProperty({ example: 'Blue', description: 'Variant color' })
- @CustomIsNumber()
+  @CustomIsNumber()
   colorId: string;
 
   @ApiProperty({ example: 12, description: 'Image ID for variant' })

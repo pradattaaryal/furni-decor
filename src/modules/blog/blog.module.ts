@@ -18,4 +18,4 @@ import { BlogCategoryModule } from '../blog-category/blog-category.module';
   providers: [BlogService, BlogRepository],
   exports: [BlogService, BlogRepository],
 })
-export class BlogModule { }
+export class BlogModule {}

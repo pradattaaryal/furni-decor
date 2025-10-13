@@ -194,9 +194,13 @@ export class ProductPaginateQueryDto extends PaginateQueryDto {
   @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
   categoryId?: number;
 
-  @ApiPropertyOptional({ type: String, description: 'Variant color filter' })
+    @ApiPropertyOptional({
+    type: Number,
+    description: 'color ID filter',
+  })
   @CustomIsOptional()
-  color?: string;
+  @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
+  colorId?: number;
 }
 
 export class QuestionsPaginateQueryWithSkipDto extends PaginateQueryWithSkipDto {

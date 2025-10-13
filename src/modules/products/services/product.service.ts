@@ -57,8 +57,6 @@ export class ProductService {
       }
     }
 
- 
-
     const product = await this._productRepo.createProduct({
       ...productData,
       images: imageIds,

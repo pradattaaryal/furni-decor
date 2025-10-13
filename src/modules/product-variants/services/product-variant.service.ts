@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import {
@@ -28,7 +32,7 @@ export class ProductVariantService {
     private readonly _imageRepo: ImageRepository,
     private readonly _productRepo: ProductRepository,
     private readonly _colorRepo: ColorRepository,
-  ) { }
+  ) {}
 
   async create(
     createDto: ProductVariantCreateDto,
@@ -41,7 +45,9 @@ export class ProductVariantService {
 
       const product = await this._productRepo._findOneById(createDto.productId);
       if (!product) {
-        throw new NotFoundException(`Product with id ${createDto.productId} not found`);
+        throw new NotFoundException(
+          `Product with id ${createDto.productId} not found`,
+        );
       }
 
       const image = createDto.imageId
@@ -52,11 +58,10 @@ export class ProductVariantService {
         ? await this._colorRepo._findOneById(createDto.colorId)
         : null;
 
- 
       const variant = new ProductVariantEntity();
-      variant.product = product
+      variant.product = product;
       variant.color = color;
-      variant.image=image;
+      variant.image = image;
       console.log(variant);
       return await this._variantRepo._create(variant, options);
     } catch (error) {
@@ -126,9 +131,13 @@ export class ProductVariantService {
   ) {
     try {
       if (updateData.productId !== undefined) {
-        const product = await this._productRepo._findOneById(updateData.productId);
+        const product = await this._productRepo._findOneById(
+          updateData.productId,
+        );
         if (!product) {
-          throw new NotFoundException(`Product with id ${updateData.productId} not found`);
+          throw new NotFoundException(
+            `Product with id ${updateData.productId} not found`,
+          );
         }
         variant.product = product;
       }
@@ -139,7 +148,9 @@ export class ProductVariantService {
         } else {
           const image = await this._imageRepo._findOneById(updateData.imageId);
           if (!image) {
-            throw new NotFoundException(`Image with id ${updateData.imageId} not found`);
+            throw new NotFoundException(
+              `Image with id ${updateData.imageId} not found`,
+            );
           }
           variant.image = image;
         }
@@ -151,7 +162,9 @@ export class ProductVariantService {
         } else {
           const color = await this._colorRepo._findOneById(updateData.colorId);
           if (!color) {
-            throw new NotFoundException(`Color with id ${updateData.colorId} not found`);
+            throw new NotFoundException(
+              `Color with id ${updateData.colorId} not found`,
+            );
           }
           variant.color = color;
         }
