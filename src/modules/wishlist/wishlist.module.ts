@@ -5,6 +5,8 @@ import { UserModule } from '../user/user.module';
 import { ProductsModule } from '../products/products.module';
 import { ProductRepositoryModule } from '../products/repositories/product.repository.module';
 import { UserRepositoryModule } from '../user/repositories/user.repostory.module';
+import { ProductVariantsModule } from '../product-variants/product-variants.module';
+import { ProductVariantRepositoryModule } from '../product-variants/repositories/product-variant.repository.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { UserRepositoryModule } from '../user/repositories/user.repostory.module
     ProductsModule,
     ProductRepositoryModule,
     UserRepositoryModule,
+    ProductVariantsModule,
+    ProductVariantRepositoryModule,
   ],
   providers: [WishlistService],
   exports: [WishlistService, WishlistRepositoryModule],

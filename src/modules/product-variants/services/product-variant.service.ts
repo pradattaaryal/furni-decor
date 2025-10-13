@@ -1,10 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { SelectQueryBuilder, UpdateResult } from 'typeorm';
-import { ProductVariantRepository } from '../repositories/product-variant.repository';
-import { ProductVariantEntity } from '../entities/product-variant.entity';
-import { ProductVariantCreateDto } from '../dto/product-variant.create.dto';
-import { IProductVariantUpdateDto } from '../interfaces/product-variant.update.dto.interface';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
+import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import {
   IFindAllOptions,
   IFindOneOptions,
@@ -15,14 +11,15 @@ import {
   IUpdateOptions,
   IUpdateRawOptions,
 } from 'src/common/database/interfaces/updateOption.interface';
-import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
-import { ProductEntity } from 'src/modules/products/entities/product.entity';
-import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { ColorRepository } from 'src/modules/color/repositories/color.repository';
 import { ImageRepository } from 'src/modules/image/repositories/image.repository';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
-import { ColorRepository } from 'src/modules/color/repositories/color.repository';
-import { ColorEntity } from 'src/modules/color/entities/color.entity';
+import { SelectQueryBuilder, UpdateResult } from 'typeorm';
+import { ProductVariantCreateDto } from '../dto/product-variant.create.dto';
+import { ProductVariantEntity } from '../entities/product-variant.entity';
+import { IProductVariantUpdateDto } from '../interfaces/product-variant.update.dto.interface';
+import { ProductVariantRepository } from '../repositories/product-variant.repository';
 
 @Injectable()
 export class ProductVariantService {
@@ -55,11 +52,12 @@ export class ProductVariantService {
         ? await this._colorRepo._findOneById(createDto.colorId)
         : null;
 
+ 
       const variant = new ProductVariantEntity();
-      variant.product =  { id: createDto.productId } as ProductEntity;
-      variant.image = image;
+      variant.product = product
       variant.color = color;
-
+      variant.image=image;
+      console.log(variant);
       return await this._variantRepo._create(variant, options);
     } catch (error) {
       throw error;

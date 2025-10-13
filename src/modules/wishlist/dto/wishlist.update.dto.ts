@@ -1,13 +1,4 @@
-import {
-  CustomIsNumber,
-  CustomIsNotEmpty,
-  CustomIsOptional,
-} from 'src/common/request/validators/custom-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
+import { CreateWishlistDto } from './wishlist.create.dto';
 
-export class UpdateWishlistDto {
-  @ApiProperty({ example: 42, description: 'ID of the wishlist' })
-  @CustomIsNumber()
-  @CustomIsNotEmpty()
-  wishlistId: number;
-}
+export class UpdateWishlistDto extends PartialType(CreateWishlistDto) {}

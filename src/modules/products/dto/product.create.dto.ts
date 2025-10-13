@@ -89,7 +89,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   modelNumber?: string;
 
   @ApiProperty({
@@ -99,7 +98,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   secondaryMaterial?: string;
 
   @ApiProperty({
@@ -109,7 +107,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   configuration?: string;
 
   @ApiProperty({ example: 100.5, description: 'Price of variant' })
@@ -125,7 +122,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   upholsteryMaterial?: string;
 
   @ApiProperty({
@@ -135,7 +131,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   upholsteryColor?: string;
 
   @ApiProperty({
@@ -145,7 +140,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   fillingMaterial?: string;
 
   @ApiProperty({
@@ -164,7 +158,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   finishType?: string;
 
   @ApiProperty({
@@ -204,7 +197,6 @@ export class ProductCreateDto implements IProductCreateDto {
   @CustomIsOptional()
   @CustomIsString()
   @CustomMaxLength(200)
-  @Transform(({ value }: { value: string }) => value?.trim())
   salesPackage?: string;
 
   @ApiProperty({
@@ -215,7 +207,6 @@ export class ProductCreateDto implements IProductCreateDto {
   @CustomIsOptional()
   @CustomIsString()
   @CustomMaxLength(30)
-  @Transform(({ value }: { value: string }) => value?.trim())
   originOfManufacture?: string;
 
   @ApiProperty({
@@ -259,7 +250,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   warrantySummary?: string;
 
   @ApiProperty({
@@ -269,7 +259,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   warrantyServiceType?: string;
 
   @ApiProperty({
@@ -279,7 +268,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   coveredInWarranty?: string;
 
   @ApiProperty({
@@ -289,7 +277,6 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   notCoveredInWarranty?: string;
 
   @ApiProperty({
@@ -299,6 +286,5 @@ export class ProductCreateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsString()
-  @Transform(({ value }: { value: string }) => value?.trim())
   domesticWarranty?: string;
 }

@@ -69,7 +69,7 @@ export class ProductAdminController {
       options: {
         relations: {
           category: { parent: true, children: true },
-          variants: { image: true },
+          variants: { image: true ,color:true},
           images: true,
         },
         where,
@@ -156,11 +156,11 @@ export class ProductAdminController {
     IResponse<{ product: ProductResponseDto | null; message: string }>
   > {
     const product = await this._productService.getById(params.id, {
-      relations: {
-        category: { parent: true, children: true },
-        variants: { image: true },
-        images: true,
-      },
+     relations: {
+          category: { parent: true, children: true },
+          variants: { image: true ,color:true},
+          images: true,
+        },
     });
     let productDto: ProductResponseDto | null = null;
     if (product) {
