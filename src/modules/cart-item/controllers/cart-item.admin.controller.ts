@@ -43,8 +43,8 @@ export class CartItemAdminController {
   async getCartByUserId(
     @Query() paginateQueryDto: PaginateQueryDto,
     @GetUser() user: AccessTokenPayload,
-  ): Promise<IResponse<{ data: CartItemEntity[]; message: string }>> {
-    const paginatedCartItems = await this.cartItemService.paginatedGet({
+  ): Promise<IResponsePaging<CartItemEntity>> {
+   return await this.cartItemService.paginatedGet({
       ...paginateQueryDto,
       options: {
         where: { cart: { userId: user.sub } },
@@ -58,13 +58,6 @@ export class CartItemAdminController {
       defaultSortColumn: 'createdAt',
       defaultSortOrder: 'DESC',
     });
-
-    return {
-      data: {
-        data: paginatedCartItems.data,
-        message: 'Cart fetched successfully',
-      },
-    };
   }
 
   @Post('/create')

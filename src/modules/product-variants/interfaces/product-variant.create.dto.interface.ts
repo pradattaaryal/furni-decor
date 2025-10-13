@@ -1,5 +1,5 @@
 export interface IProductVariantCreateDto {
-  colorId?: number ;
+  colorId?: number;
   productId: number;
-  imageId?: number ;
+  imageId?: number;
 }

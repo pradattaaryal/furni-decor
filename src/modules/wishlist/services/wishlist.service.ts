@@ -48,14 +48,15 @@ export class WishlistService {
         throw new NotFoundException(`Product with ID ${productId} not found`);
       }
 
- 
-       const variant = variantId
-         ? await this._productVariantRepository._findOneById(variantId)
-         : null;
-        if (!variant) {
-          throw new NotFoundException(`Product variant with ID ${variantId} not found`);
-        }
-    
+      const variant = variantId
+        ? await this._productVariantRepository._findOneById(variantId)
+        : null;
+      if (!variant) {
+        throw new NotFoundException(
+          `Product variant with ID ${variantId} not found`,
+        );
+      }
+
       // Check for existing wishlist entry
       const whereCondition: any = { user, product };
       if (variantId) {
@@ -70,7 +71,9 @@ export class WishlistService {
         },
       });
       if (existingWishlist) {
-        throw new BadRequestException('Product (with variant) already in wishlist');
+        throw new BadRequestException(
+          'Product (with variant) already in wishlist',
+        );
       }
 
       const entity: Partial<WishlistEntity> = {
@@ -78,13 +81,16 @@ export class WishlistService {
         product,
         userId: user.id,
         productId: product.id,
-        variantId: variantId  ,
+        variantId: variantId,
         variant: variant || null,
       };
 
       return await this._wishlistRepository._create(entity, options);
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new BadRequestException('Failed to add product to wishlist');

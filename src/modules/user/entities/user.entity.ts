@@ -7,6 +7,7 @@ import { ProductRatingEntity } from 'src/modules/product-rating/entities/product
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { ShippingAddressEntity } from 'src/modules/shipping-address/entities/shipping-address.entity';
+import { BillingAddressEntity } from 'src/modules/billing-address/entities/billing-address.entity';
 import { OrderEntity } from 'src/modules/order/entities/order.entity';
 import { WishlistEntity } from 'src/modules/wishlist/entities/wishlist.entity';
 import { BlogEntity } from 'src/modules/blog/entities/blog.entity';
@@ -40,6 +41,9 @@ export class UserEntity extends BaseUserEntity {
 
   @OneToMany(() => ShippingAddressEntity, (address) => address.user)
   shippingAddresses: ShippingAddressEntity[];
+
+  @OneToMany(() => BillingAddressEntity, (address) => address.user)
+  billingAddresses: BillingAddressEntity[];
 
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders: OrderEntity[];

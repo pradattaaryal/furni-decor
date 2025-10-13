@@ -19,7 +19,6 @@ export class CreateWishlistDto {
     description: 'ID of the product variant (optional)',
     required: false,
   })
- 
   @CustomIsNumber()
   variantId: number;
 }
