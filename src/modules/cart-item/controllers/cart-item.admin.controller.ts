@@ -44,7 +44,7 @@ export class CartItemAdminController {
     @Query() paginateQueryDto: PaginateQueryDto,
     @GetUser() user: AccessTokenPayload,
   ): Promise<IResponsePaging<CartItemEntity>> {
-   return await this.cartItemService.paginatedGet({
+    return await this.cartItemService.paginatedGet({
       ...paginateQueryDto,
       options: {
         where: { cart: { userId: user.sub } },
