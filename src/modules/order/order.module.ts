@@ -8,11 +8,13 @@ import { ShippingAddressModule } from '../shipping-address/shipping-address.modu
 import { CartModule } from '../cart/cart.module';
 import { OrderItemModule } from '../order-item/order-item.module';
 import { CartItemModule } from '../cart-item/cart-item.module';
+import { BillingAddressModule } from '../billing-address/billing-address.module';
 @Module({
   imports: [
     OrderRepositoryModule,
     forwardRef(() => OrderItemModule),
     ShippingAddressModule,
+    BillingAddressModule,
     CartModule,
     CartItemModule,
     TypeOrmModule.forFeature([OrderEntity]),

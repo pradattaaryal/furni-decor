@@ -38,6 +38,9 @@ export class OrderAdminController {
     private readonly _orderService: OrderService,
     private _connection: DataSource,
   ) {}
+
+ 
+
   @Get('/list')
   @ApiDocs({ operation: 'List Order' })
   async list(
@@ -53,36 +56,7 @@ export class OrderAdminController {
       },
     });
   }
-  @Post('/create')
-  @ApiDocs({ operation: 'Create Order with Items' })
-  @UseGuards(JwtAuthGuard)
-  async create(
-    @Body() body: CreateOrderDto,
-    @GetUser() user: AccessTokenPayload,
-    @Param() params: IdParamDto,
-  ): Promise<IResponse<{ order: OrderEntity; message: string }>> {
-    const queryRunner: QueryRunner = this._connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const order = await this._orderService.createOrder(user.sub, params.id, {
-        entityManager: queryRunner.manager,
-      });
-      await queryRunner.commitTransaction();
-      return {
-        data: {
-          order: order,
-          message: 'Order created successfully',
-        },
-      };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
+    
   @Patch('/update-status/:id')
   async updateStatus(
     @Param('id') id: number,

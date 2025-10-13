@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { DataSource, QueryRunner } from 'typeorm';
@@ -13,8 +15,12 @@ import { OrderItemService } from '../services/order-item.service';
 import { CreateOrderItemDto } from '../dto/order-item.create.dto';
 import { OrderItemEntity } from '../entities/order-item.entity';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
-import { IResponse } from 'src/common/response/interfaces/response.interface';
+import { IResponse, IResponsePaging } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
+import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
+import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
+import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 
 @ApiTags('Order Items')
 @Controller('/order-items')
@@ -23,33 +29,31 @@ export class OrderItemAdminController {
     private readonly orderItemService: OrderItemService,
     private readonly _connection: DataSource,
   ) {}
+ 
+   @Get('/user-cart-items')
+   @UseGuards(JwtAuthGuard)
+   @ApiDocs({ operation: 'Get order by User ID' })
+   async getCartByUserId(
+     @Query() paginateQueryDto: PaginateQueryDto,
+     @GetUser() user: AccessTokenPayload,
+   ): Promise<IResponsePaging<OrderItemEntity>> {
+     return await this.orderItemService.paginatedGet({
+       ...paginateQueryDto,
+       options: {
+         where: { order: { userId: user.sub } },
+         withDeleted: false,
+         relations: {
+           
+            
+         },
+       },
+       sortableColumns: ['id', 'createdAt'],
+       defaultSortColumn: 'createdAt',
+       defaultSortOrder: 'DESC',
+     });
+   }
 
-  @Post('/create')
-  @ApiDocs({ operation: 'Add Product to Order' })
-  async create(
-    @Body() body: CreateOrderItemDto,
-  ): Promise<IResponse<{ item: OrderItemEntity; message: string }>> {
-    const queryRunner: QueryRunner = this._connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const item = await this.orderItemService.create(body, {
-        entityManager: queryRunner.manager,
-      });
-      await queryRunner.commitTransaction();
-
-      return {
-        data: { item, message: 'Order Item created successfully' },
-      };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
+ 
   @Get(':id')
   @ApiDocs({ operation: 'Get Order Item by ID' })
   async getById(
@@ -61,9 +65,9 @@ export class OrderItemAdminController {
     return {
       data: {
         item,
-        message: item
-          ? 'Order Item retrieved successfully'
-          : 'Order Item not found',
+        message: 'Order Item retrieved successfully'
+            
+         
       },
     };
   }
@@ -84,4 +88,4 @@ export class OrderItemAdminController {
       data: { item: deleted, message: 'Order Item deleted successfully' },
     };
   }
-}
+} 
