@@ -87,7 +87,7 @@ export class BlogAdminController {
           deletedAt: IsNull(),
         },
         relations: {
-          category: { parent: true, children: true },
+          category: true,
           image: true,
         },
       },

@@ -4,43 +4,25 @@ import {
   CustomIsNotEmpty,
   CustomIsNumber,
   CustomIsOptional,
-  CustomIsString,
 } from 'src/common/request/validators/custom-validator';
 import { IProductVariantCreateDto } from '../interfaces/product-variant.create.dto.interface';
 
 export class ProductVariantCreateDto implements IProductVariantCreateDto {
-  @ApiProperty({
-    example: {
-      height: '80cm',
-      width: '120cm',
-      depth: '75cm',
-      seatHeight: '45cm',
-      weight: '25kg',
-    },
-    description: 'Variant dimensions',
-  })
-  @CustomIsNotEmpty()
-  dimensions: Record<string, number>;
-
-  @ApiProperty({ example: 'red', description: 'Variant color' })
-  @CustomIsNotEmpty()
-  @CustomIsString()
-  color: string;
-
-  @ApiProperty({ example: 50, description: 'Available stock  quantity' })
-  @CustomIsOptional()
-  @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseInt(value))
-  quantity: number;
-
   @ApiProperty({ example: 1, description: 'Related product id' })
   @CustomIsNotEmpty()
   @CustomIsNumber()
   @Transform(({ value }: { value: any }) => parseInt(value))
   productId: number;
 
-  @ApiProperty({ example: 12, description: 'Image ID for variant' })
+  @ApiProperty({ example: 1, description: 'Variant color id', required: false })
   @CustomIsOptional()
   @CustomIsNumber()
-  imageId: number;
+  @Transform(({ value }: { value: any }) => (value !== undefined ? parseInt(value) : undefined))
+  colorId?: number  ;
+
+  @ApiProperty({ example: 12, description: 'Image ID for variant', required: false })
+  @CustomIsOptional()
+  @CustomIsNumber()
+  @Transform(({ value }: { value: any }) => (value !== undefined ? parseInt(value) : undefined))
+  imageId?: number  ;
 }

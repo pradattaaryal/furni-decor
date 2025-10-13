@@ -1,10 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { SelectQueryBuilder, UpdateResult } from 'typeorm';
-import { ProductVariantRepository } from '../repositories/product-variant.repository';
-import { ProductVariantEntity } from '../entities/product-variant.entity';
-import { ProductVariantCreateDto } from '../dto/product-variant.create.dto';
-import { IProductVariantUpdateDto } from '../interfaces/product-variant.update.dto.interface';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
+import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import {
   IFindAllOptions,
   IFindOneOptions,
@@ -15,33 +11,57 @@ import {
   IUpdateOptions,
   IUpdateRawOptions,
 } from 'src/common/database/interfaces/updateOption.interface';
-import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
-import { ProductEntity } from 'src/modules/products/entities/product.entity';
-import { ImageEntity } from 'src/modules/image/entities/image.entity';
+import { ColorRepository } from 'src/modules/color/repositories/color.repository';
 import { ImageRepository } from 'src/modules/image/repositories/image.repository';
+import { ProductRepository } from 'src/modules/products/repositories/product.repository';
+import { SelectQueryBuilder, UpdateResult } from 'typeorm';
+import { ProductVariantCreateDto } from '../dto/product-variant.create.dto';
+import { ProductVariantEntity } from '../entities/product-variant.entity';
+import { IProductVariantUpdateDto } from '../interfaces/product-variant.update.dto.interface';
+import { ProductVariantRepository } from '../repositories/product-variant.repository';
 
 @Injectable()
 export class ProductVariantService {
   constructor(
     private readonly _variantRepo: ProductVariantRepository,
     private readonly _imageRepo: ImageRepository,
-  ) {}
+    private readonly _productRepo: ProductRepository,
+    private readonly _colorRepo: ColorRepository,
+  ) { }
 
   async create(
     createDto: ProductVariantCreateDto,
     options?: ICreateOptions,
   ): Promise<ProductVariantEntity> {
-    const image = createDto.imageId
-      ? await this._imageRepo._findOneById(createDto.imageId)
-      : null;
-    const variant = new ProductVariantEntity();
-    variant.color = createDto.color;
-    variant.dimensions = createDto.dimensions;
-    variant.quantity = createDto.quantity;
-    variant.image = image;
-    variant.product = { id: createDto.productId } as ProductEntity;
-    return await this._variantRepo._create(variant, options);
+    try {
+      if (!createDto.productId) {
+        throw new BadRequestException('productId is required');
+      }
+
+      const product = await this._productRepo._findOneById(createDto.productId);
+      if (!product) {
+        throw new NotFoundException(`Product with id ${createDto.productId} not found`);
+      }
+
+      const image = createDto.imageId
+        ? await this._imageRepo._findOneById(createDto.imageId)
+        : null;
+
+      const color = createDto.colorId
+        ? await this._colorRepo._findOneById(createDto.colorId)
+        : null;
+
+ 
+      const variant = new ProductVariantEntity();
+      variant.product = product
+      variant.color = color;
+      variant.image=image;
+      console.log(variant);
+      return await this._variantRepo._create(variant, options);
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getById(
@@ -104,7 +124,42 @@ export class ProductVariantService {
     updateData: IProductVariantUpdateDto,
     options?: IUpdateOptions<ProductVariantEntity>,
   ) {
-    Object.assign(variant, updateData);
-    return await this._variantRepo._update(variant, options);
+    try {
+      if (updateData.productId !== undefined) {
+        const product = await this._productRepo._findOneById(updateData.productId);
+        if (!product) {
+          throw new NotFoundException(`Product with id ${updateData.productId} not found`);
+        }
+        variant.product = product;
+      }
+
+      if (updateData.imageId !== undefined) {
+        if (updateData.imageId === null) {
+          variant.image = null;
+        } else {
+          const image = await this._imageRepo._findOneById(updateData.imageId);
+          if (!image) {
+            throw new NotFoundException(`Image with id ${updateData.imageId} not found`);
+          }
+          variant.image = image;
+        }
+      }
+
+      if (updateData.colorId !== undefined) {
+        if (updateData.colorId === null) {
+          variant.color = null;
+        } else {
+          const color = await this._colorRepo._findOneById(updateData.colorId);
+          if (!color) {
+            throw new NotFoundException(`Color with id ${updateData.colorId} not found`);
+          }
+          variant.color = color;
+        }
+      }
+
+      return await this._variantRepo._update(variant, options);
+    } catch (error) {
+      throw error;
+    }
   }
 }

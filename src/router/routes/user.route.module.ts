@@ -4,7 +4,6 @@ import { UserModule } from 'src/modules/user/user.module';
 import { OtpModule } from 'src/modules/otp/otp.module';
 import { AuthCustomerController } from 'src/modules/authentication/controllers/auth.customer.controller';
 import { PublicUserController } from 'src/modules/user/controllers/user.controller';
-import { PublicUserProductController } from 'src/modules/products/controllers/product.publicuser.controller';
 import { ProductsModule } from 'src/modules/products/products.module';
 import { CategoryModule } from 'src/modules/category/category.module';
 import { ImageModule } from 'src/modules/image/image.module';
@@ -22,7 +21,6 @@ import { ImageUserController } from 'src/modules/image/controllers/image.user.co
   controllers: [
     PublicUserController,
     AuthCustomerController,
-    PublicUserProductController,
     ImageUserController,
   ],
 })

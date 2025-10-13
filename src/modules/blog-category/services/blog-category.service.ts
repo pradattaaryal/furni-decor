@@ -108,6 +108,7 @@ export class BlogCategoryService {
     updateData: IBlogCategoryUpdateDto,
     options?: IUpdateOptions<BlogCategoryEntity>,
   ) {
+    blogCategory = Object.assign(blogCategory, updateData);
     return await this._blogCategoryRepo._update(blogCategory, options);
   }
 }

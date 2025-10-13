@@ -14,6 +14,8 @@ export class ProductResponseDto {
   price?: number;
 
   additionalData?: {
+    dimensions: Record<string, number>;
+
     general?: {
       salesPackage?: string;
       model?: string;
@@ -41,7 +43,6 @@ export class ProductResponseDto {
       domesticWarranty?: string;
     };
   };
-
   variants?: ProductVariantDto[];
   images?: ImageResponseDto[];
   category?: any;

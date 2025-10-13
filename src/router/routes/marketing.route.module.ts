@@ -3,12 +3,11 @@ import { AuthenticationModule } from 'src/modules/authentication/authentication.
 import { UserModule } from 'src/modules/user/user.module';
 import { OtpModule } from 'src/modules/otp/otp.module';
 import { AuthMarketingController } from 'src/modules/authentication/controllers/auth.marketing.controller';
-import { ProductMarketingController } from 'src/modules/products/controllers/product.marketing.controller';
 import { ProductsModule } from 'src/modules/products/products.module';
 import { CategoryModule } from 'src/modules/category/category.module';
 
 @Module({
   imports: [AuthenticationModule, OtpModule, ProductsModule, CategoryModule],
-  controllers: [AuthMarketingController, ProductMarketingController],
+  controllers: [AuthMarketingController],
 })
 export class MarketingRouterModule {}

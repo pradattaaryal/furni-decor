@@ -55,8 +55,7 @@ export class CategoryEntity
   @OneToMany(() => ProductEntity, (product) => product.category)
   products: ProductEntity[];
 
-  @OneToMany(() => BlogEntity, (blog) => blog.category)
-  blog: BlogEntity[];
+ 
   // ======================
   // Hooks =================
   // ======================
