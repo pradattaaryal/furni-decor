@@ -53,10 +53,13 @@ export class OrderEntity extends DatabaseBaseEntity {
   @JoinColumn({ name: 'shipping_address_id' })
   shippingAddress: ShippingAddressEntity;
 
-  @ManyToOne(() => BillingAddressEntity, (address) => address.orders, {
-    cascade: false,
-    eager: true,
-  })
-  @JoinColumn({ name: 'billing_address_id' })
-  billingAddress: BillingAddressEntity;
+@ManyToOne(() => BillingAddressEntity, (address) => address.orders, {
+  cascade: false,
+  eager: true,
+})
+@JoinColumn({ name: 'billing_address_id' })
+billingAddress: BillingAddressEntity;
+
+@Column({ name: 'billing_address_id', type: 'int', nullable: true })
+billingAddressId: number;
 }
