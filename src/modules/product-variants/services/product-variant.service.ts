@@ -62,7 +62,6 @@ export class ProductVariantService {
       variant.product = product;
       variant.color = color;
       variant.image = image;
-      console.log(variant);
       return await this._variantRepo._create(variant, options);
     } catch (error) {
       throw error;
@@ -110,6 +109,21 @@ export class ProductVariantService {
   ): Promise<ProductVariantEntity> {
     return await this._variantRepo._softDelete(variant, options);
   }
+
+
+async deleteById(
+   id:number,
+    options?: IDeleteOptions<ProductVariantEntity>,
+  ): Promise<ProductVariantEntity> {
+
+    const data = await this.getById(id);
+    if (!data) {
+      throw new NotFoundException(`ProductVariant with id ${id} not found`);
+    }
+    return await this._variantRepo._delete(data, options);
+  }
+
+
 
   async delete(
     variant: ProductVariantEntity,

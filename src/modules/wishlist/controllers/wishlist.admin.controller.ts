@@ -63,7 +63,7 @@ export class WishlistAdminController {
     return this.wishlistService.paginatedGet({
       options: {
         where: { user: { id: user.sub } },
-        relations: { product: {images:true}, variant: {image:true}},
+        relations: { product: { images: true }, variant: { image: true } },
       },
     });
   }
