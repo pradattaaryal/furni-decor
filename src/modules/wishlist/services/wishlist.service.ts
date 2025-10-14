@@ -27,7 +27,7 @@ export class WishlistService {
     private readonly _userRepository: UserRepository,
     private readonly _productRepository: ProductRepository,
     private readonly _productVariantRepository: ProductVariantRepository,
-  ) {}
+  ) { }
 
   async create(
     createData: ICreateWishlist,
@@ -36,13 +36,12 @@ export class WishlistService {
     try {
       const { userId, productId, variantId } = createData;
 
-      // Validate user existence
+
       const user = await this._userRepository._findOneById(userId);
       if (!user) {
         throw new NotFoundException(`User with ID ${userId} not found`);
       }
 
-      // Validate product existence
       const product = await this._productRepository._findOneById(productId);
       if (!product) {
         throw new NotFoundException(`Product with ID ${productId} not found`);
@@ -57,19 +56,17 @@ export class WishlistService {
         );
       }
 
-      // Check for existing wishlist entry
-      const whereCondition: any = { user, product };
-      if (variantId) {
-        whereCondition.variant = variant;
-      } else {
-        whereCondition.variant = null;
-      }
 
-      const existingWishlist = await this.getOne({
+      const existingWishlist = await this._wishlistRepository._findOne({
         options: {
-          where: whereCondition,
+          where: {
+            userId: user.id,
+            productId: productId,
+            variantId: variantId
+          },
         },
       });
+
       if (existingWishlist) {
         throw new BadRequestException(
           'Product (with variant) already in wishlist',
