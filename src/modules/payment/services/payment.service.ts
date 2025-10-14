@@ -16,6 +16,8 @@ import { ProductRepository } from 'src/modules/products/repositories/product.rep
 import { CartEntity } from 'src/modules/cart/entities/cart.entity';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { UserService } from 'src/modules/user/services/user.service';
+import { PaymentResult } from '../interfaces/payment-adapter.interface';
+import { PayPalAdapter } from '../adapter/paypal.adapter';
 
 @Injectable()
 export class PaymentService {
@@ -29,14 +31,19 @@ export class PaymentService {
     private readonly dataSource: DataSource,
     private readonly productRepo: ProductRepository,
     private readonly _userService: UserService,
+    private readonly paypalAdapter: PayPalAdapter,
   ) {}
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
     const adapter = this.paymentAdapterFactory.getAdapter(dto.provider);
     const user = await this._userService.getById(dto.userId);
-    const cart = await this.cartService.getById(dto.CartId, {
-      options: { relations: ['items'] },
+    const cart = await this.cartService.getOne({
+      options: {
+        where: { userId: user.id },
+        relations: ['items'],
+      },
     });
+
     if (!cart) throw new NotFoundException('Cart not found');
 
     const totalAmount = await this.validateCart(cart);
@@ -186,5 +193,39 @@ export class PaymentService {
       updatedAt: payment.updatedAt,
       message,
     };
+  }
+
+  ///////////////////////////////////testing///////////////////////////////////////////
+
+  async capturePayment(paymentId: string): Promise<PaymentResult> {
+    try {
+      this.logger.log(`Capturing PayPal payment: ${paymentId}`);
+
+      const result = await this.paypalAdapter.capturePayment(paymentId);
+
+      if (!result.success) {
+        this.logger.warn(`PayPal capture failed for ID: ${paymentId}`);
+        return {
+          success: false,
+          paymentId,
+          status: PaymentStatus.FAILED,
+          errorMessage: result.errorMessage || 'Payment capture failed.',
+        };
+      }
+
+      this.logger.log(`✅ PayPal payment captured successfully: ${paymentId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `❌ PayPal capture failed for ${paymentId}`,
+        error.stack || error.message,
+      );
+      return {
+        success: false,
+        paymentId,
+        status: PaymentStatus.FAILED,
+        errorMessage: 'Payment capture failed. Please try again later.',
+      };
+    }
   }
 }

@@ -75,9 +75,10 @@ export class PaymentController {
       const event = this.stripe.webhooks.constructEvent(
         rawBody,
         signature,
-        'whsec_00b0811384baf145ffad28a2513a7081ab6d3a23d396580a31ba11cbe41142b7',
+        'whsec_Ac6tAqU9fgS2JRBWNC7aQ8sXVfGksC0G',
       );
-      await this.webhookService.handleStripeWebhook(rawBody, signature);
+      console.log(event.type);
+      // await this.webhookService.handleStripeWebhook(rawBody, signature);
 
       return { received: true };
     } catch (err) {
@@ -88,7 +89,7 @@ export class PaymentController {
     }
   }
 
-  @Post('webhooks/paypal')
+  @Post('yyy')
   async paypalWebhook(
     @Headers('paypal-transmission-sig') signature: string,
     @Body() payload: any,

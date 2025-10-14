@@ -40,7 +40,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
     cart: CartEntity,
   ): Promise<PaymentResult> {
     try {
-       if (cart.userId !== user.id) {
+      if (cart.userId !== user.id) {
         throw new BadRequestException('Cart does not belong to user.');
       }
 
@@ -55,7 +55,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
         throw new BadRequestException('Payment method is required.');
       }
 
-       let customerId = user.stripeCustomerId;
+      let customerId = user.stripeCustomerId;
 
       if (!customerId) {
         const customer = await this.stripe.customers.create({
@@ -66,7 +66,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
         await this._userService.updateStripeCustomerId(user.id, customerId);
       }
 
-       await this.stripe.paymentMethods.attach(paymentMethodId, {
+      await this.stripe.paymentMethods.attach(paymentMethodId, {
         customer: customerId,
       });
 
@@ -75,18 +75,17 @@ export class StripeAdapter implements PaymentAdapterInterface {
       });
 
       const orderData = new CreateOrderDto();
-      orderData.BillingAddress = dto.shippingaddress;
-      orderData.shippingAddress = dto.shippingaddress;
-     
+      // orderData.BillingAddress = dto.shippingaddress;
+      // orderData.shippingAddress = dto.shippingaddress;
 
-       const order = await this._orderService.createOrder(
+      const order = await this._orderService.createOrder(
         user.id,
         orderData,
         amount,
       );
       if (!order) throw new BadRequestException('Order creation failed');
 
-       const paymentIntent = await this.stripe.paymentIntents.create(
+      const paymentIntent = await this.stripe.paymentIntents.create(
         {
           amount: Math.round(amount * 100), // amount in cents
           currency,
@@ -198,8 +197,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
 
   verifyWebhook(payload: Buffer, signature: string): Stripe.Event {
     try {
-      const endpointSecret =
-        'whsec_00b0811384baf145ffad28a2513a7081ab6d3a23d396580a31ba11cbe41142b7';
+      const endpointSecret = 'we_1SI0rKFhrbYI1auhbdCslHrb';
       if (!endpointSecret)
         throw new Error('Stripe webhook secret not configured');
 

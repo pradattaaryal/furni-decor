@@ -32,7 +32,7 @@ export class CartItemService {
     private readonly _productService: ProductService,
     private readonly _cartService: CartService,
     private readonly _userService: UserService,
-  ) {}
+  ) { }
 
   async create(
     userId: number,
@@ -43,61 +43,83 @@ export class CartItemService {
       const { productId, variantId, quantity } = createDto;
 
       const user = await this._userService.getById(userId, {
-        options: { relations: { cart: true } },
+        options: { relations: { cart: { items: true } } },
       });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-      if (!user.cart?.id) {
-        throw new BadRequestException('Cart ID is undefined');
-      }
-      const cart = await this._cartService.getById(user.cart.id);
-      if (!cart) {
-        throw new BadRequestException(`Cart with ID ${user.cart.id} not found`);
-      }
+
+      if (!user) throw new NotFoundException('User not found');
+      if (!user.cart?.id) throw new BadRequestException('Cart ID is undefined');
+
+      const cart = await this._cartService.getById(user.cart.id, {
+        options: {
+          relations: ['items'],
+        }
+      });
+      if (!cart) throw new BadRequestException(`Cart not found`);
+
       const product = await this._productService.getById(productId);
-      if (!product) {
-        throw new BadRequestException(`Product with ID ${productId} not found`);
-      }
+      if (!product) throw new BadRequestException(`Product not found`);
+      if (product.quantity < 0)
+        throw new BadRequestException(`Product ${product.id} out of stock`);
 
       let variant;
       if (variantId) {
         variant = await this._productVariantService.getById(variantId);
-        if (!variant) {
-          throw new BadRequestException(
-            `Product variant with ID ${variantId} not found`,
-          );
-        }
+        if (!variant)
+          throw new BadRequestException(`Product variant not found`);
       }
-      if (product.quantity < 0) {
-        throw new BadRequestException(
-          `Product ${product.id} out of stock found`,
+
+      // Check if the item already exists in the cart
+      const existingItem = cart.items.find(
+        (item) =>
+          item.productId === productId &&
+          (variantId ? item.variantId === variantId : true),
+      );
+
+      if (existingItem) {
+        // Increment quantity
+        existingItem.quantity += quantity;
+
+        // Update cart total price
+        cart.totalPrice = (cart.totalPrice || 0) + product.price * quantity;
+
+        // Save updated cart first
+        await this._cartService.update(
+          { cartId: cart.id, totalPrice: cart.totalPrice },
+          options,
+        );
+        // Save updated item
+        return await this._cartItemRepo._update(
+          existingItem,
+          options,
         );
       }
-      const unitPrice = product.price;
-      const totalPrice = unitPrice * quantity;
-      cart.totalPrice = (cart.totalPrice || 0) + totalPrice;
-      await this._cartService.update(
-        { cartId: cart.id, totalPrice: cart.totalPrice },
-        options,
-      );
+
+      // Otherwise, create new cart item
       const cartItemData: Partial<CartItemEntity> = {
         cart,
         cartId: cart.id,
         product,
         productId: product.id,
-        variant: variant,
+        variant,
         variantId: variant?.id,
         quantity,
       };
 
-      return await this._cartItemRepo._create(cartItemData, options);
+      const newCartItem = await this._cartItemRepo._create(cartItemData, options);
+
+      // Update cart total price after adding new item
+      cart.totalPrice = (cart.totalPrice || 0) + product.price * quantity;
+      await this._cartService.update(
+        { cartId: cart.id, totalPrice: cart.totalPrice },
+        options,
+      );
+      return newCartItem;
     } catch (error) {
       console.error('Error while creating cart item:', error);
-
       throw error;
     }
   }
+
   async getAllByCartId(
     cartId: number,
     options?: IFindAllOptions<CartItemEntity>,

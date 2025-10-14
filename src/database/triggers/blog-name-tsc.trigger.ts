@@ -24,8 +24,12 @@ export const addBlogNameTsvTriggers = async (queryRunner: QueryRunner) => {
   `);
 
   // 2️⃣ Drop existing triggers to avoid conflicts
-  await queryRunner.query(`DROP TRIGGER IF EXISTS before_insert_blog ON blogs;`);
-  await queryRunner.query(`DROP TRIGGER IF EXISTS before_update_blog ON blogs;`);
+  await queryRunner.query(
+    `DROP TRIGGER IF EXISTS before_insert_blog ON blogs;`,
+  );
+  await queryRunner.query(
+    `DROP TRIGGER IF EXISTS before_update_blog ON blogs;`,
+  );
 
   // 3️⃣ Create BEFORE INSERT trigger
   await queryRunner.query(`
