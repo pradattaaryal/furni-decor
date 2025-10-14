@@ -123,42 +123,41 @@ export class ProductAdminController {
     }
   }
 
-@Get('/slug/:slug')
-@ApiDocs({ operation: 'Get Product by Slug' })
-async getBySlug(
-  @Param('slug') slug: string,
-): Promise<
-  IResponse<{ product: ProductResponseDto | null; message: string }>
-> {
-  const product = await this._productService.getOne({
-    options: {
-      where: {
-        slug,
-        deletedAt: IsNull(),
+  @Get('/slug/:slug')
+  @ApiDocs({ operation: 'Get Product by Slug' })
+  async getBySlug(
+    @Param('slug') slug: string,
+  ): Promise<
+    IResponse<{ product: ProductResponseDto | null; message: string }>
+  > {
+    const product = await this._productService.getOne({
+      options: {
+        where: {
+          slug,
+          deletedAt: IsNull(),
+        },
+        relations: {
+          category: { parent: true, children: true },
+          variants: { image: true, color: true },
+          images: true,
+        },
       },
-      relations: {
-        category: { parent: true, children: true },
-        variants: { image: true, color: true }, 
-        images: true,
-      },
-    },
-  });
+    });
 
-  let productDto: ProductResponseDto | null = null;
-  if (product) {
-    productDto = this.mapToResponseDto(product);
+    let productDto: ProductResponseDto | null = null;
+    if (product) {
+      productDto = this.mapToResponseDto(product);
+    }
+
+    return {
+      data: {
+        product: productDto,
+        message: product
+          ? 'Product retrieved successfully'
+          : 'Product not found',
+      },
+    };
   }
-
-  return {
-    data: {
-      product: productDto,
-      message: product
-        ? 'Product retrieved successfully'
-        : 'Product not found',
-    },
-  };
-}
-
 
   @Get(':id')
   @ApiDocs({ operation: 'Get Product by ID' })

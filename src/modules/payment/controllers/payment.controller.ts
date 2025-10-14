@@ -19,6 +19,7 @@ import { PaymentService } from '../services/payment.service';
 import { WebhookService } from '../services/webhook.service';
 import Stripe from 'stripe';
 import { sign } from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('payment')
 export class PaymentController {
@@ -29,6 +30,7 @@ export class PaymentController {
   constructor(
     private readonly _paymentService: PaymentService,
     private readonly webhookService: WebhookService,
+    private readonly configService: ConfigService
   ) {}
 
   @Post('/create')
@@ -38,7 +40,11 @@ export class PaymentController {
     @Body() body: CreatePaymentDto,
     @GetUser() user: AccessTokenPayload,
   ) {
+        const key = this.configService
+      .get<string>('auth.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY')
+      ?.trim();
     try {
+      console.log(`value fromm varieable${key}`);
       body.userId = user.sub;
       const payment = await this._paymentService.createPayment(body);
       return {
@@ -61,7 +67,7 @@ export class PaymentController {
       throw new BadRequestException('Payment ID is required.');
     }
 
-    const result = await this._paymentService.capturePayment(paymentId, user.sub);
+    const result = await this._paymentService.capturePayment(paymentId);
     return {
       data: result,
       message: result.success
@@ -83,13 +89,13 @@ export class PaymentController {
     if (!rawBody) throw new BadRequestException('Missing raw body');
 
     try {
-      const event = this.stripe.webhooks.constructEvent(
-        rawBody,
-        signature,
-        'whsec_Ac6tAqU9fgS2JRBWNC7aQ8sXVfGksC0G',
-      );
-      console.log(event.type);
-      // await this.webhookService.handleStripeWebhook(rawBody, signature);
+      // const event = this.stripe.webhooks.constructEvent(
+      //   rawBody,
+      //   signature,
+      //   'whsec_Ac6tAqU9fgS2JRBWNC7aQ8sXVfGksC0G',
+      // );
+      // console.log(event.type);
+      await this.webhookService.handleStripeWebhook(rawBody, signature);
 
       return { received: true };
     } catch (err) {

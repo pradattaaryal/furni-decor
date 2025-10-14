@@ -197,7 +197,7 @@ export class PaymentService {
 
   ///////////////////////////////////testing///////////////////////////////////////////
 
-  async capturePayment(paymentId: string,userID): Promise<PaymentResult> {
+  async capturePayment(paymentId: string): Promise<PaymentResult> {
     try {
       this.logger.log(`Capturing PayPal payment: ${paymentId}`);
 
