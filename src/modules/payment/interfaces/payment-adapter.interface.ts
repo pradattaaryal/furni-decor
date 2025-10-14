@@ -32,8 +32,9 @@ export interface PaymentAdapterInterface {
     createPaymentDto: CreatePaymentDto,
     CartData: CartEntity,
   ): Promise<PaymentResult>;
-  getPaymentStatus(paymentId: string): Promise<PaymentStatus>;
-  refundPayment(paymentId: string, amount?: number): Promise<RefundResult>;
-  cancelPayment(paymentId: string): Promise<boolean>;
+  // getPaymentStatus(paymentId: string): Promise<PaymentStatus>;
+  // refundPayment(paymentId: string, amount?: number): Promise<RefundResult>;
+  // cancelPayment(paymentId: string): Promise<boolean>;
+
   verifyWebhook(payload: Buffer, signature: string);
 }

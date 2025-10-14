@@ -39,8 +39,6 @@ export class OrderAdminController {
     private _connection: DataSource,
   ) {}
 
- 
-
   @Get('/list')
   @ApiDocs({ operation: 'List Order' })
   async list(
@@ -56,7 +54,7 @@ export class OrderAdminController {
       },
     });
   }
-    
+
   @Patch('/update-status/:id')
   async updateStatus(
     @Param('id') id: number,

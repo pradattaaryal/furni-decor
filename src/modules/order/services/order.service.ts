@@ -73,11 +73,11 @@ export class OrderService {
       variantId: item.variantId,
       quantity: item.quantity,
       price: item.product?.price,
-     }));
+    }));
     for (const item of bulkOrderItems) {
       await this._orderItemService.create(item, options);
     }
-     return order;
+    return order;
   }
   // async clearCartRecursive(cart: CartEntity): Promise<void> {
   //   if (!cart) return;
@@ -103,22 +103,24 @@ export class OrderService {
   ): Promise<OrderEntity> {
     return this._orderRepo._softDelete(entity, options);
   }
-async getAllByUserId(userId: number): Promise<OrderEntity[]> {
-  const { data: orders } = await this._orderRepo._paginateFind({options:{
-    where: { userId },
-    relations: {
-      items: {
-        productImage: true,
-        varientImage: true,
+  async getAllByUserId(userId: number): Promise<OrderEntity[]> {
+    const { data: orders } = await this._orderRepo._paginateFind({
+      options: {
+        where: { userId },
+        relations: {
+          items: {
+            productImage: true,
+            varientImage: true,
+          },
+          shippingAddress: true,
+          billingAddress: true,
+        },
+        order: { createdAt: 'DESC' },
       },
-      shippingAddress: true,
-      billingAddress: true,
-    },
-    order: { createdAt: 'DESC' },
-  }});
+    });
 
-  return orders;
-}
+    return orders;
+  }
 
   async paginatedGet(options?: IPaginateFindOption<OrderEntity>): Promise<{
     data: OrderEntity[];
