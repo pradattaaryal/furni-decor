@@ -22,29 +22,6 @@ export class CreatePaymentDto {
   userId: number;
 
   @ApiProperty({
-    description: 'shippingaddress ID associated with the payment',
-    example: 6,
-  })
-  @CustomIsNumber()
-  shippingaddress: number;
-
-  @ApiProperty({
-    description: 'Cart ID associated with the payment',
-    example: 6,
-  })
-  @CustomIsNumber()
-  CartId: number;
-
-  @ApiProperty({
-    description: 'Payment amount to be charged',
-    example: 99.99,
-    minimum: 0.01,
-  })
-  @CustomIsNumber()
-  @CustomMin(0.01)
-  amount: number;
-
-  @ApiProperty({
     description: 'Currency code for the transaction (ISO 4217 format)',
     example: 'USD',
   })

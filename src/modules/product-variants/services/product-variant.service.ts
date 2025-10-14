@@ -110,20 +110,16 @@ export class ProductVariantService {
     return await this._variantRepo._softDelete(variant, options);
   }
 
-
-async deleteById(
-   id:number,
+  async deleteById(
+    id: number,
     options?: IDeleteOptions<ProductVariantEntity>,
   ): Promise<ProductVariantEntity> {
-
     const data = await this.getById(id);
     if (!data) {
       throw new NotFoundException(`ProductVariant with id ${id} not found`);
     }
     return await this._variantRepo._delete(data, options);
   }
-
-
 
   async delete(
     variant: ProductVariantEntity,

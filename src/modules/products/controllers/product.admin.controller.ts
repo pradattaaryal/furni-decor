@@ -184,7 +184,10 @@ export class ProductAdminController {
     @Param() params: IdParamDto,
     @Body() updateProductData: ProductUpdateDto,
   ): Promise<IResponse<{ product: ProductResponseDto; message: string }>> {
-    const updatedProduct = await this._productService.update(params.id, updateProductData);
+    const updatedProduct = await this._productService.update(
+      params.id,
+      updateProductData,
+    );
     return {
       data: {
         product: this.mapToResponseDto(updatedProduct),
@@ -192,7 +195,6 @@ export class ProductAdminController {
       },
     };
   }
-
 
   @Delete('soft-delete/:id')
   @ApiDocs({ operation: 'Soft Delete Product' })

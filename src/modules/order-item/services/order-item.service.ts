@@ -13,7 +13,10 @@ import { ProductService } from 'src/modules/products/services/product.service';
 import { ProductVariantService } from 'src/modules/product-variants/services/product-variant.service';
 import { OrderService } from 'src/modules/order/services/order.service';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
-import { IFindOneOptions, IPaginateFindOption } from 'src/common/database/interfaces/findOption.interface';
+import {
+  IFindOneOptions,
+  IPaginateFindOption,
+} from 'src/common/database/interfaces/findOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { EntityManager } from 'typeorm';
 import { ImageService } from 'src/modules/image/services/image.service';
@@ -115,8 +118,6 @@ export class OrderItemService {
   }> {
     return await this._orderItemRepo._paginateFind(options);
   }
-
-
 
   async bulkCreateFromRepo(
     items: Partial<OrderItemEntity>[],
