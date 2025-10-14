@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Headers,
+  Param,
   Post,
   RawBodyRequest,
   Req,
@@ -49,15 +50,25 @@ export class PaymentController {
     }
   }
 
-  // @Post('webhooks/stripe')
-  // async stripeWebhook(
-  //   @Headers('stripe-signature') signature: string,
-  //   @Req() req: RawBodyRequest<Request>,
-  // ): Promise<{ received: boolean }> {
-  //   const payload = req.rawBody || req.body;
-  //   await this.webhookService.handleStripeWebhook(payload, signature);
-  //   return { received: true };
-  // }
+  @Post('/capture/:paymentId')
+  @ApiDocs({ operation: 'Capture PayPal Payment' })
+  @UseGuards(JwtAuthGuard)
+  async capturePayment(
+    @Param('paymentId') paymentId: string,
+    @GetUser() user: AccessTokenPayload,
+  ) {
+    if (!paymentId) {
+      throw new BadRequestException('Payment ID is required.');
+    }
+
+    const result = await this._paymentService.capturePayment(paymentId, user.sub);
+    return {
+      data: result,
+      message: result.success
+        ? 'Payment captured successfully.'
+        : 'Payment capture failed.',
+    };
+  }
 
   @Post('xxx')
   async stripeWebhook(
