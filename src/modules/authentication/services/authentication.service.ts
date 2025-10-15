@@ -86,28 +86,29 @@ export class AuthenticationService {
 
   /** ================= USER VALIDATION ================== */
 
- async validateUser(
-  email: string,
-  password: string,
-): Promise<Omit<UserEntity, 'password'>> {
-  const user = await this.findUserByEmail(email);
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<Omit<UserEntity, 'password'>> {
+    const user = await this.findUserByEmail(email);
 
-  if (!user) {
-    throw new UnauthorizedException('Invalid email or password');
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    const isPasswordValid = await this.comparePassword(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (!user.verified) {
+      throw new UnauthorizedException(
+        'Account not verified. Please verify your email.',
+      );
+    }
+
+    return this.sanitizeUser(user);
   }
-
-  const isPasswordValid = await this.comparePassword(password, user.password);
-  if (!isPasswordValid) {
-    throw new UnauthorizedException('Invalid email or password');
-  }
-
-  if (!user.verified) {
-    throw new UnauthorizedException('Account not verified. Please verify your email.');
-  }
-
-  return this.sanitizeUser(user);
-}
-
 
   async findUserByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepository._findOne({
@@ -143,12 +144,12 @@ export class AuthenticationService {
       );
       const [firstName, ...rest] = input.displayName?.split(' ') || [''];
       const lastName = rest.length ? rest.join(' ') : 'lastname';
-
+console.log(`dat in handle locial${input.avatarUrl}`);
       user = await this.userService.create({
         firstName,
         lastName,
         email: input.email,
-        imageurl: input.avatarUrl,
+        image_url: input.avatarUrl,
         password: randomPassword,
       } as UserCreateDto);
 

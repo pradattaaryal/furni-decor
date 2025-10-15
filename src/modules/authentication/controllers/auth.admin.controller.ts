@@ -27,7 +27,10 @@ import {
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
-import { ChangeNewPasswordDto, AccessTokenPayload } from '../dto/forgot-password.dto';
+import {
+  ChangeNewPasswordDto,
+  AccessTokenPayload,
+} from '../dto/forgot-password.dto';
 @ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -123,6 +126,7 @@ export class AuthAdminController {
       displayName?: string;
       avatarUrl?: string;
     };
+    console.log(profile.avatarUrl);
     const result = await this.authService.handleSocialLogin({
       providerId: profile.providerId,
       email: profile.email,

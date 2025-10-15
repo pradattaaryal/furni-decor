@@ -32,6 +32,17 @@ export class ProductCreateDto implements IProductCreateDto {
   name: string;
 
   @ApiProperty({
+    example: faker.commerce.productName(),
+    description: 'Product tag',
+  })
+  @CustomIsNotEmpty()
+  @CustomIsString()
+  @CustomMinLength(2)
+  @CustomMaxLength(100)
+  @Transform(({ value }: { value: string }) => value.trim())
+  tag: string;
+
+  @ApiProperty({
     example: {
       height: '80cm',
       width: '120cm',

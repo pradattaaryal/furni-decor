@@ -28,6 +28,8 @@ export class ProductEntity
 {
   @Column({ name: 'name', type: 'varchar', length: 100 })
   name: string;
+  @Column({ name: 'tag', type: 'varchar', length: 100, nullable: true })
+  tag: string;
 
   @Column({ name: 'description', type: 'varchar', length: 200 })
   description: string;
