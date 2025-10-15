@@ -38,6 +38,9 @@ export class ProductEntity
   @Column({ type: 'int', nullable: false })
   quantity: number;
 
+  @Column({ type: 'boolean', default: false, nullable: true })
+  featured: boolean;
+
   @Column({ type: 'jsonb', nullable: false })
   dimensions: Record<string, number>;
 

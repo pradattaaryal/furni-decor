@@ -86,23 +86,33 @@ export class AuthenticationService {
 
   /** ================= USER VALIDATION ================== */
 
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<Omit<UserEntity, 'password'>> {
-    const user = await this.findUserByEmail(email);
-    if (!user || !(await this.comparePassword(password, user.password))) {
-      throw new UnauthorizedException('Email not found');
-    }
-    if (!user.verified) {
-      throw new UnauthorizedException('Account not verified');
-    }
-    return this.sanitizeUser(user);
+ async validateUser(
+  email: string,
+  password: string,
+): Promise<Omit<UserEntity, 'password'>> {
+  const user = await this.findUserByEmail(email);
+
+  if (!user) {
+    throw new UnauthorizedException('Invalid email or password');
   }
+
+  const isPasswordValid = await this.comparePassword(password, user.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedException('Invalid email or password');
+  }
+
+  if (!user.verified) {
+    throw new UnauthorizedException('Account not verified. Please verify your email.');
+  }
+
+  return this.sanitizeUser(user);
+}
+
 
   async findUserByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepository._findOne({
       options: { where: { email }, withDeleted: false } as any,
+      relations: { image: true },
     });
   }
 
@@ -123,6 +133,7 @@ export class AuthenticationService {
     providerId: string;
     email?: string;
     displayName?: string;
+    avatarUrl?: string;
   }) {
     let user = input.email ? await this.findUserByEmail(input.email) : null;
 
@@ -137,6 +148,7 @@ export class AuthenticationService {
         firstName,
         lastName,
         email: input.email,
+        imageurl: input.avatarUrl,
         password: randomPassword,
       } as UserCreateDto);
 
@@ -163,6 +175,27 @@ export class AuthenticationService {
   }
 
   /** ================= PASSWORD FLOWS ================== */
+
+  async changePassword(
+    userId: number,
+    currentPassword: string,
+    newPassword: string,
+    options?: IUpdateOptions<UserEntity>,
+  ): Promise<void> {
+    const user = await this.userRepository._findOneById(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const isCurrentValid = await this.comparePassword(
+      currentPassword,
+      user.password,
+    );
+    if (!isCurrentValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    user.password = await this.hashPassword(newPassword);
+    await this.userRepository._update(user, options);
+  }
 
   async forgotPassword(email: string): Promise<void> {
     const user = await this.findUserByEmail(email);

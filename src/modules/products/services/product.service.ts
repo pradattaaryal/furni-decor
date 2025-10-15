@@ -160,6 +160,15 @@ export class ProductService {
   ): Promise<ProductEntity> {
     return await this._productRepo._softDelete(product, options);
   }
+  async toggleFeatured(productId: number): Promise<ProductEntity> {
+    const product = await this._productRepo._findOneById(productId);
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${productId} not found`);
+    }
+
+    product.featured = !product.featured;
+    return await this._productRepo._update(product);
+  }
 
   async delete(
     product: ProductEntity,

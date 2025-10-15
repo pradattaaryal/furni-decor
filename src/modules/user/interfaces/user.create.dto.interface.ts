@@ -5,3 +5,8 @@ export interface IUserCreateDto {
   lastName?: string;
   imageId?: number;
 }
+export interface IUserUpdateDto {
+  firstName?: string;
+  lastName?: string;
+  imageId?: number;
+}

@@ -63,4 +63,7 @@ export class UserCreateDto implements IUserCreateDto {
   @CustomIsOptional()
   @CustomIsNumber()
   imageId?: number | undefined;
+
+  @CustomIsOptional()
+  imageurl?: string;
 }

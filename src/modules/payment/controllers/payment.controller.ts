@@ -30,7 +30,7 @@ export class PaymentController {
   constructor(
     private readonly _paymentService: PaymentService,
     private readonly webhookService: WebhookService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   @Post('/create')
@@ -40,7 +40,7 @@ export class PaymentController {
     @Body() body: CreatePaymentDto,
     @GetUser() user: AccessTokenPayload,
   ) {
-        const key = this.configService
+    const key = this.configService
       .get<string>('auth.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY')
       ?.trim();
     try {

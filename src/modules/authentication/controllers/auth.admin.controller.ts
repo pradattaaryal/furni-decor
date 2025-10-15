@@ -25,6 +25,9 @@ import {
   ResetPasswordDto,
 } from '../dto/forgot-password.dto';
 import { Response } from 'express';
+import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
+import { ChangeNewPasswordDto, AccessTokenPayload } from '../dto/forgot-password.dto';
 @ApiTags('Auth')
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -85,6 +88,25 @@ export class AuthAdminController {
     return this.authService.resetPassword(body.token, body.password);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  @ApiDocs({
+    operation: 'Change password',
+  })
+  async changePassword(
+    @Body() body: ChangeNewPasswordDto,
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<IResponse<{ message: string }>> {
+    await this.authService.changePassword(
+      user.sub,
+      body.oldPassword,
+      body.newPassword,
+    );
+    return {
+      data: { message: 'Password changed successfully' },
+    };
+  }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Request() req: any) {}
@@ -99,11 +121,13 @@ export class AuthAdminController {
       providerId: string;
       email?: string;
       displayName?: string;
+      avatarUrl?: string;
     };
     const result = await this.authService.handleSocialLogin({
       providerId: profile.providerId,
       email: profile.email,
       displayName: profile.displayName,
+      avatarUrl: profile.avatarUrl,
     });
 
     const query = new URLSearchParams({
