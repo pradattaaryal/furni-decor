@@ -36,7 +36,44 @@ export class CartItemAdminController {
     private readonly cartItemService: CartItemService,
     private _connection: DataSource,
   ) {}
+  @Post('/add-or-update')
+  @UseGuards(JwtAuthGuard)
+  @ApiDocs({ operation: 'Add product to cart or increase quantity if exists' })
+  async addOrUpdate(
+    @Body() body: CreateCartItemDto,
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<IResponse<{ item: CartItemEntity; message: string }>> {
+    const queryRunner: QueryRunner = this._connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
+    try {
+      const userId = user.sub;
+
+      const item = await this.cartItemService.addOrUpdateCartItem(
+        userId,
+        body.productId,
+        body.variantId,
+        body.quantity,
+        { entityManager: queryRunner.manager },
+      );
+
+      await queryRunner.commitTransaction();
+
+      return {
+        data: {
+          item,
+          message: 'Cart item added or updated successfully',
+        },
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  
   @Get('/user-cart-items')
   @UseGuards(JwtAuthGuard)
   @ApiDocs({ operation: 'Get Cart by User ID' })

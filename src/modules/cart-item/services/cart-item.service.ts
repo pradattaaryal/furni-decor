@@ -32,7 +32,7 @@ export class CartItemService {
     private readonly _productService: ProductService,
     private readonly _cartService: CartService,
     private readonly _userService: UserService,
-  ) {}
+  ) { }
 
   async create(
     userId: number,
@@ -288,6 +288,24 @@ export class CartItemService {
     return await this._cartItemRepo._update(cartItem, options);
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   async decrementQuantity(
     cartItemId: number,
     decrementDto: CartItemQuantityDto,
@@ -359,4 +377,128 @@ export class CartItemService {
       where: { cartId: cartitem.cartId },
     });
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  async addOrUpdateCartItem(
+    userId: number,
+    productId: number,
+    variantId?: number,
+    quantity: number = 1,
+    options?: ICreateOptions,
+  ): Promise<CartItemEntity> {
+    // ✅ Get user and their cart with items
+    const user = await this._userService.getById(userId, {
+      options: { relations: { cart: { items: true } } },
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const cart = user.cart || (await this._cartService.findByUserId(userId));
+    if (!cart) throw new BadRequestException('Cart not found');
+
+    const existingItem = cart.items.find(
+      (item) =>
+        item.productId === productId &&
+        (variantId ? item.variantId === variantId : !item.variantId),
+    );
+
+    if (existingItem) {
+      const variant = variantId
+        ? await this._productVariantService.getById(variantId)
+        : null;
+
+
+      const product = await this._productService.getById(productId);
+      if (!product) { throw new NotFoundException(`product with id ${productId} not found`) }
+      if (product && existingItem.quantity + quantity > product.quantity) {
+        throw new BadRequestException('Not enough stock for this variant');
+      }
+
+      existingItem.quantity += quantity;
+
+      const price = product.price;
+      cart.totalPrice += price * quantity;
+
+      await this._cartService.update(
+        { cartId: cart.id, totalPrice: cart.totalPrice },
+        options,
+      );
+
+      return this._cartItemRepo._update(existingItem, options);
+    }
+
+    const createDto: CreateCartItemDto = { productId, variantId, quantity };
+    return this.create(userId, createDto, options);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
