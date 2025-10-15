@@ -25,7 +25,7 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 import { PaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ImageService } from 'src/modules/image/services/image.service';
-  import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { AccessTokenPayload } from 'src/modules/authentication/dto/forgot-password.dto';
 import { GetUser } from 'src/modules/authentication/decorators/jwt-payload.decorator';
 import { UserUpdateDto } from '../dto/user.update.dto';
@@ -37,14 +37,13 @@ export class AdminUserController {
     private readonly _userService: UserService,
     private _connection: DataSource,
     private readonly _imageService: ImageService,
-  ) { }
+  ) {}
   @Patch('/update-profile')
   @ApiDocs({ operation: 'Update User Profile' })
   @UseGuards(JwtAuthGuard)
   async updateProfile(
     @Body() updateDto: UserUpdateDto,
     @GetUser() user: AccessTokenPayload,
-
   ): Promise<
     IResponse<{
       message: string;
@@ -144,7 +143,6 @@ export class AdminUserController {
       },
     };
   }
-
 
   @Delete('/soft-delete/:id')
   @ApiDocs({ operation: 'Soft delete User' })

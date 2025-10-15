@@ -33,7 +33,7 @@ export class ImageEntity extends DatabaseBaseEntity implements IImageInterface {
 
   @Column({ type: 'varchar', length: 255 })
   filename: string;
-  
+
   @Column({ type: 'varchar', length: 50 })
   mime: string;
   @Exclude()

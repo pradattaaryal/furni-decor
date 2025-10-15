@@ -9,10 +9,12 @@ import {
   CustomMaxLength,
   CustomMinLength,
 } from 'src/common/request/validators/custom-validator';
-import { IUserCreateDto, IUserUpdateDto } from '../interfaces/user.create.dto.interface';
+import {
+  IUserCreateDto,
+  IUserUpdateDto,
+} from '../interfaces/user.create.dto.interface';
 
 export class UserUpdateDto implements IUserUpdateDto {
- 
   @ApiProperty({
     example: 'John',
     description: 'First name of the user',
@@ -38,6 +40,5 @@ export class UserUpdateDto implements IUserUpdateDto {
   })
   @CustomIsOptional()
   @CustomIsNumber()
-  imageId?: number ;
-
+  imageId?: number;
 }

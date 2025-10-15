@@ -15,7 +15,10 @@ import { ProductService } from '../services/product.service';
 import { ProductCreateDto } from '../dto/product.create.dto';
 import { ProductUpdateDto } from '../dto/product.update.dto';
 import { ProductEntity } from '../entities/product.entity';
-import { ProductPaginateQueryDto } from 'src/common/doc/query/paginateQuery.dto';
+import {
+  PaginateQueryDto,
+  ProductPaginateQueryDto,
+} from 'src/common/doc/query/paginateQuery.dto';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
 import {
   IResponse,
@@ -26,6 +29,7 @@ import { CategoryService } from 'src/modules/category/services/category.service'
 import { Between, DataSource, IsNull, QueryRunner } from 'typeorm';
 import { ProductResponseDto } from '../dto/product.response.dto';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
+import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 
 @ApiTags('Products')
 @Controller('/products')
@@ -40,7 +44,7 @@ export class ProductAdminController {
   @ApiDocs({ operation: 'List Products' })
   async list(
     @Query() paginateQueryDto: ProductPaginateQueryDto,
-  ): Promise<IResponsePaging<ProductEntity>> {
+  ): Promise<IResponsePaging<any>> {
     const where: any = {};
     if (
       paginateQueryDto.minPrice !== undefined &&
@@ -70,6 +74,17 @@ export class ProductAdminController {
           variants: { image: true, color: true },
           images: true,
         },
+        // select: {
+        //   id: true,
+        //   name: true,
+        //   tag: true,
+        //   price: true,
+        //   discountValue: true,
+        //   images: {
+        //     id: true,
+        //     path: true,
+        //   },
+        // },
         where: {
           variants: {
             color: {
@@ -84,7 +99,19 @@ export class ProductAdminController {
       defaultSortColumn: 'createdAt',
       defaultSortOrder: 'DESC',
     });
-
+    // const mappedData = data.data.map((product) => ({
+    //     id: product.id,
+    //     name: product.name,
+    //     tag: product.tag,
+    //     price: product.price,
+    //     discountedPrice: product.discountValue ?? null,
+    //     imageId: product.images?.[0]?.id ?? null,
+    //     imagePath: product.images?.[0]?.path ?? null,
+    //   }));
+    // return {
+    //   ...data,
+    //   data: mappedData,
+    // };
     return data;
   }
 
@@ -98,6 +125,23 @@ export class ProductAdminController {
   //     message: 'Homepage data retrieved successfully',
   //   };
   // }
+
+  @Get('/list-related-products/:id')
+  @ApiDocs({ operation: 'List Related Products' })
+  @RequestParamGuard(IdParamDto)
+  async listRelatedProduct(
+    @Param('id') id: number,
+    @Query() paginateQueryDto: PaginateQueryDto,
+  ): Promise<IResponsePaging<ProductEntity>> {
+    const where: any = {};
+
+    const data = await this._productService.paginatedGet({
+      ...paginateQueryDto,
+      options: { where },
+    });
+
+    return data;
+  }
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Product' })
@@ -315,6 +359,7 @@ export class ProductAdminController {
       id: product.id,
       name: product.name,
       slug: product.slug,
+      tag: product.tag,
       description: product.description,
       price: product.price,
       quantity: product.quantity,
