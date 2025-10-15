@@ -86,19 +86,28 @@ export class AuthenticationService {
 
   /** ================= USER VALIDATION ================== */
 
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<Omit<UserEntity, 'password'>> {
-    const user = await this.findUserByEmail(email);
-    if (!user || !(await this.comparePassword(password, user.password))) {
-      throw new UnauthorizedException('Email not found');
-    }
-    if (!user.verified) {
-      throw new UnauthorizedException('Account not verified');
-    }
-    return this.sanitizeUser(user);
+ async validateUser(
+  email: string,
+  password: string,
+): Promise<Omit<UserEntity, 'password'>> {
+  const user = await this.findUserByEmail(email);
+
+  if (!user) {
+    throw new UnauthorizedException('Invalid email or password');
   }
+
+  const isPasswordValid = await this.comparePassword(password, user.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedException('Invalid email or password');
+  }
+
+  if (!user.verified) {
+    throw new UnauthorizedException('Account not verified. Please verify your email.');
+  }
+
+  return this.sanitizeUser(user);
+}
+
 
   async findUserByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepository._findOne({
