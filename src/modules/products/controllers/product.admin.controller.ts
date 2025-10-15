@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductService } from '../services/product.service';
@@ -24,6 +25,7 @@ import { ApiDocs } from 'src/common/doc/common-docs';
 import { CategoryService } from 'src/modules/category/services/category.service';
 import { Between, DataSource, IsNull, QueryRunner } from 'typeorm';
 import { ProductResponseDto } from '../dto/product.response.dto';
+import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 
 @ApiTags('Products')
 @Controller('/products')
@@ -52,7 +54,6 @@ export class ProductAdminController {
     if (paginateQueryDto.categoryId !== undefined) {
       where.category = { id: paginateQueryDto.categoryId };
     }
- 
 
     if (paginateQueryDto.searchBy == 'name') {
       paginateQueryDto.searchBy = '@@nameTsv';
@@ -69,12 +70,12 @@ export class ProductAdminController {
           variants: { image: true, color: true },
           images: true,
         },
-        where:{
-        variants:{
-           color :{
-            id:paginateQueryDto.colorId
-           }
-        }
+        where: {
+          variants: {
+            color: {
+              id: paginateQueryDto.colorId,
+            },
+          },
         },
       },
       searchableColumns: ['@@nameTsv'],
@@ -86,6 +87,17 @@ export class ProductAdminController {
 
     return data;
   }
+
+  // @Get('/home-page')
+  // @ApiDocs({ operation: 'Get Homepage Data' })
+  // async getHomeData(): Promise<IResponse<any>> {
+  //   const data = await this.homeService.getHomeData();
+
+  //   return {
+  //     data,
+  //     message: 'Homepage data retrieved successfully',
+  //   };
+  // }
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Product' })
@@ -154,6 +166,28 @@ export class ProductAdminController {
         message: product
           ? 'Product retrieved successfully'
           : 'Product not found',
+      },
+    };
+  }
+
+  @Patch('/toggle-featured/:id')
+  @ApiDocs({ operation: 'Toggle Product Featured Status' })
+  async toggleFeatured(
+    @Param('id') id: number,
+  ): Promise<
+    IResponse<{ product: ProductResponseDto | null; message: string }>
+  > {
+    const product = await this._productService.toggleFeatured(id);
+
+    let productDto: ProductResponseDto | null = null;
+    if (product) {
+      productDto = this.mapToResponseDto(product);
+    }
+
+    return {
+      data: {
+        product: productDto,
+        message: `Product ${product.id} is now ${product.featured ? 'featured' : 'not featured'}`,
       },
     };
   }
@@ -283,7 +317,7 @@ export class ProductAdminController {
       slug: product.slug,
       description: product.description,
       price: product.price,
-      quantity:product.quantity,
+      quantity: product.quantity,
       additionalData: {
         dimensions: product.dimensions,
 

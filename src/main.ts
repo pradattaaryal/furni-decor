@@ -6,12 +6,13 @@ import { AppModule } from './app/app.module';
 import swaggerInit from './swagger';
 import { json, raw, urlencoded } from 'express';
 import * as bodyParser from 'body-parser';
+import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
     rawBody: true,
     // logger: false, // disables all logs
   });
-
+app.useStaticAssets(join(__dirname, '..', 'images'), { prefix: '/backend/' })
   app.use(
     '/backend/api/admin/payment/xxx',
     raw({

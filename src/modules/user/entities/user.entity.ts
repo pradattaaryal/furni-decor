@@ -19,6 +19,9 @@ export class UserEntity extends BaseUserEntity {
   @Column({ name: 'first_name', type: 'varchar', nullable: false })
   firstName: string | null;
 
+  @Column({ name: 'image_url', type: 'varchar', nullable: true })
+  image_url: string | null;
+
   @Column({ name: 'last_name', type: 'varchar', nullable: false })
   lastName: string | null;
 

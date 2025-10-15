@@ -22,10 +22,12 @@ import { ICreateOptions } from 'src/common/database/interfaces/createOption.inte
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { ImageService } from 'src/modules/image/services/image.service';
-import { IUserCreateDto } from '../interfaces/user.create.dto.interface';
+import { IUserCreateDto, IUserUpdateDto } from '../interfaces/user.create.dto.interface';
 import { IPrepareUserCreateData } from '../interfaces/user.prepare-create.interface';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
-
+import { options } from 'joi';
+import { UserUpdateDto } from '../dto/user.update.dto';
+ 
 @Injectable()
 export class UserService {
   constructor(
@@ -55,7 +57,46 @@ export class UserService {
 
     return user;
   }
+  async updateUserData(
+    userData: IUserUpdateDto,
+    userId: number,
+    options?: IUpdateOptions<UserEntity>,
+  ): Promise<UserEntity> {
+    const existingUser = await this.userRepo._findOneById(userId, {
+      relations: { image: true },
+      ...options,
+    });
 
+    if (!existingUser) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+     let image ;
+    if (userData.imageId) {
+      image = await this.imageService.getById(userData.imageId);
+      if (!image) {
+        throw new NotFoundException(`Image with ID ${userData.imageId} not found`);
+      }
+      existingUser.image = image;
+     }
+
+     Object.assign(existingUser, {
+      firstName: userData.firstName ?? existingUser.firstName,
+      lastName: userData.lastName ?? existingUser.lastName,
+    });
+
+    await this.userRepo._update(existingUser, options);
+
+     const updatedUser = await this.userRepo._findOneById(userId, {
+      relations: { image: true },
+    });
+
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    return updatedUser;
+  }
   async updateStripeCustomerId(
     userId: number,
     stripeCustomerId: string,
@@ -83,7 +124,6 @@ export class UserService {
         'Password must be at least 6 characters long',
       );
     }
-
     // Prevent duplicate email
     await this.throwErrorIfExistingUserByEmailFound(registerDto.email);
 

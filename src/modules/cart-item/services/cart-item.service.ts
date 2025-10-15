@@ -32,7 +32,7 @@ export class CartItemService {
     private readonly _productService: ProductService,
     private readonly _cartService: CartService,
     private readonly _userService: UserService,
-  ) { }
+  ) {}
 
   async create(
     userId: number,
@@ -288,24 +288,6 @@ export class CartItemService {
     return await this._cartItemRepo._update(cartItem, options);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   async decrementQuantity(
     cartItemId: number,
     decrementDto: CartItemQuantityDto,
@@ -378,49 +360,6 @@ export class CartItemService {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   async addOrUpdateCartItem(
     userId: number,
     productId: number,
@@ -448,10 +387,11 @@ export class CartItemService {
         ? await this._productVariantService.getById(variantId)
         : null;
 
-
       const product = await this._productService.getById(productId);
-      if (!product) { throw new NotFoundException(`product with id ${productId} not found`) }
-      if (product && existingItem.quantity + quantity > product.quantity) {
+      if (!product) {
+        throw new NotFoundException(`product with id ${productId} not found`);
+      }
+      if (existingItem.quantity + quantity > product.quantity) {
         throw new BadRequestException('Not enough stock for this variant');
       }
 
@@ -471,34 +411,4 @@ export class CartItemService {
     const createDto: CreateCartItemDto = { productId, variantId, quantity };
     return this.create(userId, createDto, options);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
