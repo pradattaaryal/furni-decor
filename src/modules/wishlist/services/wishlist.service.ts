@@ -27,7 +27,7 @@ export class WishlistService {
     private readonly _userRepository: UserRepository,
     private readonly _productRepository: ProductRepository,
     private readonly _productVariantRepository: ProductVariantRepository,
-  ) { }
+  ) {}
 
   async create(
     createData: ICreateWishlist,
@@ -35,7 +35,6 @@ export class WishlistService {
   ): Promise<WishlistEntity> {
     try {
       const { userId, productId, variantId } = createData;
-
 
       const user = await this._userRepository._findOneById(userId);
       if (!user) {
@@ -56,13 +55,12 @@ export class WishlistService {
         );
       }
 
-
       const existingWishlist = await this._wishlistRepository._findOne({
         options: {
           where: {
             userId: user.id,
             productId: productId,
-            variantId: variantId
+            variantId: variantId,
           },
         },
       });
