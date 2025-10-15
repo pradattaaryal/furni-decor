@@ -60,7 +60,6 @@ export class ProductAdminController {
     delete paginateQueryDto.minPrice;
     delete paginateQueryDto.maxPrice;
     delete paginateQueryDto.categoryId;
-   // delete paginateQueryDto.colorId;
 
     const data = await this._productService.paginatedGet({
       ...paginateQueryDto,
