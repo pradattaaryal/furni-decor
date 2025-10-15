@@ -284,7 +284,7 @@ export class ProductAdminController {
       slug: product.slug,
       description: product.description,
       price: product.price,
-
+      quatity:product.quantity,
       additionalData: {
         dimensions: product.dimensions,
 

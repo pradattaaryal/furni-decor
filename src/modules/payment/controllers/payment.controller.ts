@@ -106,12 +106,12 @@ export class PaymentController {
     }
   }
 
-  @Post('yyy')
-  async paypalWebhook(
-    @Headers('paypal-transmission-sig') signature: string,
-    @Body() payload: any,
-  ): Promise<{ received: boolean }> {
-    await this.webhookService.handlePayPalWebhook(payload, signature);
-    return { received: true };
-  }
+  // @Post('yyy')
+  // async paypalWebhook(
+  //   @Headers('paypal-transmission-sig') signature: string,
+  //   @Body() payload: any,
+  // ): Promise<{ received: boolean }> {
+  //   await this.webhookService.handlePayPalWebhook(payload, signature);
+  //   return { received: true };
+  // }
 }
