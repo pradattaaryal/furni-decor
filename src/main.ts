@@ -12,7 +12,7 @@ async function bootstrap() {
     rawBody: true,
     // logger: false, // disables all logs
   });
-app.useStaticAssets(join(__dirname, '..', 'images'), { prefix: '/backend/' })
+  app.useStaticAssets(join(__dirname, '..', 'images'), { prefix: '/backend/' });
   app.use(
     '/backend/api/admin/payment/xxx',
     raw({

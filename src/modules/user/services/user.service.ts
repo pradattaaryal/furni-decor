@@ -22,12 +22,15 @@ import { ICreateOptions } from 'src/common/database/interfaces/createOption.inte
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { ImageService } from 'src/modules/image/services/image.service';
-import { IUserCreateDto, IUserUpdateDto } from '../interfaces/user.create.dto.interface';
+import {
+  IUserCreateDto,
+  IUserUpdateDto,
+} from '../interfaces/user.create.dto.interface';
 import { IPrepareUserCreateData } from '../interfaces/user.prepare-create.interface';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
 import { options } from 'joi';
 import { UserUpdateDto } from '../dto/user.update.dto';
- 
+
 @Injectable()
 export class UserService {
   constructor(
@@ -50,8 +53,7 @@ export class UserService {
     );
 
     const preparedData = await this.prepareCreateUserData(createDto);
-
-    const user = await this.userRepo._create(preparedData, {
+     const user = await this.userRepo._create(preparedData, {
       entityManager: options?.entityManager,
     });
 
@@ -71,23 +73,25 @@ export class UserService {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-     let image ;
+    let image;
     if (userData.imageId) {
       image = await this.imageService.getById(userData.imageId);
       if (!image) {
-        throw new NotFoundException(`Image with ID ${userData.imageId} not found`);
+        throw new NotFoundException(
+          `Image with ID ${userData.imageId} not found`,
+        );
       }
       existingUser.image = image;
-     }
+    }
 
-     Object.assign(existingUser, {
+    Object.assign(existingUser, {
       firstName: userData.firstName ?? existingUser.firstName,
       lastName: userData.lastName ?? existingUser.lastName,
     });
 
     await this.userRepo._update(existingUser, options);
 
-     const updatedUser = await this.userRepo._findOneById(userId, {
+    const updatedUser = await this.userRepo._findOneById(userId, {
       relations: { image: true },
     });
 
