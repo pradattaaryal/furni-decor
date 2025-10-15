@@ -12,7 +12,7 @@ export class ProductResponseDto {
   slug: string;
   description?: string;
   price?: number;
-
+  quatity?: number;
   additionalData?: {
     dimensions: Record<string, number>;
 

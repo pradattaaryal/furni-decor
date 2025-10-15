@@ -38,7 +38,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
     cart: CartEntity,
   ): Promise<PaymentResult> {
     try {
-       if (!user || !user.id) {
+      if (!user || !user.id) {
         throw new BadRequestException('User is required.');
       }
 
@@ -56,18 +56,16 @@ export class PayPalAdapter implements PaymentAdapterInterface {
       }
 
       const returnUrl =
-        dto.returnUrl ||
-        this.configService.get<string>('PAYPAL_RETURN_URL');
+        dto.returnUrl || this.configService.get<string>('PAYPAL_RETURN_URL');
       const cancelUrl =
-        dto.cancelUrl ||
-        this.configService.get<string>('PAYPAL_CANCEL_URL');
+        dto.cancelUrl || this.configService.get<string>('PAYPAL_CANCEL_URL');
 
       if (!returnUrl || !cancelUrl) {
         throw new BadRequestException(
           'PayPal return and cancel URLs must be configured.',
         );
       }
- 
+
       const orderData = new CreateOrderDto();
       const order = await this.orderService.createOrder(
         user.id,
@@ -79,7 +77,6 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         throw new BadRequestException('Order creation failed.');
       }
 
- 
       const request = new paypal.orders.OrdersCreateRequest();
       request.prefer('return=representation');
       request.requestBody({
@@ -109,11 +106,11 @@ export class PayPalAdapter implements PaymentAdapterInterface {
       });
 
       const orderResponse = await this.paypalClient.execute(request);
-       // --- 4. Extract Approval URL ---
+      // --- 4. Extract Approval URL ---
       const approveUrl = orderResponse.result.links?.find(
         (link: any) => link.rel === 'approve',
       )?.href;
-console.log(approveUrl);
+      console.log(approveUrl);
       if (!approveUrl) {
         throw new BadRequestException('PayPal approval URL not found.');
       }
@@ -153,27 +150,27 @@ console.log(approveUrl);
 
   async capturePayment(paymentId: string): Promise<PaymentResult> {
     try {
-       if (!paymentId || paymentId.trim() === '') {
+      if (!paymentId || paymentId.trim() === '') {
         throw new BadRequestException('Payment ID is required.');
       }
 
-       const request = new paypal.orders.OrdersCaptureRequest(paymentId);
+      const request = new paypal.orders.OrdersCaptureRequest(paymentId);
       request.requestBody({});
 
       const capture = await this.paypalClient.execute(request);
 
-       if (!capture.result || !capture.result.purchase_units) {
+      if (!capture.result || !capture.result.purchase_units) {
         throw new BadRequestException('Invalid capture response from PayPal.');
       }
 
-       const captureDetails =
+      const captureDetails =
         capture.result.purchase_units[0]?.payments?.captures?.[0];
 
       if (!captureDetails) {
         throw new BadRequestException('Capture details not found in response.');
       }
 
-       return {
+      return {
         success: capture.result.status === 'COMPLETED',
         paymentId: capture.result.id,
         transactionId: captureDetails.id,
@@ -184,15 +181,12 @@ console.log(approveUrl);
         },
       };
     } catch (error: any) {
-       this.logger.error(
-        `PayPal capture failed for payment ${paymentId}`,
-        {
-          message: error.message,
-          statusCode: error.statusCode,
-          details: error.details,
-          stack: error.stack,
-        },
-      );
+      this.logger.error(`PayPal capture failed for payment ${paymentId}`, {
+        message: error.message,
+        statusCode: error.statusCode,
+        details: error.details,
+        stack: error.stack,
+      });
 
       return {
         success: false,
@@ -224,9 +218,6 @@ console.log(approveUrl);
       throw new BadRequestException('Unable to retrieve payment status.');
     }
   }
-
-  
-
 
   verifyWebhook(payload: Buffer, signature: string): boolean {
     try {
@@ -268,7 +259,3 @@ console.log(approveUrl);
     return statusMap[status] || PaymentStatus.FAILED;
   }
 }
-
-
-
-

@@ -32,7 +32,7 @@ export class CartItemService {
     private readonly _productService: ProductService,
     private readonly _cartService: CartService,
     private readonly _userService: UserService,
-  ) { }
+  ) {}
 
   async create(
     userId: number,
@@ -52,7 +52,7 @@ export class CartItemService {
       const cart = await this._cartService.getById(user.cart.id, {
         options: {
           relations: ['items'],
-        }
+        },
       });
       if (!cart) throw new BadRequestException(`Cart not found`);
 
@@ -88,10 +88,7 @@ export class CartItemService {
           options,
         );
         // Save updated item
-        return await this._cartItemRepo._update(
-          existingItem,
-          options,
-        );
+        return await this._cartItemRepo._update(existingItem, options);
       }
 
       // Otherwise, create new cart item
@@ -105,7 +102,10 @@ export class CartItemService {
         quantity,
       };
 
-      const newCartItem = await this._cartItemRepo._create(cartItemData, options);
+      const newCartItem = await this._cartItemRepo._create(
+        cartItemData,
+        options,
+      );
 
       // Update cart total price after adding new item
       cart.totalPrice = (cart.totalPrice || 0) + product.price * quantity;
