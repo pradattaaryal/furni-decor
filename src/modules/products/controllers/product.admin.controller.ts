@@ -52,9 +52,7 @@ export class ProductAdminController {
     if (paginateQueryDto.categoryId !== undefined) {
       where.category = { id: paginateQueryDto.categoryId };
     }
-    if (paginateQueryDto.colorId) {
-      where.variants = { color: paginateQueryDto.colorId };
-    }
+ 
 
     if (paginateQueryDto.searchBy == 'name') {
       paginateQueryDto.searchBy = '@@nameTsv';
@@ -62,7 +60,7 @@ export class ProductAdminController {
     delete paginateQueryDto.minPrice;
     delete paginateQueryDto.maxPrice;
     delete paginateQueryDto.categoryId;
-    delete paginateQueryDto.colorId;
+   // delete paginateQueryDto.colorId;
 
     const data = await this._productService.paginatedGet({
       ...paginateQueryDto,
@@ -72,11 +70,13 @@ export class ProductAdminController {
           variants: { image: true, color: true },
           images: true,
         },
-        // where:{
-        // variants:{
-        //   color:coloeId
-        // }
-        // },
+        where:{
+        variants:{
+           color :{
+            id:paginateQueryDto.colorId
+           }
+        }
+        },
       },
       searchableColumns: ['@@nameTsv'],
       defaultSearchColumns: ['@@nameTsv'],
@@ -284,7 +284,7 @@ export class ProductAdminController {
       slug: product.slug,
       description: product.description,
       price: product.price,
-      quatity:product.quantity,
+      quantity:product.quantity,
       additionalData: {
         dimensions: product.dimensions,
 
