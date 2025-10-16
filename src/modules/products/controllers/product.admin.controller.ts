@@ -137,7 +137,11 @@ export class ProductAdminController {
 
     const data = await this._productService.paginatedGet({
       ...paginateQueryDto,
-      options: { where },
+      options: { relations: {
+          category: { parent: true, children: true },
+          variants: { image: true, color: true },
+          images: true,
+        },where },
     });
 
     return data;
