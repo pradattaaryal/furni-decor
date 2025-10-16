@@ -28,4 +28,5 @@ export interface IProductUpdateDto {
   notCoveredInWarranty?: string;
   domesticWarranty?: string;
   images?: number[];
+  mainImageId?: number;
 }

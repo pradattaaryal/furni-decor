@@ -35,7 +35,7 @@ export class OrderService {
     private readonly _orderItemService: OrderItemService,
     private readonly _orderRepo: OrderRepository,
     private readonly _cartItemService: CartItemService,
-  ) {}
+  ) { }
 
   async createOrder(
     user_id: number,
@@ -45,10 +45,24 @@ export class OrderService {
   ): Promise<OrderEntity> {
     const shippingAddress = await this._shippingAddressService.getById(
       body.shippingAddress,
+      {
+        options: {
+          where: {
+            userId: user_id
+          }
+        }
+      }
     );
 
     const BillingAddress = await this._billingAddressService.getById(
       body.BillingAddress,
+      {
+        options: {
+          where: {
+            userId: user_id
+          }
+        }
+      }
     );
 
     const cart = await this._cartService.findByUserId(user_id);
