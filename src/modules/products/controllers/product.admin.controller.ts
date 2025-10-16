@@ -73,6 +73,7 @@ export class ProductAdminController {
           category: { parent: true, children: true },
           variants: { image: true, color: true },
           images: true,
+          mainImage: true,
         },
         // select: {
         //   id: true,
@@ -141,6 +142,7 @@ export class ProductAdminController {
           category: { parent: true, children: true },
           variants: { image: true, color: true },
           images: true,
+          mainImage: true,
         },where },
     });
 
@@ -199,6 +201,7 @@ export class ProductAdminController {
           category: { parent: true, children: true },
           variants: { image: true, color: true },
           images: true,
+          mainImage: true,
         },
       },
     });
@@ -252,6 +255,7 @@ export class ProductAdminController {
         category: { parent: true, children: true },
         variants: { image: true, color: true },
         images: true,
+        mainImage: true,
       },
     });
     let productDto: ProductResponseDto | null = null;
@@ -408,6 +412,12 @@ export class ProductAdminController {
         path: img.path,
         filename: img.filename,
       })),
+
+      mainImage: product.mainImage ? {
+        id: product.mainImage.id,
+        path: product.mainImage.path,
+        filename: product.mainImage.filename,
+      } : undefined,
 
       category: product.category,
     };

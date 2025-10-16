@@ -56,9 +56,9 @@ export class PayPalAdapter implements PaymentAdapterInterface {
       }
 
       const returnUrl =
-        dto.returnUrl || this.configService.get<string>('PAYPAL_RETURN_URL');
+        dto.returnUrl || this.configService.get<string>('paypal.returnUrl');
       const cancelUrl =
-        dto.cancelUrl || this.configService.get<string>('PAYPAL_CANCEL_URL');
+        dto.cancelUrl || this.configService.get<string>('paypal.cancelUrl');
 
       if (!returnUrl || !cancelUrl) {
         throw new BadRequestException(
@@ -106,7 +106,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
       });
 
       const orderResponse = await this.paypalClient.execute(request);
-      // --- 4. Extract Approval URL ---
+
       const approveUrl = orderResponse.result.links?.find(
         (link: any) => link.rel === 'approve',
       )?.href;
@@ -115,7 +115,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         throw new BadRequestException('PayPal approval URL not found.');
       }
 
-      // --- 5. Return Payment Result ---
+    
       return {
         success: true,
         paymentId: orderResponse.result.id,
@@ -128,7 +128,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         },
       };
     } catch (error: any) {
-      // --- Enhanced PayPal Error Logging ---
+     
       this.logger.error('PayPal payment creation failed', {
         message: error.message,
         statusCode: error.statusCode,
@@ -231,13 +231,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         return false;
       }
 
-      // Note: Proper PayPal webhook verification requires transmissionId, transmissionTime, and certUrl
-      // This is a basic validation; production should use PayPal's verification API
-      // See: https://developer.paypal.com/docs/api-basics/notifications/webhooks/
-
-      // For complete verification, implement PayPal's signature verification algorithm
-      // or use their SDK's verification method if available
-
+  
       this.logger.debug('Webhook verification passed (basic)');
       return true;
     } catch (error) {

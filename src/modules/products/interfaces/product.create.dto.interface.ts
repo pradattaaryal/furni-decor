@@ -30,4 +30,5 @@ export interface IProductCreateDto {
   notCoveredInWarranty?: string;
   domesticWarranty?: string;
   images: number[];
+  mainImageId?: number;
 }

@@ -44,8 +44,7 @@ export class PaymentController {
       .get<string>('auth.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY')
       ?.trim();
     try {
-      console.log(`value fromm varieable${key}`);
-      body.userId = user.sub;
+       body.userId = user.sub;
       const payment = await this._paymentService.createPayment(body);
       return {
         data: { payment, message: 'Payment initialized successfully' },
@@ -63,11 +62,13 @@ export class PaymentController {
     @Param('paymentId') paymentId: string,
     @GetUser() user: AccessTokenPayload,
   ) {
+    console.log(`capyure method called with paymentId: ${paymentId}`);
     if (!paymentId) {
       throw new BadRequestException('Payment ID is required.');
     }
 
     const result = await this._paymentService.capturePayment(paymentId);
+    console.log(` data from capture of paypal ${result}`);
     return {
       data: result,
       message: result.success

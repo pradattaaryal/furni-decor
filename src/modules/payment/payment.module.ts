@@ -40,13 +40,12 @@ export const PAYPAL_CLIENT = 'PAYPAL_CLIENT';
     {
       provide: PAYPAL_CLIENT,
       useFactory: (configService: ConfigService) => {
-        const clientId = configService.get<string>('PAYPAL_CLIENT_ID');
-        const clientSecret = configService.get<string>('PAYPAL_CLIENT_SECRET');
+        const clientId = configService.get<string>('paypal.clientId');
+        const clientSecret = configService.get<string>('paypal.clientSecret');
         const environment =
-          configService.get<string>('NODE_ENV') === 'production'
+          configService.get<string>('paypal.paypalMode') === 'live'
             ? new paypal.core.LiveEnvironment(clientId, clientSecret)
             : new paypal.core.SandboxEnvironment(clientId, clientSecret);
-
         return new paypal.core.PayPalHttpClient(environment);
       },
       inject: [ConfigService],
@@ -54,4 +53,4 @@ export const PAYPAL_CLIENT = 'PAYPAL_CLIENT';
   ],
   exports: [PaymentService, PaymentRepository, WebhookService],
 })
-export class PaymentModule {}
+export class PaymentModule { }
