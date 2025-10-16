@@ -22,7 +22,7 @@ import { ICartItemEntity } from '../interfaces/cart-item.entity.interface';
 import { CartItemQuantityDto } from '../dto/cart-item.increment.dto';
 import { IPaginationMeta } from 'src/common/response/interfaces/response.interface';
 import { UserService } from 'src/modules/user/services/user.service';
-import { use } from 'passport';
+import { ProductEntity } from 'src/modules/products/entities/product.entity';
 
 @Injectable()
 export class CartItemService {
@@ -32,7 +32,30 @@ export class CartItemService {
     private readonly _productService: ProductService,
     private readonly _cartService: CartService,
     private readonly _userService: UserService,
-  ) {}
+  ) { }
+
+  private computeEffectiveUnitPrice(product: ProductEntity): number {
+    let price = product.price || 0;
+    const { discountValue, discountStartDate, discountEndDate } = product;
+
+    if (
+      discountValue !== undefined &&
+      discountValue !== null &&
+      discountStartDate &&
+      discountEndDate
+    ) {
+      const now = new Date();
+      const start = new Date(discountStartDate);
+      const end = new Date(discountEndDate);
+      if (now >= start && now <= end) {
+        price = price - discountValue;
+      }
+    }
+
+    // Ensure non-negative and 2-decimal precision
+    price = Math.max(0, Number(price.toFixed(2)));
+    return price;
+  }
 
   async create(
     userId: number,
@@ -58,6 +81,7 @@ export class CartItemService {
 
       const product = await this._productService.getById(productId);
       if (!product) throw new BadRequestException(`Product not found`);
+      if (product.quantity < quantity) throw new BadRequestException(`Not enough stock for product ${product.id}`);
       if (product.quantity < 0)
         throw new BadRequestException(`Product ${product.id} out of stock`);
 
@@ -67,6 +91,16 @@ export class CartItemService {
         if (!variant)
           throw new BadRequestException(`Product variant not found`);
       }
+      const unitPrice = this.computeEffectiveUnitPrice(product);
+
+
+
+
+
+
+
+
+
 
       // Check if the item already exists in the cart
       const existingItem = cart.items.find(
@@ -80,7 +114,7 @@ export class CartItemService {
         existingItem.quantity += quantity;
 
         // Update cart total price
-        cart.totalPrice = (cart.totalPrice || 0) + product.price * quantity;
+        cart.totalPrice = (cart.totalPrice || 0) + unitPrice * quantity;
 
         // Save updated cart first
         await this._cartService.update(
@@ -108,7 +142,7 @@ export class CartItemService {
       );
 
       // Update cart total price after adding new item
-      cart.totalPrice = (cart.totalPrice || 0) + product.price * quantity;
+      cart.totalPrice = (cart.totalPrice || 0) + unitPrice * quantity;
       await this._cartService.update(
         { cartId: cart.id, totalPrice: cart.totalPrice },
         options,
@@ -168,13 +202,13 @@ export class CartItemService {
           `Product variant with ID ${entity.variantId} not found`,
         );
       }
+      if (variant.quantity < 0) {
+        throw new BadRequestException(
+          `Product variant with ID ${entity.variantId} out of stock found`,
+        );
+      }
     }
-    if (variant.quantity < 0) {
-      throw new BadRequestException(
-        `Product variant with ID ${entity.variantId} out of stock found`,
-      );
-    }
-    const unitPrice = product.price;
+    const unitPrice = this.computeEffectiveUnitPrice(product);
     const totalPrice = unitPrice * entity.quantity;
     cart.totalPrice = (cart.totalPrice || 0) - totalPrice;
     await this._cartService.update(
@@ -191,55 +225,55 @@ export class CartItemService {
     return await this._cartItemRepo._paginateFind(options);
   }
 
-  async update(
-    id: number,
-    updateDto: CartItemUpdateDto,
-    options?: IUpdateOptions<CartItemEntity>,
-  ): Promise<CartItemEntity> {
-    try {
-      const existing = await this.getById(id, options);
-      if (!existing) {
-        throw new NotFoundException(`Cart item with ID ${id} not found`);
-      }
+  // async update(
+  //   id: number,
+  //   updateDto: CartItemUpdateDto,
+  //   options?: IUpdateOptions<CartItemEntity>,
+  // ): Promise<CartItemEntity> {
+  //   try {
+  //     const existing = await this.getById(id, options);
+  //     if (!existing) {
+  //       throw new NotFoundException(`Cart item with ID ${id} not found`);
+  //     }
 
-      const cart = await this._cartService.getById(existing.cartId);
-      if (!cart) {
-        throw new BadRequestException(
-          `Cart with ID ${existing.cartId} not found`,
-        );
-      }
+  //     const cart = await this._cartService.getById(existing.cartId);
+  //     if (!cart) {
+  //       throw new BadRequestException(
+  //         `Cart with ID ${existing.cartId} not found`,
+  //       );
+  //     }
 
-      const oldTotal = cart.totalPrice;
-      const product = await this._productService.getById(existing.productId);
-      if (!product) {
-        throw new BadRequestException(
-          `Product with ID ${existing.productId} not found`,
-        );
-      }
+  //     const product = await this._productService.getById(existing.productId);
+  //     if (!product) {
+  //       throw new BadRequestException(
+  //         `Product with ID ${existing.productId} not found`,
+  //       );
+  //     }
 
-      const newQuantity = updateDto.quantity ?? existing.quantity;
-      const unitPrice = product.price;
-      const newTotal = unitPrice * newQuantity;
+  //     const unitPrice = this.computeEffectiveUnitPrice(product);
+  //     const currentItemTotal = unitPrice * existing.quantity;
+  //     const newQuantity = updateDto.quantity ?? existing.quantity;
+  //     const newTotal = unitPrice * newQuantity;
 
-      cart.totalPrice = (cart.totalPrice || 0) - oldTotal + newTotal;
+  //     cart.totalPrice = (cart.totalPrice || 0) - currentItemTotal + newTotal;
 
-      await this._cartService.update(
-        { cartId: cart.id, totalPrice: cart.totalPrice },
-        options,
-      );
+  //     await this._cartService.update(
+  //       { cartId: cart.id, totalPrice: cart.totalPrice },
+  //       options,
+  //     );
 
-      Object.assign(existing, {
-        ...updateDto,
-        price: unitPrice,
-        quantity: newQuantity,
-      });
+  //     Object.assign(existing, {
+  //       ...updateDto,
+  //       price: unitPrice,
+  //       quantity: newQuantity,
+  //     });
 
-      return await this._cartItemRepo._update(existing, options);
-    } catch (error) {
-      console.error('Error while updating cart item:', error);
-      throw error;
-    }
-  }
+  //     return await this._cartItemRepo._update(existing, options);
+  //   } catch (error) {
+  //     console.error('Error while updating cart item:', error);
+  //     throw error;
+  //   }
+  // }
 
   async incrementQuantity(
     cartItemId: number,
@@ -273,7 +307,8 @@ export class CartItemService {
 
     cartItem.quantity += incrementDto.quantity;
 
-    const totalIncrease = product.price * incrementDto.quantity;
+    const unitPrice = this.computeEffectiveUnitPrice(product);
+    const totalIncrease = unitPrice * incrementDto.quantity;
     const cart = await this._cartService.getById(cartItem.cartId);
     if (!cart) {
       throw new BadRequestException('cart not found');
@@ -303,6 +338,7 @@ export class CartItemService {
         `Product with ID ${cartItem.productId} not found`,
       );
 
+    const unitPrice = this.computeEffectiveUnitPrice(product);
     if (decrementDto.quantity >= cartItem.quantity) {
       await this._cartItemRepo._delete(cartItem, options);
 
@@ -311,7 +347,7 @@ export class CartItemService {
         throw new BadRequestException('cart not found');
       }
       cart.totalPrice =
-        (cart.totalPrice || 0) - product.price * cartItem.quantity;
+        (cart.totalPrice || 0) - unitPrice * cartItem.quantity;
       await this._cartService.update(
         { cartId: cart.id, totalPrice: cart.totalPrice },
         options,
@@ -326,7 +362,7 @@ export class CartItemService {
         throw new BadRequestException('cart not found');
       }
       cart.totalPrice =
-        (cart.totalPrice || 0) - product.price * decrementDto.quantity;
+        (cart.totalPrice || 0) - unitPrice * decrementDto.quantity;
       await this._cartService.update(
         { cartId: cart.id, totalPrice: cart.totalPrice },
         options,
@@ -367,8 +403,7 @@ export class CartItemService {
     quantity: number = 1,
     options?: ICreateOptions,
   ): Promise<CartItemEntity> {
-    // ✅ Get user and their cart with items
-    const user = await this._userService.getById(userId, {
+     const user = await this._userService.getById(userId, {
       options: { relations: { cart: { items: true } } },
     });
     if (!user) throw new NotFoundException('User not found');
@@ -397,8 +432,8 @@ export class CartItemService {
 
       existingItem.quantity += quantity;
 
-      const price = product.price;
-      cart.totalPrice += price * quantity;
+      const unitPrice = this.computeEffectiveUnitPrice(product);
+      cart.totalPrice += unitPrice * quantity;
 
       await this._cartService.update(
         { cartId: cart.id, totalPrice: cart.totalPrice },
