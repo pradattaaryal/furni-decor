@@ -401,9 +401,6 @@ export class ProductAdminController {
       variants: product.variants?.map((variant) => {
         const { image, ...rest } = variant;
         const mappedVariant: any = { ...rest, image };
-        if (image?.id != null) {
-          mappedVariant.imageId = image.id;
-        }
         return mappedVariant;
       }),
 
@@ -411,12 +408,15 @@ export class ProductAdminController {
         id: img.id,
         path: img.path,
         filename: img.filename,
+        mime:img.mime
       })),
 
       mainImage: product.mainImage ? {
         id: product.mainImage.id,
         path: product.mainImage.path,
         filename: product.mainImage.filename,
+        mime:product.mainImage.mime
+
       } : undefined,
 
       category: product.category,

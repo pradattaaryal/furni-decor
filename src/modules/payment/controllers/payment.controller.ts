@@ -40,9 +40,7 @@ export class PaymentController {
     @Body() body: CreatePaymentDto,
     @GetUser() user: AccessTokenPayload,
   ) {
-    const key = this.configService
-      .get<string>('auth.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY')
-      ?.trim();
+ 
     try {
        body.userId = user.sub;
       const payment = await this._paymentService.createPayment(body);
@@ -107,12 +105,4 @@ export class PaymentController {
     }
   }
 
-  // @Post('yyy')
-  // async paypalWebhook(
-  //   @Headers('paypal-transmission-sig') signature: string,
-  //   @Body() payload: any,
-  // ): Promise<{ received: boolean }> {
-  //   await this.webhookService.handlePayPalWebhook(payload, signature);
-  //   return { received: true };
-  // }
 }

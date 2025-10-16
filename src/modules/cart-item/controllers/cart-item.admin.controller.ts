@@ -97,38 +97,38 @@ export class CartItemAdminController {
     });
   }
 
-  @Post('/create')
-  @UseGuards(JwtAuthGuard)
-  @ApiDocs({ operation: 'Add Product to Cart' })
-  async create(
-    @Body() body: CreateCartItemDto,
-    @GetUser() user: AccessTokenPayload,
-  ): Promise<IResponse<{ item: CartItemEntity; message: string }>> {
-    const queryRunner: QueryRunner = this._connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  // @Post('/create')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiDocs({ operation: 'Add Product to Cart' })
+  // async create(
+  //   @Body() body: CreateCartItemDto,
+  //   @GetUser() user: AccessTokenPayload,
+  // ): Promise<IResponse<{ item: CartItemEntity; message: string }>> {
+  //   const queryRunner: QueryRunner = this._connection.createQueryRunner();
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
 
-    try {
-      const userId = user.sub;
-      const item = await this.cartItemService.create(userId, body, {
-        entityManager: queryRunner.manager,
-      });
+  //   try {
+  //     const userId = user.sub;
+  //     const item = await this.cartItemService.create(userId, body, {
+  //       entityManager: queryRunner.manager,
+  //     });
 
-      await queryRunner.commitTransaction();
+  //     await queryRunner.commitTransaction();
 
-      return {
-        data: {
-          item,
-          message: 'Cart Item created successfully',
-        },
-      };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
+  //     return {
+  //       data: {
+  //         item,
+  //         message: 'Cart Item created successfully',
+  //       },
+  //     };
+  //   } catch (error) {
+  //     await queryRunner.rollbackTransaction();
+  //     throw error;
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  // }
 
   @Get(':id')
   @ApiDocs({ operation: 'Get Cart Item by ID' })
@@ -149,36 +149,36 @@ export class CartItemAdminController {
     };
   }
 
-  @Patch(':id')
-  @ApiDocs({ operation: 'Update Cart Item' })
-  async update(
-    @Param() params: IdParamDto,
-    @Body() updateDto: CartItemUpdateDto,
-  ): Promise<IResponse<{ item: CartItemEntity; message: string }>> {
-    const queryRunner: QueryRunner = this._connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  // @Patch(':id')
+  // @ApiDocs({ operation: 'Update Cart Item' })
+  // async update(
+  //   @Param() params: IdParamDto,
+  //   @Body() updateDto: CartItemUpdateDto,
+  // ): Promise<IResponse<{ item: CartItemEntity; message: string }>> {
+  //   const queryRunner: QueryRunner = this._connection.createQueryRunner();
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
 
-    try {
-      const updated = await this.cartItemService.update(params.id, updateDto, {
-        entityManager: queryRunner.manager,
-      });
+  //   try {
+  //     const updated = await this.cartItemService.update(params.id, updateDto, {
+  //       entityManager: queryRunner.manager,
+  //     });
 
-      await queryRunner.commitTransaction();
+  //     await queryRunner.commitTransaction();
 
-      return {
-        data: {
-          item: updated,
-          message: 'Cart Item updated successfully',
-        },
-      };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
+  //     return {
+  //       data: {
+  //         item: updated,
+  //         message: 'Cart Item updated successfully',
+  //       },
+  //     };
+  //   } catch (error) {
+  //     await queryRunner.rollbackTransaction();
+  //     throw error;
+  //   } finally {
+  //     await queryRunner.release();
+  //   }
+  // }
 
   @Delete('hard-delete/:id')
   @ApiDocs({ operation: 'Hard Delete Cart Item' })
