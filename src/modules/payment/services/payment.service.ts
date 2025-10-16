@@ -98,32 +98,82 @@ export class PaymentService {
   }
 
   // --------------------- Cart validation ---------------------
+  // private async validateCart(cart: CartEntity): Promise<number> {
+  //   if (!cart.isActive) throw new BadRequestException('Cart is inactive');
+  //   if (!cart.items?.length) throw new BadRequestException('Cart is empty');
+
+  //   const productIds = cart.items.map((i) => i.productId);
+  //   const products = await this.productRepo._findByIds(productIds, {
+  //     options: { relations: { variants: true } },
+  //   });
+  //   const productMap = new Map(products.map((p) => [p.id, p]));
+
+  //   let total = 0;
+  //   for (const item of cart.items) {
+  //     const product = productMap.get(item.productId);
+  //     if (!product)
+  //       throw new BadRequestException(`Product ${item.productId} not found`);
+
+  //     this.validateProduct(product);
+  //     const price = this.getProductPrice(product);
+
+  //     total += price * item.quantity;
+  //   }
+
+  //   if (total <= 0)
+  //     throw new BadRequestException('Total amount cannot be zero');
+  //   return total;
+  // }
+
+
   private async validateCart(cart: CartEntity): Promise<number> {
-    if (!cart.isActive) throw new BadRequestException('Cart is inactive');
+     if (!cart.isActive) throw new BadRequestException('Cart is inactive');
     if (!cart.items?.length) throw new BadRequestException('Cart is empty');
 
-    const productIds = cart.items.map((i) => i.productId);
+     const productIds = cart.items.map((i) => i.productId);
     const products = await this.productRepo._findByIds(productIds, {
       options: { relations: { variants: true } },
     });
     const productMap = new Map(products.map((p) => [p.id, p]));
 
     let total = 0;
+    const currentDate = new Date();
+
     for (const item of cart.items) {
       const product = productMap.get(item.productId);
       if (!product)
         throw new BadRequestException(`Product ${item.productId} not found`);
 
       this.validateProduct(product);
-      const price = this.getProductPrice(product);
+      let price = this.getProductPrice(product);
 
-      total += price * item.quantity;
+      // Apply discount if valid
+      if (product.discountValue && product.discountStartDate && product.discountEndDate) {
+        const isDiscountValid =
+          currentDate >= new Date(product.discountStartDate) &&
+          currentDate <= new Date(product.discountEndDate);
+        
+        if (isDiscountValid) {
+          price = price - (price * product.discountValue) / 100;
+        }
+      }
+
+      const itemTotal = price * item.quantity;
+      total += itemTotal;
+
+      // Apply 5% shipping charge if item total is less than 500
+      if (itemTotal < 500) {
+        total += itemTotal * 0.05;
+      }
     }
 
     if (total <= 0)
       throw new BadRequestException('Total amount cannot be zero');
-    return total;
+
+    return Number(total.toFixed(2)); // Round to 2 decimal places for currency
   }
+
+
 
   private validateProduct(product: ProductEntity) {
     if (!product.price || product.price <= 0)

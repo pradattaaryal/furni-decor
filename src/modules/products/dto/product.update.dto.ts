@@ -2,45 +2,44 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { faker } from '@faker-js/faker';
 import {
-  CustomIsNotEmpty,
+  CustomIsOptional,
   CustomIsString,
   CustomMinLength,
   CustomMaxLength,
-  CustomIsOptional,
   CustomIsNumber,
   CustomMin,
   CustomIsArray,
   CustomValidateNested,
-  CustomIsFutureDate,
   CustomIsStartBeforeEnd,
 } from 'src/common/request/validators/custom-validator';
-import { IProductCreateDto } from '../interfaces/product.create.dto.interface';
-import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
-import { ImageEntity } from 'src/modules/image/entities/image.entity';
-import { ProductVariantCreateDto } from 'src/modules/product-variants/dto/product-variant.create.dto';
+ import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
+import { IProductUpdateDto } from '../interfaces/product.update.dto.interface';
 
-export class ProductUpdateDto implements IProductCreateDto {
+export class ProductUpdateDto implements IProductUpdateDto {
   @ApiProperty({
     example: faker.commerce.productName(),
     description: 'Product name',
+    required: false,
   })
-  @CustomIsNotEmpty()
+  @CustomIsOptional()
   @CustomIsString()
   @CustomMinLength(2)
   @CustomMaxLength(100)
-  @Transform(({ value }: { value: string }) => value.trim())
-  name: string;
+  @Transform(({ value }: { value: string }) => (value ? value.trim() : value))
+  name?: string;
 
   @ApiProperty({
     example: faker.commerce.productName(),
     description: 'Product tag',
+    required: false,
   })
-  @CustomIsNotEmpty()
+  @CustomIsOptional()
   @CustomIsString()
   @CustomMinLength(2)
   @CustomMaxLength(100)
-  @Transform(({ value }: { value: string }) => value.trim())
-  tag: string;
+  @Transform(({ value }: { value: string }) => (value ? value.trim() : value))
+  tag?: string;
+
   @ApiProperty({
     example: {
       height: '80cm',
@@ -50,26 +49,32 @@ export class ProductUpdateDto implements IProductCreateDto {
       weight: '25kg',
     },
     description: 'Variant dimensions',
+    required: false,
   })
-  @CustomIsNotEmpty()
-  dimensions: Record<string, number>;
+  @CustomIsOptional()
+  dimensions?: Record<string, number>;
 
-  @ApiProperty({ example: 50, description: 'Available stock  quantity' })
+  @ApiProperty({
+    example: 50,
+    description: 'Available stock quantity',
+    required: false,
+  })
   @CustomIsOptional()
   @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseInt(value))
-  quantity: number;
+  @Transform(({ value }: { value: any }) => (value ? parseInt(value) : value))
+  quantity?: number;
 
   @ApiProperty({
     example: faker.commerce.productDescription(),
     description: 'Product description',
+    required: false,
   })
-  @CustomIsNotEmpty()
+  @CustomIsOptional()
   @CustomIsString()
   @CustomMinLength(10)
   @CustomMaxLength(200)
-  @Transform(({ value }: { value: string }) => value.trim())
-  description: string;
+  @Transform(({ value }: { value: string }) => (value ? value.trim() : value))
+  description?: string;
 
   @ApiProperty({
     example: [
@@ -119,11 +124,15 @@ export class ProductUpdateDto implements IProductCreateDto {
   @CustomIsString()
   configuration?: string;
 
-  @ApiProperty({ example: 100.5, description: 'Price of variant' })
+  @ApiProperty({
+    example: 100.5,
+    description: 'Price of variant',
+    required: false,
+  })
   @CustomIsOptional()
   @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseFloat(value))
-  price: number;
+  @Transform(({ value }: { value: any }) => (value ? parseFloat(value) : value))
+  price?: number;
 
   @ApiProperty({
     example: 'Leather',
@@ -159,7 +168,7 @@ export class ProductUpdateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsArray()
-  images: number[];
+  images?: number[];
 
   @ApiProperty({
     example: 1,
@@ -168,7 +177,7 @@ export class ProductUpdateDto implements IProductCreateDto {
   })
   @CustomIsOptional()
   @CustomIsNumber()
-  @Transform(({ value }: { value: any }) => parseInt(value))
+  @Transform(({ value }: { value: any }) => (value ? parseInt(value) : value))
   mainImageId?: number;
 
   @ApiProperty({
@@ -197,17 +206,16 @@ export class ProductUpdateDto implements IProductCreateDto {
   @CustomIsNumber()
   maxLoad?: number;
 
-  // ================= Additional Product Specifications End =================
-
   @ApiProperty({
     example: 1,
     description: 'Category ID',
+    required: false,
   })
-  @CustomIsNotEmpty()
+  @CustomIsOptional()
   @CustomIsNumber()
   @CustomMin(1)
-  @Transform(({ value }: { value: any }) => parseInt(value))
-  categoryId: number;
+  @Transform(({ value }: { value: any }) => (value ? parseInt(value) : value))
+  categoryId?: number;
 
   @ApiProperty({
     example: 'Premium packaging with assembly guide',
@@ -237,9 +245,7 @@ export class ProductUpdateDto implements IProductCreateDto {
   @CustomIsOptional()
   @CustomIsNumber()
   @CustomMin(0)
-  @Transform(({ value }: { value: any }) =>
-    value ? parseFloat(value) : undefined,
-  )
+  @Transform(({ value }: { value: any }) => (value ? parseFloat(value) : value))
   discountValue?: number;
 
   @ApiProperty({
