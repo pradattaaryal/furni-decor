@@ -46,5 +46,6 @@ export class ProductResponseDto {
   };
   variants?: ProductVariantDto[];
   images?: ImageResponseDto[];
+  mainImage?: ImageResponseDto;
   category?: any;
 }

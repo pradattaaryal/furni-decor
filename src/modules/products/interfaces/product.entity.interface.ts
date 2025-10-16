@@ -27,7 +27,9 @@ export interface IProductEntity extends DatabaseBaseEntity {
   coveredInWarranty?: string;
   notCoveredInWarranty?: string;
   domesticWarranty?: string;
+  mainImageId?: number;
   category?: CategoryEntity;
   variants?: ProductVariantEntity[];
   images?: ImageEntity[];
+  mainImage?: ImageEntity;
 }

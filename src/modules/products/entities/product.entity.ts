@@ -164,6 +164,14 @@ export class ProductEntity
     },
   })
   price: number;
+
+  @Column({ name: 'main_image_id', nullable: true })
+  mainImageId: number;
+
+  @ManyToOne(() => ImageEntity, { nullable: true })
+  @JoinColumn({ name: 'main_image_id' })
+  mainImage?: ImageEntity;
+
   @OneToMany(() => ImageEntity, (image) => image.product)
   images?: ImageEntity[];
 

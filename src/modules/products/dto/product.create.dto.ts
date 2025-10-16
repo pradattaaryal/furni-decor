@@ -163,6 +163,16 @@ export class ProductCreateDto implements IProductCreateDto {
   images: number[];
 
   @ApiProperty({
+    example: 1,
+    description: 'Main image ID for the product',
+    required: false,
+  })
+  @CustomIsOptional()
+  @CustomIsNumber()
+  @Transform(({ value }: { value: any }) => parseInt(value))
+  mainImageId?: number;
+
+  @ApiProperty({
     example: 'Matte',
     description: 'Finish type of the product',
     required: false,

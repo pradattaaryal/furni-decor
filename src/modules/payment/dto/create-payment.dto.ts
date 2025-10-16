@@ -21,6 +21,23 @@ import {
 export class CreatePaymentDto {
   userId: number;
 
+  @ApiPropertyOptional({
+    description: 'shippingAddress id',
+    example: '1',
+  })
+  @CustomIsNotEmpty()
+  @CustomIsNumber()
+  shippingAddress?: number;
+
+
+  @ApiPropertyOptional({
+    description: 'BillingAddress id',
+    example: '1',
+  })
+  @CustomIsNotEmpty()
+  @CustomIsNumber()
+  BillingAddress?: number;
+
   @ApiProperty({
     description: 'Currency code for the transaction (ISO 4217 format)',
     example: 'USD',
@@ -62,7 +79,7 @@ export class CreatePaymentDto {
 
   @ApiPropertyOptional({
     description: 'URL to redirect after successful payment',
-    example: 'https://yourapp.com/payment/success',
+    example: 'http://localhost:5173/success',
   })
   @CustomIsOptional()
   @CustomIsString()
@@ -70,7 +87,7 @@ export class CreatePaymentDto {
 
   @ApiPropertyOptional({
     description: 'URL to redirect after canceled payment',
-    example: 'https://yourapp.com/payment/cancel',
+    example: 'http://localhost:5173/cancel',
   })
   @CustomIsOptional()
   @CustomIsString()
