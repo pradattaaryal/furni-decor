@@ -22,3 +22,12 @@ export interface IPaginationMeta {
   searchBy?: string;
   skipPagination?: boolean;
 }
+export interface ICartResponse<T> extends IResponsePaging<T> {
+  summary: {
+    subtotal: number;
+    totalDiscount: number;
+    totalShipping: number;
+    grandTotal: number;
+  };
+}
+
