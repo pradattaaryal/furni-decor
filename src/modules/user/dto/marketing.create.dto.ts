@@ -31,13 +31,14 @@ export class MarketingUserCreateDto implements IUserCreateDto {
   @CustomMaxLength(50, { message: 'Password is too long' })
   @CustomMinLength(6, { message: 'Password is too short' })
   @CustomMatches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/,
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*_\-\.?&])[A-Za-z\d@$!%*_\-\.?&]{6,16}$/,
     {
       message:
-        'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)',
+        'Password must be 6–16 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*_- .?&)',
     },
   )
   password: string;
+
 
   @ApiProperty({
     example: 'John',
