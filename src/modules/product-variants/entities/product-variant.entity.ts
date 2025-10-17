@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { ImageEntity } from 'src/modules/image/entities/image.entity';
@@ -18,6 +19,18 @@ export const PRODUCT_VARIANT_DATABASE_TABLE_NAME = 'product_variants';
 @Entity({ name: PRODUCT_VARIANT_DATABASE_TABLE_NAME })
 @Index(['id'])
 export class ProductVariantEntity extends DatabaseBaseEntity {
+   @PrimaryGeneratedColumn()
+  id: number;
+
+   @Column({ name: 'product_id' })
+  productId: number;
+
+  @ManyToOne(() => ProductEntity, (product) => product.variants, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'product_id' })
+  product: ProductEntity;
+
   @ManyToOne(() => ColorEntity, (color) => color.variants, {
     nullable: true,
     onDelete: 'SET NULL',
@@ -25,15 +38,9 @@ export class ProductVariantEntity extends DatabaseBaseEntity {
   @JoinColumn({ name: 'color_id' })
   color: ColorEntity | null;
 
-  @OneToOne(() => ImageEntity, { onDelete: 'SET NULL' })
+  @OneToOne(() => ImageEntity, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'image_id' })
   image: ImageEntity | null;
-
-  @ManyToOne(() => ProductEntity, (product) => product.variants, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'product_id' })
-  product: ProductEntity;
 
   @OneToMany(() => WishlistEntity, (wishlist) => wishlist.variant)
   wishlists: WishlistEntity[];

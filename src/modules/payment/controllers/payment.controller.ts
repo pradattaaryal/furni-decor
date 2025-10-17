@@ -40,9 +40,8 @@ export class PaymentController {
     @Body() body: CreatePaymentDto,
     @GetUser() user: AccessTokenPayload,
   ) {
- 
     try {
-       body.userId = user.sub;
+      body.userId = user.sub;
       const payment = await this._paymentService.createPayment(body);
       return {
         data: { payment, message: 'Payment initialized successfully' },
@@ -104,5 +103,4 @@ export class PaymentController {
       );
     }
   }
-
 }

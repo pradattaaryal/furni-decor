@@ -74,87 +74,84 @@ export class CartItemAdminController {
     }
   }
 
-@Get('/user-cart-items')
-@UseGuards(JwtAuthGuard)
-@ApiDocs({ operation: 'Get Cart by User ID' })
-async getCartByUserId(
-  @Query() paginateQueryDto: PaginateQueryDto,
-  @GetUser() user: AccessTokenPayload,
-): Promise<ICartResponse<CartItemEntity>> {
-  const result = await this.cartItemService.paginatedGet({
-    ...paginateQueryDto,
-    options: {
-      where: { cart: { userId: user.sub } },
-      withDeleted: false,
-      relations: {
-        product: { images: true, mainImage: true },
-        variant: { image: true },
+  @Get('/user-cart-items')
+  @UseGuards(JwtAuthGuard)
+  @ApiDocs({ operation: 'Get Cart by User ID' })
+  async getCartByUserId(
+    @Query() paginateQueryDto: PaginateQueryDto,
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<ICartResponse<CartItemEntity>> {
+    const result = await this.cartItemService.paginatedGet({
+      ...paginateQueryDto,
+      options: {
+        where: { cart: { userId: user.sub } },
+        withDeleted: false,
+        relations: {
+          product: { images: true, mainImage: true },
+          variant: { image: true },
+        },
       },
-    },
-    sortableColumns: ['id', 'createdAt'],
-    defaultSortColumn: 'createdAt',
-    defaultSortOrder: 'DESC',
-  });
+      sortableColumns: ['id', 'createdAt'],
+      defaultSortColumn: 'createdAt',
+      defaultSortOrder: 'DESC',
+    });
 
- 
-  const summary = this.calculateCartSummary(result.data);
+    const summary = this.calculateCartSummary(result.data);
 
-  return {
-    ...result,
-    summary,  
-  };
-}
-private calculateCartSummary(items: CartItemEntity[]) {
-  const currentDate = new Date();
+    return {
+      ...result,
+      summary,
+    };
+  }
+  private calculateCartSummary(items: CartItemEntity[]) {
+    const currentDate = new Date();
 
-  let subtotal = 0;
-  let totalDiscount = 0;
-  let totalShipping = 0;
+    let subtotal = 0;
+    let totalDiscount = 0;
+    let totalShipping = 0;
 
-  for (const item of items) {
-    const product = item.product;
-    if (!product) continue;
+    for (const item of items) {
+      const product = item.product;
+      if (!product) continue;
 
-    const originalPrice = product.price;
-    const quantity = item.quantity;
-    let finalPrice = originalPrice;
-    let discount = 0;
+      const originalPrice = product.price;
+      const quantity = item.quantity;
+      let finalPrice = originalPrice;
+      let discount = 0;
 
-    const isDiscountActive =
-      product.discountValue &&
-      product.discountStartDate &&
-      product.discountEndDate &&
-      currentDate >= new Date(product.discountStartDate) &&
-      currentDate <= new Date(product.discountEndDate);
+      const isDiscountActive =
+        product.discountValue &&
+        product.discountStartDate &&
+        product.discountEndDate &&
+        currentDate >= new Date(product.discountStartDate) &&
+        currentDate <= new Date(product.discountEndDate);
 
-    if (isDiscountActive) {
-      // Assuming fixed discount (not %)
-      finalPrice = Math.max(originalPrice - (product.discountValue ?? 0), 0);
-      discount = (originalPrice - finalPrice) * quantity;
+      if (isDiscountActive) {
+        // Assuming fixed discount (not %)
+        finalPrice = Math.max(originalPrice - (product.discountValue ?? 0), 0);
+        discount = (originalPrice - finalPrice) * quantity;
+      }
+
+      const itemSubtotal = finalPrice * quantity;
+      subtotal += itemSubtotal;
+      totalDiscount += discount;
+
+      // Apply 5% shipping if item total < 500
+      if (itemSubtotal < 500) {
+        const shipping = itemSubtotal * 0.05;
+        totalShipping += shipping;
+      }
     }
 
-    const itemSubtotal = finalPrice * quantity;
-    subtotal += itemSubtotal;
-    totalDiscount += discount;
+    const grandTotal = subtotal + totalShipping;
 
-    // Apply 5% shipping if item total < 500
-    if (itemSubtotal < 500) {
-      const shipping = itemSubtotal * 0.05;
-      totalShipping += shipping;
-    }  
+    return {
+      subtotal: Number(subtotal.toFixed(2)),
+      totalDiscount: Number(totalDiscount.toFixed(2)),
+      totalShipping: Number(totalShipping.toFixed(2)),
+      grandTotal: Number(grandTotal.toFixed(2)),
+    };
   }
-
-  const grandTotal = subtotal + totalShipping;
-
-  return {
-    subtotal: Number(subtotal.toFixed(2)),
-    totalDiscount: Number(totalDiscount.toFixed(2)),
-    totalShipping: Number(totalShipping.toFixed(2)),
-    grandTotal: Number(grandTotal.toFixed(2)),
-  };
-}
-
-
 
   // @Post('/create')
   // @UseGuards(JwtAuthGuard)

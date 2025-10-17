@@ -53,4 +53,4 @@ export const PAYPAL_CLIENT = 'PAYPAL_CLIENT';
   ],
   exports: [PaymentService, PaymentRepository, WebhookService],
 })
-export class PaymentModule { }
+export class PaymentModule {}

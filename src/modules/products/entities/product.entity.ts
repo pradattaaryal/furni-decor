@@ -46,6 +46,12 @@ export class ProductEntity
   @Column({ type: 'jsonb', nullable: false })
   dimensions: Record<string, number>;
 
+  @Column({ type: 'float', default: 0 })
+  averageRating: number;
+
+  @Column({ type: 'int', default: 0 })
+  ratingCount: number;
+
   @Column({
     name: 'model_number',
     type: 'varchar',

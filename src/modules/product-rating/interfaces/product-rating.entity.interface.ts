@@ -1,17 +1,10 @@
-import { IProductEntity } from 'src/modules/products/interfaces/product.entity.interface';
-import { IUserEntity } from 'src/modules/user/interfaces/user.entity.interface';
+import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
+import { ProductEntity } from 'src/modules/products/entities/product.entity';
+import { UserEntity } from 'src/modules/user/entities/user.entity';
+import { RATING_VALUE } from '../constants/product-rating.constant';
 
 export interface IProductRatingEntity {
-  /*product: IProductEntity;
-  user: IUserEntity;
-  isApproved: boolean;
-  rating: number;
-  parent?: IProductRatingEntity | null;
-  children?: IProductRatingEntity[];
-  comment?: string | null;*/
   productId: number;
-  rating: number;
-  parent_id?: number | null;
-  comment?: string;
   userId: number;
+  rating: RATING_VALUE;
 }

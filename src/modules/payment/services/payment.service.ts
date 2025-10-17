@@ -125,12 +125,11 @@ export class PaymentService {
   //   return total;
   // }
 
-
   private async validateCart(cart: CartEntity): Promise<number> {
-     if (!cart.isActive) throw new BadRequestException('Cart is inactive');
+    if (!cart.isActive) throw new BadRequestException('Cart is inactive');
     if (!cart.items?.length) throw new BadRequestException('Cart is empty');
 
-     const productIds = cart.items.map((i) => i.productId);
+    const productIds = cart.items.map((i) => i.productId);
     const products = await this.productRepo._findByIds(productIds, {
       options: { relations: { variants: true } },
     });
@@ -148,11 +147,15 @@ export class PaymentService {
       let price = this.getProductPrice(product);
 
       // Apply discount if valid
-      if (product.discountValue && product.discountStartDate && product.discountEndDate) {
+      if (
+        product.discountValue &&
+        product.discountStartDate &&
+        product.discountEndDate
+      ) {
         const isDiscountValid =
           currentDate >= new Date(product.discountStartDate) &&
           currentDate <= new Date(product.discountEndDate);
-        
+
         if (isDiscountValid) {
           price = price - (price * product.discountValue) / 100;
         }
@@ -172,8 +175,6 @@ export class PaymentService {
 
     return Number(total.toFixed(2)); // Round to 2 decimal places for currency
   }
-
-
 
   private validateProduct(product: ProductEntity) {
     if (!product.price || product.price <= 0)

@@ -115,7 +115,6 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         throw new BadRequestException('PayPal approval URL not found.');
       }
 
-    
       return {
         success: true,
         paymentId: orderResponse.result.id,
@@ -128,7 +127,6 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         },
       };
     } catch (error: any) {
-     
       this.logger.error('PayPal payment creation failed', {
         message: error.message,
         statusCode: error.statusCode,
@@ -231,7 +229,6 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         return false;
       }
 
-  
       this.logger.debug('Webhook verification passed (basic)');
       return true;
     } catch (error) {

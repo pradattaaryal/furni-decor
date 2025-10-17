@@ -29,7 +29,6 @@ export class CreatePaymentDto {
   @CustomIsNumber()
   shippingAddress?: number;
 
-
   @ApiPropertyOptional({
     description: 'BillingAddress id',
     example: '1',

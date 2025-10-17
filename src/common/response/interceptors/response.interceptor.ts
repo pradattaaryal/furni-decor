@@ -19,8 +19,9 @@ import {
 
 @Injectable()
 export class ResponseDefaultInterceptor<T>
-  implements NestInterceptor<Promise<T>> {
-  constructor(private readonly reflector: Reflector) { }
+  implements NestInterceptor<Promise<T>>
+{
+  constructor(private readonly reflector: Reflector) {}
 
   async intercept(
     context: ExecutionContext,

@@ -19,7 +19,7 @@ import { DebuggerModule } from 'src/common/debugger/debugger.module';
     }),
     DebuggerModule,
   ],
-  providers: [TriggerCommand],
-  // providers: [SeedCommand, TriggerCommand, TriggerRemoveCommand],
+  providers: [TriggerCommand, SeedCommand],
+  //providers: [SeedCommand, TriggerCommand, TriggerRemoveCommand],
 })
 export class CommandModule {}

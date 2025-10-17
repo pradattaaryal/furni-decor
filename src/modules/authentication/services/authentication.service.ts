@@ -144,7 +144,7 @@ export class AuthenticationService {
       );
       const [firstName, ...rest] = input.displayName?.split(' ') || [''];
       const lastName = rest.length ? rest.join(' ') : 'lastname';
-console.log(`dat in handle locial${input.avatarUrl}`);
+      console.log(`dat in handle locial${input.avatarUrl}`);
       user = await this.userService.create({
         firstName,
         lastName,

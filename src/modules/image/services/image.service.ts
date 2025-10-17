@@ -212,7 +212,7 @@ export class ImageService {
       case UPLOAD_FOLDER_ENUM.USER:
         type = FILE_ASSOCIATION_TYPE.USER;
         break;
-         case UPLOAD_FOLDER_ENUM.PRODUCT_IMAGE:
+      case UPLOAD_FOLDER_ENUM.PRODUCT_IMAGE:
         type = FILE_ASSOCIATION_TYPE.PRODUCT_IMAGE;
         break;
     }

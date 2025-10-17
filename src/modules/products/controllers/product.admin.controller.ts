@@ -138,12 +138,15 @@ export class ProductAdminController {
 
     const data = await this._productService.paginatedGet({
       ...paginateQueryDto,
-      options: { relations: {
+      options: {
+        relations: {
           category: { parent: true, children: true },
           variants: { image: true, color: true },
           images: true,
           mainImage: true,
-        },where },
+        },
+        where,
+      },
     });
 
     return data;
@@ -408,16 +411,17 @@ export class ProductAdminController {
         id: img.id,
         path: img.path,
         filename: img.filename,
-        mime:img.mime
+        mime: img.mime,
       })),
 
-      mainImage: product.mainImage ? {
-        id: product.mainImage.id,
-        path: product.mainImage.path,
-        filename: product.mainImage.filename,
-        mime:product.mainImage.mime
-
-      } : undefined,
+      mainImage: product.mainImage
+        ? {
+            id: product.mainImage.id,
+            path: product.mainImage.path,
+            filename: product.mainImage.filename,
+            mime: product.mainImage.mime,
+          }
+        : undefined,
 
       category: product.category,
     };

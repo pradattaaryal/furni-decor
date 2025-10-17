@@ -1,39 +1,34 @@
-// src/modules/product-rating/entities/product-rating.entity.ts
-
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, Unique, Index } from 'typeorm';
+import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { ProductEntity } from 'src/modules/products/entities/product.entity';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
-import { DatabaseBaseEntity } from 'src/common/database/base/entity/BaseEntity';
 import { IProductRatingEntity } from '../interfaces/product-rating.entity.interface';
+import {
+  PRODUCT_RATING_DATABASE_TABLE_NAME,
+  RATING_VALUE,
+} from '../constants/product-rating.constant';
 
-@Entity({ name: 'product_ratings' })
-// implements IProductRatingEntity
-export class ProductRatingEntity extends DatabaseBaseEntity {
-  @Column({ name: 'is_approved', type: 'boolean', default: false })
-  isApproved: boolean;
+@Entity({ name: PRODUCT_RATING_DATABASE_TABLE_NAME })
+@Unique('unique_user_product_rating', ['productId', 'userId'])
+@Index(['productId', 'userId'])
+export class ProductRatingEntity
+  extends DatabaseBaseEntity
+  implements IProductRatingEntity
+{
+  @Column({ name: 'product_id' })
+  productId: number;
 
-  @Column({ type: 'smallint', nullable: false })
-  rating: number;
+  @Column({ name: 'user_id' })
+  userId: number;
 
-  // @Column({ type: 'int', nullable: true })
-  // parent_id: number | null;
+  @Column({
+    type: 'int',
+    enum: RATING_VALUE,
+    comment: 'Rating value from 1 to 5',
+  })
+  rating: RATING_VALUE;
 
-  @Column({ type: 'text', nullable: true })
-  comment?: string | null;
-  // ======================
-  // Relations=============
-  // ======================
-
+  // Relations
   @ManyToOne(() => ProductEntity, (product) => product.ratings, {
     onDelete: 'CASCADE',
   })
@@ -45,17 +40,4 @@ export class ProductRatingEntity extends DatabaseBaseEntity {
   })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
-  @ManyToOne(
-    () => ProductRatingEntity,
-    (productrating) => productrating.children,
-    {
-      nullable: true,
-      onDelete: 'SET NULL',
-    },
-  )
-  @JoinColumn({ name: 'parent_id' })
-  parent?: ProductRatingEntity | null;
-
-  @OneToMany(() => ProductRatingEntity, (productrating) => productrating.parent)
-  children?: ProductRatingEntity[];
 }

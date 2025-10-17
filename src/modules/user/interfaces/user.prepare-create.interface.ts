@@ -6,5 +6,5 @@ export interface IPrepareUserCreateData {
   firstName?: string;
   lastName?: string;
   image?: ImageEntity | null;
-  image_url?:string;
+  image_url?: string;
 }
