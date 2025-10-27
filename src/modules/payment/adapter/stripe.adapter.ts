@@ -105,7 +105,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
           },
         },
         {
-          idempotencyKey: `order_${order.id}_user_${user.id}`,
+          idempotencyKey: `order_${order.id}_user_${user.id}_${Date.now()}`,
         },
       );
 
@@ -118,6 +118,7 @@ export class StripeAdapter implements PaymentAdapterInterface {
         status: this.mapStripeStatus(paymentIntent.status),
         metadata: {
           clientSecret: paymentIntent.client_secret,
+          orderId: order.id,
         },
       };
     } catch (error: any) {
@@ -197,7 +198,8 @@ export class StripeAdapter implements PaymentAdapterInterface {
 
   verifyWebhook(payload: Buffer, signature: string): Stripe.Event {
     try {
-      const endpointSecret = 'we_1SI0rKFhrbYI1auhbdCslHrb';
+        const endpointSecret =this.configService.get<string>('stripe.stripe_webhook_signiture');
+
       if (!endpointSecret)
         throw new Error('Stripe webhook secret not configured');
 

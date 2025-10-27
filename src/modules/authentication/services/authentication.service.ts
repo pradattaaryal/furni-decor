@@ -17,6 +17,11 @@ import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { CartService } from 'src/modules/cart/services/cart.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { WishlistService } from 'src/modules/wishlist/services/wishlist.service';
+import { WishlistRepository } from 'src/modules/wishlist/repositories/wishlist.repository';
+import { CartRepository } from 'src/modules/cart/repositories/cart.repository';
+import { object } from 'joi';
+import { CartItemRepository } from 'src/modules/cart-item/repositories/cart-item.repository';
 
 export type AccessTokenPayload = { sub: number; roles: UserRole };
 export type TokenPayloadForCredentialReset = { sub: number; email: string };
@@ -31,6 +36,8 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
     private readonly _cartService: CartService,
+    private readonly _wishlistRepo:WishlistRepository,
+    private readonly _cartItemRepo:CartItemRepository
   ) {}
 
   /** ================= AUTH HELPERS ================== */
@@ -127,7 +134,17 @@ export class AuthenticationService {
       role: user.role as UserRole,
     });
 
-    return { token, user };
+
+    const wishlistcount=await this._wishlistRepo._findCount({options:{where:{userId:user.id}
+    }})
+   const cartCount=await this._cartItemRepo._findCount({options:{where:{ cart:{userId:user.id}
+    }}})
+ const userData = {
+  wishlistcount,
+  cartCount
+ };
+
+    return { token, user,userData };
   }
 
   async handleSocialLogin(input: {

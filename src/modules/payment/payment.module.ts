@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRepositoryModule } from '../user/repositories/user.repostory.module';
 import { CartModule } from '../cart/cart.module';
+import { CartItemModule } from '../cart-item/cart-item.module';
 import { PaymentEntity } from './entities/payment.entity';
 import { PayPalAdapter } from './adapter/paypal.adapter';
 import { StripeAdapter } from './adapter/stripe.adapter';
@@ -21,9 +22,10 @@ export const PAYPAL_CLIENT = 'PAYPAL_CLIENT';
 @Module({
   imports: [
     TypeOrmModule.forFeature([PaymentEntity]),
-    ConfigModule, // 👈 required for ConfigService
+    ConfigModule, 
     OrderModule,
     CartModule,
+    CartItemModule,
     ProductsModule,
     ProductRepositoryModule,
     UserModule,
@@ -52,5 +54,6 @@ export const PAYPAL_CLIENT = 'PAYPAL_CLIENT';
     },
   ],
   exports: [PaymentService, PaymentRepository, WebhookService],
+  controllers: [],
 })
 export class PaymentModule {}

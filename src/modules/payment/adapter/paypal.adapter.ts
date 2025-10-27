@@ -120,6 +120,7 @@ export class PayPalAdapter implements PaymentAdapterInterface {
         paymentId: orderResponse.result.id,
         transactionId: orderResponse.result.id,
         cart,
+     
         status: this.mapPayPalStatus(orderResponse.result.status),
         checkoutUrl: approveUrl,
         metadata: {

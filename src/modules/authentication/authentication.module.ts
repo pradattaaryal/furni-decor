@@ -13,10 +13,16 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { CartModule } from '../cart/cart.module';
 import { UserEntity } from '../user/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WishlistModule } from '../wishlist/wishlist.module';
+import { CartEntity } from '../cart/entities/cart.entity';
+import { WishlistEntity } from '../wishlist/entities/wishlist.entity';
+import { CartItemModule } from '../cart-item/cart-item.module';
+import { CartItemEntity } from '../cart-item/entities/cart-item.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity,WishlistEntity,    CartItemEntity
+]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -26,6 +32,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
     }),
     UserModule,
+    WishlistModule,
+    CartItemModule,
     UserRepositoryModule,
     OtpModule,
     CartModule,

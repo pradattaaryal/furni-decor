@@ -17,6 +17,7 @@ import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { PaymentService } from '../services/payment.service';
 import { WebhookService } from '../services/webhook.service';
+import { PaymentProvider } from '../entities/payment.entity';
 import Stripe from 'stripe';
 import { sign } from 'crypto';
 import { ConfigService } from '@nestjs/config';
@@ -31,7 +32,7 @@ export class PaymentController {
     private readonly _paymentService: PaymentService,
     private readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   @Post('/create')
   @ApiDocs({ operation: 'Initialize Payment' })
@@ -59,13 +60,21 @@ export class PaymentController {
     @Param('paymentId') paymentId: string,
     @GetUser() user: AccessTokenPayload,
   ) {
-    console.log(`capyure method called with paymentId: ${paymentId}`);
+    console.log(`capture method called with paymentId: ${paymentId}`);
     if (!paymentId) {
       throw new BadRequestException('Payment ID is required.');
     }
 
     const result = await this._paymentService.capturePayment(paymentId);
-    console.log(` data from capture of paypal ${result}`);
+    console.log(`data from capture of paypal ${result}`);
+
+     if (result.success) {
+      await this.webhookService.handlePaymentCompletion(
+        paymentId,
+        PaymentProvider.PAYPAL,
+      );
+    }
+
     return {
       data: result,
       message: result.success
@@ -74,31 +83,24 @@ export class PaymentController {
     };
   }
 
-  @Post('xxx')
+  @Post('stripe-weebhook')
   async stripeWebhook(
     @Headers('stripe-signature') signature: string,
     @Req() req: RawBodyRequest<Request>,
   ): Promise<{ received: boolean }> {
     console.log('🟢 [Stripe Webhook] Incoming request');
 
-    const rawBody = req.rawBody; // this must be a Buffer
+    const rawBody = req.rawBody;  
 
     if (!signature) throw new BadRequestException('Missing Stripe signature');
     if (!rawBody) throw new BadRequestException('Missing raw body');
-
-    try {
-      // const event = this.stripe.webhooks.constructEvent(
-      //   rawBody,
-      //   signature,
-      //   'whsec_Ac6tAqU9fgS2JRBWNC7aQ8sXVfGksC0G',
-      // );
-      // console.log(event.type);
-      await this.webhookService.handleStripeWebhook(rawBody, signature);
+     try {
+ 
+       await this.webhookService.handleStripeWebhook(rawBody, signature);
 
       return { received: true };
     } catch (err) {
-      console.error('🚨 Stripe verification failed:', err.message);
-      throw new BadRequestException(
+       throw new BadRequestException(
         `Invalid Stripe webhook signature: ${err.message}`,
       );
     }
