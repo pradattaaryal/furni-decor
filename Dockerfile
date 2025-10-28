@@ -25,4 +25,4 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3001
 
-CMD npx typeorm --dataSource=dist/database/data-source.js migration:run && CLI_PATH=./dist/cli.js npx nestjs-command trigger:init && node dist/main.js
+CMD npx typeorm --dataSource=dist/database/data-source.js migration:run && CLI_PATH=./dist/cli.js npx nestjs-command trigger:init && CLI_PATH=./dist/cli.js npx nestjs-command seed:init && node dist/main.js
