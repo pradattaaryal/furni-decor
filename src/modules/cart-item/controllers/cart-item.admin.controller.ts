@@ -35,7 +35,7 @@ export class CartItemAdminController {
   constructor(
     private readonly cartItemService: CartItemService,
     private _connection: DataSource,
-  ) { }
+  ) {}
   @Post('/add-or-update')
   @UseGuards(JwtAuthGuard)
   @ApiDocs({ operation: 'Add product to cart or increase quantity if exists' })
@@ -341,11 +341,8 @@ export class CartItemAdminController {
     return {
       data: {
         count: count,
-        message: 'cart item count retrieved successfully.'
-      }
-    }
+        message: 'cart item count retrieved successfully.',
+      },
+    };
   }
-
-
-
 }

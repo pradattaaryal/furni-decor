@@ -170,7 +170,6 @@ export class PaginateQueryIsActiveWithSkipDto extends PaginateQueryWithSkipDto {
 }
 
 export class ProductPaginateQueryDto extends PaginateQueryDto {
-
   @ApiPropertyOptional({
     type: Number,
     description: 'rating',
@@ -178,7 +177,6 @@ export class ProductPaginateQueryDto extends PaginateQueryDto {
   @CustomIsOptional()
   @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
   rating?: number;
-
 
   @ApiPropertyOptional({
     type: Number,

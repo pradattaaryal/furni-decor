@@ -137,11 +137,6 @@ export class AuthenticationService {
       id: user.id,
       role: user.role as UserRole,
     });
-
-    //   const wishlistcount=await this._wishlistRepo._findCount({options:{where:{userId:user.id}
-    //   }})
-    //  const cartCount=await this._cartItemRepo._findCount({options:{where:{ cart:{userId:user.id}
-    //   }}})
     const defultBillingAddress = await this._billingAddressService.getOne({
       options: { where: { userId: user.id, default: true } },
     });
@@ -149,8 +144,6 @@ export class AuthenticationService {
       options: { where: { userId: user.id, default: true } },
     });
     const userData = {
-      // wishlistcount,
-      // cartCount,
       defultBillingAddress,
       defultShippingAddress,
     };

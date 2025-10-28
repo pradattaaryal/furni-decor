@@ -6,6 +6,7 @@ import {
 import {
   DataSource,
   QueryRunner,
+  Repository,
   SelectQueryBuilder,
   UpdateResult,
 } from 'typeorm';
@@ -36,16 +37,27 @@ import slugify from 'slugify';
 import { Option } from 'nestjs-command';
 import { CategoryService } from 'src/modules/category/services/category.service';
 import { ProductUpdateDto } from '../dto/product.update.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ColorEntity } from 'src/modules/color/entities/color.entity';
+import { promises } from 'dns';
+import { ProductCacheService } from './product-cache.service';
 
 @Injectable()
 export class ProductService {
   private _dataSource: any;
   constructor(
+    @InjectRepository(ProductEntity)
+    private _productRepository: Repository<ProductEntity>,
+    @InjectRepository(CategoryEntity)
+    private _categoryRepository: Repository<CategoryEntity>,
+    @InjectRepository(ColorEntity)
+    private _colorRepository: Repository<ColorEntity>,
     private _connection: DataSource,
     private readonly _productRepo: ProductRepository,
     private readonly _variantService: ProductVariantService,
     private readonly _imageService: ImageService,
     private readonly _categoryService: CategoryService,
+    private readonly _productCache: ProductCacheService,
   ) {}
   async create(
     createDto: ProductCreateDto,
@@ -98,6 +110,15 @@ export class ProductService {
       }
     }
 
+    // prime caches and invalidate list caches
+    if (product?.id) {
+      await this._productCache.setById(product.id, product);
+    }
+    if (product?.slug) {
+      await this._productCache.setBySlug(product.slug, product);
+    }
+    await this._productCache.invalidateAllPaginated();
+
     return product;
   }
 
@@ -105,7 +126,17 @@ export class ProductService {
     id: number,
     options?: IFindOneOptions<ProductEntity>,
   ): Promise<ProductEntity | null> {
-    return await this._productRepo._findOneById(id, options);
+    // Try cache first
+    const cached = await this._productCache.getById(id);
+    if (cached) return cached;
+
+    const product = await this._productRepo._findOneById(id, options);
+    if (product) {
+      await this._productCache.setById(id, product);
+      if (product.slug)
+        await this._productCache.setBySlug(product.slug, product);
+    }
+    return product;
   }
 
   async fetchProduct(id: number): Promise<ProductEntity | null> {
@@ -158,7 +189,13 @@ export class ProductService {
     data: ProductEntity[];
     _pagination: IPaginationMeta;
   }> {
-    return await this._productRepo._paginateFind(options);
+    // Try cache first
+    const cached = await this._productCache.getPaginated(options);
+    if (cached) return cached;
+
+    const result = await this._productRepo._paginateFind(options);
+    await this._productCache.setPaginated(options, result);
+    return result;
   }
 
   async paginatedQueryBuilderFind(
@@ -174,7 +211,10 @@ export class ProductService {
     product: ProductEntity,
     options?: IUpdateOptions<ProductEntity>,
   ): Promise<ProductEntity> {
-    return await this._productRepo._softDelete(product, options);
+    const deleted = await this._productRepo._softDelete(product, options);
+    await this._productCache.invalidateForProduct({ id: product.id, slug: product.slug });
+    await this._productCache.invalidateAllPaginated();
+    return deleted;
   }
   async toggleFeatured(productId: number): Promise<ProductEntity> {
     const product = await this._productRepo._findOneById(productId);
@@ -183,20 +223,33 @@ export class ProductService {
     }
 
     product.featured = !product.featured;
-    return await this._productRepo._update(product);
+    const updated = await this._productRepo._update(product);
+    await this._productCache.invalidateForProduct({ id: updated.id, slug: updated.slug });
+    await this._productCache.setById(updated.id, updated);
+    if (updated.slug) await this._productCache.setBySlug(updated.slug, updated);
+    await this._productCache.invalidateAllPaginated();
+    return updated;
   }
 
   async delete(
     product: ProductEntity,
     options?: IDeleteOptions<ProductEntity>,
   ): Promise<ProductEntity> {
-    return await this._productRepo._delete(product, options);
+    const removed = await this._productRepo._delete(product, options);
+    await this._productCache.invalidateForProduct({ id: product.id, slug: product.slug });
+    await this._productCache.invalidateAllPaginated();
+    return removed;
   }
 
   async restore(
     options: IUpdateRawOptions<ProductEntity>,
   ): Promise<UpdateResult | null> {
-    return await this._productRepo._restoreRaw(options);
+    const res = await this._productRepo._restoreRaw(options);
+    if (options?.where && typeof options.where === 'object' && 'id' in (options as any).where) {
+      await this._productCache.invalidateById((options.where as any).id);
+    }
+    await this._productCache.invalidateAllPaginated();
+    return res;
   }
 
   async update(
@@ -294,6 +347,15 @@ export class ProductService {
 
       await queryRunner.commitTransaction();
 
+      // Invalidate and refresh caches
+      await this._productCache.invalidateForProduct({
+        id: updatedProduct.id,
+        slug: updatedProduct.slug,
+      });
+      await this._productCache.setById(updatedProduct.id, updatedProduct);
+      if (updatedProduct.slug)
+        await this._productCache.setBySlug(updatedProduct.slug, updatedProduct);
+      await this._productCache.invalidateAllPaginated();
       return updatedProduct;
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -360,6 +422,9 @@ export class ProductService {
     if (!slug) {
       throw new NotFoundException(`Slug is required`);
     }
+    // Try cache first
+    const cached = await this._productCache.getBySlug(slug);
+    if (cached) return cached;
 
     const product = await this._productRepo._findOne({
       options: {
@@ -381,7 +446,30 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException(`Product with slug "${slug}" not found`);
     }
-
+    await this._productCache.setBySlug(slug, product);
+    if (product.id) await this._productCache.setById(product.id, product);
     return product;
+  }
+
+  async getFilterData() {
+    const raw = await this._productRepository
+      .createQueryBuilder('product')
+      .select('MIN(product.price)', 'minPrice')
+      .addSelect('MAX(product.price)', 'maxPrice')
+      .getRawOne();
+
+    const minPrice = parseFloat(raw.minPrice);
+    const maxPrice = parseFloat(raw.maxPrice);
+
+    const category = await this._categoryRepository.find();
+    const color = await this._colorRepository.find();
+
+    const data = {
+      minPrice,
+      maxPrice,
+      category,
+      color,
+    };
+    return data;
   }
 }

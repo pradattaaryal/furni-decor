@@ -30,7 +30,23 @@ import { IdParamDto } from 'src/common/dto/id-param.dto';
 @ApiBearerAuth('accessToken')
 export class CategoryMarketingController {
   constructor(private readonly categoryService: CategoryService) {}
-
+  @Get('/list')
+  @ApiDocs({ operation: 'List Categories' })
+  async list(
+    @Query() paginateQueryDto: PaginateQueryDto,
+  ): Promise<IResponsePaging<CategoryEntity>> {
+    return this.categoryService.paginatedGet({
+      ...paginateQueryDto,
+      searchableColumns: ['name'],
+      defaultSearchColumns: ['name'],
+      defaultSortColumn: 'id',
+      sortableColumns: ['createdAt', 'id', 'name'],
+      options: {
+        where: {},
+        relations: ['children', 'parent'],
+      },
+    });
+  }
   @Post('/create')
   @ApiDocs({ operation: 'Create Category' })
   async create(
@@ -53,24 +69,6 @@ export class CategoryMarketingController {
         message: 'Category created successfully.',
       },
     };
-  }
-
-  @Get('/list')
-  @ApiDocs({ operation: 'List Categories' })
-  async list(
-    @Query() paginateQueryDto: PaginateQueryDto,
-  ): Promise<IResponsePaging<CategoryEntity>> {
-    return this.categoryService.paginatedGet({
-      ...paginateQueryDto,
-      searchableColumns: ['name'],
-      defaultSearchColumns: ['name'],
-      defaultSortColumn: 'id',
-      sortableColumns: ['createdAt', 'id', 'name'],
-      options: {
-        where: {},
-        relations: ['children', 'parent'],
-      },
-    });
   }
 
   @Get(':id')
@@ -100,7 +98,6 @@ export class CategoryMarketingController {
   ): Promise<IResponse<{ category: CategoryEntity; message: string }>> {
     const found = await this.categoryService.getById(id);
     if (!found) throw new NotFoundException('Cannot find Category');
-
     const updated = await this.categoryService.update(
       found,
       updateCategoryData,
@@ -162,4 +159,4 @@ export class CategoryMarketingController {
   //     },
   //   };
   // }
-} //
+}

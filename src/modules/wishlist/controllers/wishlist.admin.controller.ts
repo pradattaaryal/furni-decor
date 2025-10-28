@@ -30,7 +30,7 @@ import { UpdateWishlistDto } from '../dto/wishlist.update.dto';
 @ApiTags('Wishlist')
 @Controller('/wishlist')
 export class WishlistAdminController {
-  constructor(private readonly wishlistService: WishlistService) { }
+  constructor(private readonly wishlistService: WishlistService) {}
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Wishlist Entry' })
@@ -94,10 +94,8 @@ export class WishlistAdminController {
     return {
       data: {
         count: count,
-        message: 'Wishlist count retrieved successfully.'
-      }
-    }
+        message: 'Wishlist count retrieved successfully.',
+      },
+    };
   }
-
-
 }

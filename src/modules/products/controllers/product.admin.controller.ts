@@ -26,17 +26,27 @@ import {
 } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { CategoryService } from 'src/modules/category/services/category.service';
-import { Between, DataSource, IsNull, MoreThanOrEqual, QueryRunner } from 'typeorm';
+import {
+  Between,
+  DataSource,
+  IsNull,
+  MoreThanOrEqual,
+  QueryRunner,
+  Repository,
+} from 'typeorm';
 import { ProductResponseDto } from '../dto/product.response.dto';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @ApiTags('Products')
 @Controller('/products')
 export class ProductAdminController {
   constructor(
+
     private readonly _productService: ProductService,
     private readonly _categoryService: CategoryService,
+
     private _connection: DataSource,
   ) { }
 
@@ -55,7 +65,6 @@ export class ProductAdminController {
         paginateQueryDto.maxPrice,
       );
     }
-
 
     if (paginateQueryDto.rating !== undefined) {
       where.averageRating = MoreThanOrEqual(paginateQueryDto.rating);
@@ -83,7 +92,7 @@ export class ProductAdminController {
       ...paginateQueryDto,
       options: {
         relations: {
-          category: { parent: true, children: true },
+           category: { parent: true, children: true },
           variants: { image: true, color: true },
           images: true,
           mainImage: true,
@@ -245,6 +254,32 @@ export class ProductAdminController {
       },
     };
   }
+
+
+  @Get()
+  @ApiDocs({ operation: 'Get filter data for product ' })
+  async getFilterData(
+
+  ): Promise<
+    IResponse<{ data: object; message: string }>
+  > {
+    try {
+      const data = await this._productService.getFilterData();
+
+      return {
+        data: {
+          data,
+          message: 'Product retrieved successfully',
+        },
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+
+
+
 
   @Patch(':id')
   @ApiDocs({ operation: 'Update Product' })

@@ -214,7 +214,6 @@ export class PaymentService {
       const result = await this.paypalAdapter.capturePayment(paymentId);
 
       if (!result.success) {
-        this.logger.warn(`PayPal capture failed for ID: ${paymentId}`);
         return {
           success: false,
           paymentId,

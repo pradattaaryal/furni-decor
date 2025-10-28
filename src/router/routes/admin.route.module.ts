@@ -27,8 +27,7 @@ import { OrderItemAdminController } from 'src/modules/order-item/controllers/ord
 import { WishlistModule } from 'src/modules/wishlist/wishlist.module';
 import { WishlistAdminController } from 'src/modules/wishlist/controllers/wishlist.admin.controller';
 import { PaymentModule } from 'src/modules/payment/payment.module';
-import { PaymentController } from 'src/modules/payment/controllers/payment.controller';
-import { BlogAdminController } from 'src/modules/blog/controllers/blog.admin.controller';
+ import { BlogAdminController } from 'src/modules/blog/controllers/blog.admin.controller';
 import { BlogModule } from 'src/modules/blog/blog.module';
 import { BlogCategoryModule } from 'src/modules/blog-category/blog-category.module';
 import { BlogCategoryAdminController } from 'src/modules/blog-category/controllers/blog-category.admin.controller';
@@ -38,6 +37,7 @@ import { BillingAddressModule } from 'src/modules/billing-address/billing-addres
 import { BillingAddressAdminController } from 'src/modules/billing-address/controllers/billing-address.admin.controller';
 import { HomePageBannerModule } from 'src/modules/home-page-banner/home-page-banner.module';
 import { HomePageBannerAdminController } from 'src/modules/home-page-banner/controllers/home-page-banner.admin.controller';
+import { PaymentUserController } from 'src/modules/payment/controllers/payment.user.controller';
 
 @Module({
   imports: [
@@ -76,7 +76,7 @@ import { HomePageBannerAdminController } from 'src/modules/home-page-banner/cont
     ImageAdminController,
     OrderAdminController,
     OrderItemAdminController,
-    PaymentController,
+    PaymentUserController,
     ProductAdminController,
     ProductRatingAdminController,
     ProductVarientsAdminController,

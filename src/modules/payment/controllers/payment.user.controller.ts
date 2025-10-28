@@ -23,7 +23,7 @@ import { sign } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('payment')
-export class PaymentController {
+export class PaymentUserController {
   private readonly stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
     apiVersion: '2025-08-27.basil',
   });

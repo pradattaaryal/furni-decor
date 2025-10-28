@@ -75,8 +75,8 @@ export class StripeAdapter implements PaymentAdapterInterface {
       });
 
       const orderData = new CreateOrderDto();
-      // orderData.BillingAddress = dto.shippingaddress;
-      // orderData.shippingAddress = dto.shippingaddress;
+      orderData.BillingAddress = dto.BillingAddress ?? 0;
+      orderData.shippingAddress = dto.shippingAddress ?? 0;
 
       const order = await this._orderService.createOrder(
         user.id,

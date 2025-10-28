@@ -28,9 +28,8 @@ import { IdParamDto } from 'src/common/dto/id-param.dto';
 @ApiTags('Category')
 @Controller('categories')
 @ApiBearerAuth('accessToken')
-export class CategoryAdminController {
+export class CategoryUserController {
   constructor(private readonly categoryService: CategoryService) {}
-
   @Get('/list')
   @ApiDocs({ operation: 'List Categories' })
   async list(
@@ -48,6 +47,7 @@ export class CategoryAdminController {
       },
     });
   }
+ 
 
   @Get(':id')
   @ApiDocs({ operation: 'Get Category' })
@@ -66,4 +66,6 @@ export class CategoryAdminController {
       },
     };
   }
+
+ 
 }

@@ -82,7 +82,28 @@ export class OrderAdminController {
       },
     };
   }
-
+@Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiDocs({ operation: 'Get Order by User ID' })
+  async getOrderByUserId(
+    @Param() params: IdParamDto,
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<IResponse<{ item: any; message: string }>> {
+    const item = await this._orderService.paginatedGet( {options: {
+        relations: {
+          items: true,
+        },
+        where:{
+          userId: user.sub
+        }
+      },});
+    return {
+      data: {
+        item,
+        message: 'Order retrieved successfully',
+      },
+    };
+  }
   @Delete(':id')
   @ApiDocs({ operation: 'soft Delete Order ' })
   async delete(
