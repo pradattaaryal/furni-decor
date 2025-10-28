@@ -38,7 +38,7 @@ export class ProductAdminController {
     private readonly _productService: ProductService,
     private readonly _categoryService: CategoryService,
     private _connection: DataSource,
-  ) {}
+  ) { }
 
   @Get('/list')
   @ApiDocs({ operation: 'List Products' })
@@ -58,6 +58,13 @@ export class ProductAdminController {
     if (paginateQueryDto.categoryId !== undefined) {
       where.category = { id: paginateQueryDto.categoryId };
     }
+    if (paginateQueryDto.colorId !== undefined) {
+      where.variants = {
+        color: {
+          id: paginateQueryDto.colorId,
+        },
+      };
+    }
 
     if (paginateQueryDto.searchBy == 'name') {
       paginateQueryDto.searchBy = '@@nameTsv';
@@ -75,24 +82,8 @@ export class ProductAdminController {
           images: true,
           mainImage: true,
         },
-        // select: {
-        //   id: true,
-        //   name: true,
-        //   tag: true,
-        //   price: true,
-        //   discountValue: true,
-        //   images: {
-        //     id: true,
-        //     path: true,
-        //   },
-        // },
-        where: {
-          variants: {
-            color: {
-              id: paginateQueryDto.colorId,
-            },
-          },
-        },
+
+        where,
       },
       searchableColumns: ['@@nameTsv'],
       defaultSearchColumns: ['@@nameTsv'],
@@ -100,57 +91,11 @@ export class ProductAdminController {
       defaultSortColumn: 'createdAt',
       defaultSortOrder: 'DESC',
     });
-    // const mappedData = data.data.map((product) => ({
-    //     id: product.id,
-    //     name: product.name,
-    //     tag: product.tag,
-    //     price: product.price,
-    //     discountedPrice: product.discountValue ?? null,
-    //     imageId: product.images?.[0]?.id ?? null,
-    //     imagePath: product.images?.[0]?.path ?? null,
-    //   }));
-    // return {
-    //   ...data,
-    //   data: mappedData,
-    // };
-    return data;
-  }
-
-  // @Get('/home-page')
-  // @ApiDocs({ operation: 'Get Homepage Data' })
-  // async getHomeData(): Promise<IResponse<any>> {
-  //   const data = await this.homeService.getHomeData();
-
-  //   return {
-  //     data,
-  //     message: 'Homepage data retrieved successfully',
-  //   };
-  // }
-
-  @Get('/list-related-products/:id')
-  @ApiDocs({ operation: 'List Related Products' })
-  @RequestParamGuard(IdParamDto)
-  async listRelatedProduct(
-    @Param('id') id: number,
-    @Query() paginateQueryDto: PaginateQueryDto,
-  ): Promise<IResponsePaging<ProductEntity>> {
-    const where: any = {};
-
-    const data = await this._productService.paginatedGet({
-      ...paginateQueryDto,
-      options: {
-        relations: {
-          category: { parent: true, children: true },
-          variants: { image: true, color: true },
-          images: true,
-          mainImage: true,
-        },
-        where,
-      },
-    });
 
     return data;
   }
+
+
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Product' })
@@ -245,6 +190,30 @@ export class ProductAdminController {
       },
     };
   }
+  // @Get('/list-related-products/:id')
+  // @ApiDocs({ operation: 'List Related Products' })
+  // @RequestParamGuard(IdParamDto)
+  // async listRelatedProduct(
+  //   @Param('id') id: number,
+  //   @Query() paginateQueryDto: PaginateQueryDto,
+  // ): Promise<IResponsePaging<ProductEntity>> {
+  //   const where: any = {};
+
+  //   const data = await this._productService.paginatedGet({
+  //     ...paginateQueryDto,
+  //     options: {
+  //       relations: {
+  //         category: { parent: true, children: true },
+  //         variants: { image: true, color: true },
+  //         images: true,
+  //         mainImage: true,
+  //       },
+  //       where,
+  //     },
+  //   });
+
+  //   return data;
+  // }
 
   @Get(':id')
   @ApiDocs({ operation: 'Get Product by ID' })
@@ -416,11 +385,11 @@ export class ProductAdminController {
 
       mainImage: product.mainImage
         ? {
-            id: product.mainImage.id,
-            path: product.mainImage.path,
-            filename: product.mainImage.filename,
-            mime: product.mainImage.mime,
-          }
+          id: product.mainImage.id,
+          path: product.mainImage.path,
+          filename: product.mainImage.filename,
+          mime: product.mainImage.mime,
+        }
         : undefined,
 
       category: product.category,

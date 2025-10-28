@@ -18,6 +18,10 @@ import { CartEntity } from '../cart/entities/cart.entity';
 import { WishlistEntity } from '../wishlist/entities/wishlist.entity';
 import { CartItemModule } from '../cart-item/cart-item.module';
 import { CartItemEntity } from '../cart-item/entities/cart-item.entity';
+import { ShippingAddressModule } from '../shipping-address/shipping-address.module';
+import { BillingAddressModule } from '../billing-address/billing-address.module';
+import { BillingAddressEntity } from '../billing-address/entities/billing-address.entity';
+import { ShippingAddressEntity } from '../shipping-address/entities/shipping-address.entity';
 
 @Module({
   imports: [
@@ -37,6 +41,8 @@ import { CartItemEntity } from '../cart-item/entities/cart-item.entity';
     UserRepositoryModule,
     OtpModule,
     CartModule,
+    ShippingAddressModule,
+    BillingAddressModule
   ],
   controllers: [],
   providers: [

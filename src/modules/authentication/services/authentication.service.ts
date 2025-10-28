@@ -22,6 +22,8 @@ import { WishlistRepository } from 'src/modules/wishlist/repositories/wishlist.r
 import { CartRepository } from 'src/modules/cart/repositories/cart.repository';
 import { object } from 'joi';
 import { CartItemRepository } from 'src/modules/cart-item/repositories/cart-item.repository';
+import { BillingAddressService } from 'src/modules/billing-address/services/billing-address.service';
+import { ShippingAddressService } from 'src/modules/shipping-address/services/shipping-address.service';
 
 export type AccessTokenPayload = { sub: number; roles: UserRole };
 export type TokenPayloadForCredentialReset = { sub: number; email: string };
@@ -37,7 +39,9 @@ export class AuthenticationService {
     private readonly otpService: OtpService,
     private readonly _cartService: CartService,
     private readonly _wishlistRepo:WishlistRepository,
-    private readonly _cartItemRepo:CartItemRepository
+    private readonly _cartItemRepo:CartItemRepository,
+    private readonly _billingAddressService:BillingAddressService,
+    private readonly _shippingAddressService:ShippingAddressService
   ) {}
 
   /** ================= AUTH HELPERS ================== */
@@ -139,9 +143,13 @@ export class AuthenticationService {
     }})
    const cartCount=await this._cartItemRepo._findCount({options:{where:{ cart:{userId:user.id}
     }}})
+    const defultBillingAddress=await this._billingAddressService.getOne({options:{where:{userId:user.id,default:true}}});
+    const defultShippingAddress=await this._shippingAddressService.getOne({options:{where:{userId:user.id, default:true}}})
  const userData = {
   wishlistcount,
-  cartCount
+  cartCount,
+  defultBillingAddress,
+  defultShippingAddress
  };
 
     return { token, user,userData };
