@@ -13,10 +13,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { CartItemService } from '../services/cart-item.service';
 import { CreateCartItemDto } from '../dto/cart-item.create.dto';
-import { CartItemUpdateDto } from '../dto/cart-item.update.dto';
 import { CartItemEntity } from '../entities/cart-item.entity';
 import { IdParamDto } from 'src/common/dto/id-param.dto';
 import {
+  ICartResponse,
   IResponse,
   IResponsePaging,
 } from 'src/common/response/interfaces/response.interface';
@@ -80,14 +80,14 @@ export class CartItemAdminController {
   async getCartByUserId(
     @Query() paginateQueryDto: PaginateQueryDto,
     @GetUser() user: AccessTokenPayload,
-  ): Promise<IResponsePaging<CartItemEntity>> {
-    return await this.cartItemService.paginatedGet({
+  ): Promise<ICartResponse<CartItemEntity>> {
+    const result = await this.cartItemService.paginatedGet({
       ...paginateQueryDto,
       options: {
         where: { cart: { userId: user.sub } },
         withDeleted: false,
         relations: {
-          product: { images: true },
+          product: { images: true, mainImage: true },
           variant: { image: true },
         },
       },
@@ -95,6 +95,62 @@ export class CartItemAdminController {
       defaultSortColumn: 'createdAt',
       defaultSortOrder: 'DESC',
     });
+
+    const summary = this.calculateCartSummary(result.data);
+
+    return {
+      ...result,
+      summary,
+    };
+  }
+  private calculateCartSummary(items: CartItemEntity[]) {
+    const currentDate = new Date();
+
+    let subtotal = 0;
+    let totalDiscount = 0;
+    let totalShipping = 0;
+
+    for (const item of items) {
+      const product = item.product;
+      if (!product) continue;
+
+      const originalPrice = product.price;
+      const quantity = item.quantity;
+      let finalPrice = originalPrice;
+      let discount = 0;
+
+      const isDiscountActive =
+        product.discountValue &&
+        product.discountStartDate &&
+        product.discountEndDate &&
+        currentDate >= new Date(product.discountStartDate) &&
+        currentDate <= new Date(product.discountEndDate);
+
+      if (isDiscountActive) {
+        // Assuming fixed discount (not %)
+        finalPrice = Math.max(originalPrice - (product.discountValue ?? 0), 0);
+        discount = (originalPrice - finalPrice) * quantity;
+      }
+
+      const itemSubtotal = finalPrice * quantity;
+      subtotal += itemSubtotal;
+      totalDiscount += discount;
+
+      // Apply 5% shipping if item total < 500
+      if (itemSubtotal < 500) {
+        const shipping = itemSubtotal * 0.05;
+        totalShipping += shipping;
+      }
+    }
+
+    const grandTotal = subtotal + totalShipping;
+
+    return {
+      subtotal: Number(subtotal.toFixed(2)),
+      totalDiscount: Number(totalDiscount.toFixed(2)),
+      totalShipping: Number(totalShipping.toFixed(2)),
+      grandTotal: Number(grandTotal.toFixed(2)),
+    };
   }
 
   // @Post('/create')

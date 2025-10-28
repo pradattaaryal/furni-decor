@@ -4,7 +4,7 @@ export class ImageResponseDto {
   id: number;
   path: string;
   filename: string;
-  mime:string
+  mime: string;
 }
 
 export class ProductResponseDto {

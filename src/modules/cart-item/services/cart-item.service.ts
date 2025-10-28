@@ -32,7 +32,7 @@ export class CartItemService {
     private readonly _productService: ProductService,
     private readonly _cartService: CartService,
     private readonly _userService: UserService,
-  ) { }
+  ) {}
 
   private computeEffectiveUnitPrice(product: ProductEntity): number {
     let price = product.price || 0;
@@ -81,7 +81,10 @@ export class CartItemService {
 
       const product = await this._productService.getById(productId);
       if (!product) throw new BadRequestException(`Product not found`);
-      if (product.quantity < quantity) throw new BadRequestException(`Not enough stock for product ${product.id}`);
+      if (product.quantity < quantity)
+        throw new BadRequestException(
+          `Not enough stock for product ${product.id}`,
+        );
       if (product.quantity < 0)
         throw new BadRequestException(`Product ${product.id} out of stock`);
 
@@ -92,15 +95,6 @@ export class CartItemService {
           throw new BadRequestException(`Product variant not found`);
       }
       const unitPrice = this.computeEffectiveUnitPrice(product);
-
-
-
-
-
-
-
-
-
 
       // Check if the item already exists in the cart
       const existingItem = cart.items.find(
@@ -346,8 +340,7 @@ export class CartItemService {
       if (!cart) {
         throw new BadRequestException('cart not found');
       }
-      cart.totalPrice =
-        (cart.totalPrice || 0) - unitPrice * cartItem.quantity;
+      cart.totalPrice = (cart.totalPrice || 0) - unitPrice * cartItem.quantity;
       await this._cartService.update(
         { cartId: cart.id, totalPrice: cart.totalPrice },
         options,
@@ -403,7 +396,7 @@ export class CartItemService {
     quantity: number = 1,
     options?: ICreateOptions,
   ): Promise<CartItemEntity> {
-     const user = await this._userService.getById(userId, {
+    const user = await this._userService.getById(userId, {
       options: { relations: { cart: { items: true } } },
     });
     if (!user) throw new NotFoundException('User not found');

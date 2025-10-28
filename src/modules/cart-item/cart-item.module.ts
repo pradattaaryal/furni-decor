@@ -18,8 +18,8 @@ import { ProductsModule } from '../products/products.module';
     ProductsModule,
     UserModule,
   ],
-  providers: [CartItemService],
-  exports: [CartItemService],
+  providers: [CartItemService,CartItemRepositoryModule],
+  exports: [CartItemService,CartItemRepositoryModule],
   controllers: [],
 })
 export class CartItemModule {}

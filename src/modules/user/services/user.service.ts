@@ -53,7 +53,7 @@ export class UserService {
     );
 
     const preparedData = await this.prepareCreateUserData(createDto);
-     const user = await this.userRepo._create(preparedData, {
+    const user = await this.userRepo._create(preparedData, {
       entityManager: options?.entityManager,
     });
 

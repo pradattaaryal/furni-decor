@@ -149,4 +149,11 @@ export class BillingAddressService {
       await this._billingAddressRepo._update(defaultAddress);
     }
   }
+  async getOne(
+      options: IFindOneOptions<BillingAddressEntity>,
+    ): Promise<BillingAddressEntity | null> {
+      const data = await this._billingAddressRepo._findOne(options);
+      return data;
+    }
+  
 }

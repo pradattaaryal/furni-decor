@@ -32,7 +32,7 @@ export class PaymentService {
     private readonly productRepo: ProductRepository,
     private readonly _userService: UserService,
     private readonly paypalAdapter: PayPalAdapter,
-  ) {}
+  ) { }
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
     const adapter = this.paymentAdapterFactory.getAdapter(dto.provider);
@@ -59,13 +59,20 @@ export class PaymentService {
 
       try {
         const result = await adapter.createPayment(user, payment, dto, cart);
-
-        payment.status = result.success ? result.status : PaymentStatus.FAILED;
-
+       
+        if (!result.success) {
+          payment.failureReason =
+            result.errorMessage || 'Payment processing failed.';
+          payment.status = PaymentStatus.FAILED
+        }
+        else {
+          payment.status = PaymentStatus.PENDING
+        }
         if (result.success) {
           payment.providerPaymentId = result.paymentId;
           payment.providerTransactionId = result.transactionId ?? '';
           payment.metadata = {
+             
             ...payment.metadata,
             ...result.metadata,
           };
@@ -97,40 +104,13 @@ export class PaymentService {
     });
   }
 
-  // --------------------- Cart validation ---------------------
-  // private async validateCart(cart: CartEntity): Promise<number> {
-  //   if (!cart.isActive) throw new BadRequestException('Cart is inactive');
-  //   if (!cart.items?.length) throw new BadRequestException('Cart is empty');
-
-  //   const productIds = cart.items.map((i) => i.productId);
-  //   const products = await this.productRepo._findByIds(productIds, {
-  //     options: { relations: { variants: true } },
-  //   });
-  //   const productMap = new Map(products.map((p) => [p.id, p]));
-
-  //   let total = 0;
-  //   for (const item of cart.items) {
-  //     const product = productMap.get(item.productId);
-  //     if (!product)
-  //       throw new BadRequestException(`Product ${item.productId} not found`);
-
-  //     this.validateProduct(product);
-  //     const price = this.getProductPrice(product);
-
-  //     total += price * item.quantity;
-  //   }
-
-  //   if (total <= 0)
-  //     throw new BadRequestException('Total amount cannot be zero');
-  //   return total;
-  // }
-
+  
 
   private async validateCart(cart: CartEntity): Promise<number> {
-     if (!cart.isActive) throw new BadRequestException('Cart is inactive');
+    if (!cart.isActive) throw new BadRequestException('Cart is inactive');
     if (!cart.items?.length) throw new BadRequestException('Cart is empty');
 
-     const productIds = cart.items.map((i) => i.productId);
+    const productIds = cart.items.map((i) => i.productId);
     const products = await this.productRepo._findByIds(productIds, {
       options: { relations: { variants: true } },
     });
@@ -147,33 +127,21 @@ export class PaymentService {
       this.validateProduct(product);
       let price = this.getProductPrice(product);
 
-      // Apply discount if valid
-      if (product.discountValue && product.discountStartDate && product.discountEndDate) {
-        const isDiscountValid =
-          currentDate >= new Date(product.discountStartDate) &&
-          currentDate <= new Date(product.discountEndDate);
-        
-        if (isDiscountValid) {
-          price = price - (price * product.discountValue) / 100;
-        }
-      }
-
       const itemTotal = price * item.quantity;
       total += itemTotal;
 
-      // Apply 5% shipping charge if item total is less than 500
-      if (itemTotal < 500) {
-        total += itemTotal * 0.05;
-      }
-    }
 
+    }
+    // Apply 5% shipping charge if item total is less than 500
+
+    if (total < 500) {
+      total += total * 0.05;
+    }
     if (total <= 0)
       throw new BadRequestException('Total amount cannot be zero');
 
     return Number(total.toFixed(2)); // Round to 2 decimal places for currency
   }
-
-
 
   private validateProduct(product: ProductEntity) {
     if (!product.price || product.price <= 0)
@@ -245,8 +213,7 @@ export class PaymentService {
     };
   }
 
-  ///////////////////////////////////testing///////////////////////////////////////////
-
+ 
   async capturePayment(paymentId: string): Promise<PaymentResult> {
     try {
       this.logger.log(`Capturing PayPal payment: ${paymentId}`);
@@ -279,3 +246,5 @@ export class PaymentService {
     }
   }
 }
+
+ 

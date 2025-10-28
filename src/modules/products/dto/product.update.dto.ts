@@ -12,7 +12,7 @@ import {
   CustomValidateNested,
   CustomIsStartBeforeEnd,
 } from 'src/common/request/validators/custom-validator';
- import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
+import { ProductVariantDto } from 'src/modules/product-variants/dto/product-variant.dto';
 import { IProductUpdateDto } from '../interfaces/product.update.dto.interface';
 
 export class ProductUpdateDto implements IProductUpdateDto {
@@ -76,6 +76,8 @@ export class ProductUpdateDto implements IProductUpdateDto {
   @Transform(({ value }: { value: string }) => (value ? value.trim() : value))
   description?: string;
 
+  ratingCount?: number;
+  averageRating?: number;
   @ApiProperty({
     example: [
       {

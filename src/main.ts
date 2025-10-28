@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import { AppModule } from './app/app.module';
 import swaggerInit from './swagger';
 import { json, raw, urlencoded } from 'express';
-import * as bodyParser from 'body-parser';
 import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestApplication>(AppModule, {
@@ -14,7 +13,7 @@ async function bootstrap() {
   });
   app.useStaticAssets(join(__dirname, '..', 'images'), { prefix: '/backend/' });
   app.use(
-    '/backend/api/admin/payment/xxx',
+    '/backend/api/admin/payment/stripe-weebhook',
     raw({
       type: 'application/json',
       verify: (req, res, buf) => {
@@ -22,7 +21,7 @@ async function bootstrap() {
       },
     }),
   );
-  // Other JSON endpoints use the normal JSON parser
+ 
   app.use(json());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await swaggerInit(app);
