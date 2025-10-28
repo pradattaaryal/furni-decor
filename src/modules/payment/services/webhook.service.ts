@@ -29,7 +29,7 @@ export class WebhookService {
     private cartService: CartService,
     private cartItemService: CartItemService,
     private dataSource: DataSource,
-  ) { }
+  ) {}
 
   async handleStripeWebhook(payload: any, signature: string): Promise<void> {
     const adapter = this.paymentAdapterFactory.getAdapter(
@@ -207,14 +207,11 @@ export class WebhookService {
       // Reset cart total price
       await this.cartService.update({ cartId: cart.id, totalPrice: 0 });
 
-      this.logger.log(
-        `Cart cleared successfully for user ${payment.userId}`,
-      );
+      this.logger.log(`Cart cleared successfully for user ${payment.userId}`);
     } catch (error) {
       this.logger.error(
         `Failed to clear cart for user ${payment.userId}: ${error.message}`,
       );
-
     }
   }
 }

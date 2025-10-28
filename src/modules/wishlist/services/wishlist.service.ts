@@ -112,6 +112,13 @@ export class WishlistService {
     return await this._wishlistRepository._findAll(options);
   }
 
+   async getCount(
+    userId: number,
+    options?: IFindAllOptions<WishlistEntity>,
+  ): Promise<number> {
+    return await this._wishlistRepository._findCount({options:{where:{userId:userId}}});
+  }
+
   async getById(
     id: number,
     options?: IFindOneOptions<WishlistEntity>,

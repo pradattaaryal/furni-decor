@@ -76,8 +76,6 @@ export class ProductRatingAdminController {
     }
   }
 
-  
-
   @Patch('/update/:id')
   @ApiDocs({ operation: 'Update Product Rating' })
   @UseGuards(JwtAuthGuard)
@@ -175,7 +173,4 @@ export class ProductRatingAdminController {
       },
     };
   }
-
- 
-
 }

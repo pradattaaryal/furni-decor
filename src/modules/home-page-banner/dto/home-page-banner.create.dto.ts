@@ -71,8 +71,9 @@ export class HomePageBannerCreateDto implements IHomePageBannerCreateDto {
   })
   @CustomIsOptional()
   @CustomIsBoolean()
-  @Transform(({ value }: { value: any }) =>
-    value === 'true' || value === true || value === 1 || value === '1',
+  @Transform(
+    ({ value }: { value: any }) =>
+      value === 'true' || value === true || value === 1 || value === '1',
   )
   isActive?: boolean;
 }

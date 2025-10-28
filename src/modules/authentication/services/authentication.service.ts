@@ -38,10 +38,10 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
     private readonly _cartService: CartService,
-    private readonly _wishlistRepo:WishlistRepository,
-    private readonly _cartItemRepo:CartItemRepository,
-    private readonly _billingAddressService:BillingAddressService,
-    private readonly _shippingAddressService:ShippingAddressService
+    private readonly _wishlistRepo: WishlistRepository,
+    private readonly _cartItemRepo: CartItemRepository,
+    private readonly _billingAddressService: BillingAddressService,
+    private readonly _shippingAddressService: ShippingAddressService,
   ) {}
 
   /** ================= AUTH HELPERS ================== */
@@ -138,21 +138,24 @@ export class AuthenticationService {
       role: user.role as UserRole,
     });
 
+    //   const wishlistcount=await this._wishlistRepo._findCount({options:{where:{userId:user.id}
+    //   }})
+    //  const cartCount=await this._cartItemRepo._findCount({options:{where:{ cart:{userId:user.id}
+    //   }}})
+    const defultBillingAddress = await this._billingAddressService.getOne({
+      options: { where: { userId: user.id, default: true } },
+    });
+    const defultShippingAddress = await this._shippingAddressService.getOne({
+      options: { where: { userId: user.id, default: true } },
+    });
+    const userData = {
+      // wishlistcount,
+      // cartCount,
+      defultBillingAddress,
+      defultShippingAddress,
+    };
 
-    const wishlistcount=await this._wishlistRepo._findCount({options:{where:{userId:user.id}
-    }})
-   const cartCount=await this._cartItemRepo._findCount({options:{where:{ cart:{userId:user.id}
-    }}})
-    const defultBillingAddress=await this._billingAddressService.getOne({options:{where:{userId:user.id,default:true}}});
-    const defultShippingAddress=await this._shippingAddressService.getOne({options:{where:{userId:user.id, default:true}}})
- const userData = {
-  wishlistcount,
-  cartCount,
-  defultBillingAddress,
-  defultShippingAddress
- };
-
-    return { token, user,userData };
+    return { token, user, userData };
   }
 
   async handleSocialLogin(input: {

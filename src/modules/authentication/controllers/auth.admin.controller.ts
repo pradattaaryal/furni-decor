@@ -35,7 +35,7 @@ import {
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthAdminController {
-  constructor(private readonly authService: AuthenticationService) { }
+  constructor(private readonly authService: AuthenticationService) {}
 
   @Post('/verify-otp')
   @ApiOperation({ summary: 'Verify OTP and activate user' })
@@ -60,12 +60,14 @@ export class AuthAdminController {
   @ApiOperation({ summary: 'Login with credentials' })
   async login(
     @Body() body: LoginDto,
-  ): Promise<IResponse<{ tokens: object; user: object; message: string; data:object}>> {
+  ): Promise<
+    IResponse<{ tokens: object; user: object; message: string; data: object }>
+  > {
     const tokens = await this.authService.login(body);
 
     return {
       data: {
-        data:tokens.userData,
+        data: tokens.userData,
         tokens: tokens.token,
         user: tokens.user,
         message: 'Login successful',
@@ -113,7 +115,7 @@ export class AuthAdminController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Request() req: any) { }
+  async googleAuth(@Request() req: any) {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
@@ -139,7 +141,7 @@ export class AuthAdminController {
       accessToken: result.tokens.accessToken,
       user: JSON.stringify(result.user),
     }).toString();
-   // console.log(`https://decor.wendevs.com/o-auth?${query}`);
+    // console.log(`https://decor.wendevs.com/o-auth?${query}`);
     res.redirect(`https://decor.wendevs.com/o-auth?${query}`);
   }
 }

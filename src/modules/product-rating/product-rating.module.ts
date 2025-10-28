@@ -16,5 +16,5 @@ import { ProductsModule } from '../products/products.module';
   ],
   providers: [ProductRatingService],
   exports: [ProductRatingService],
- })
+})
 export class ProductRatingModule {}

@@ -32,7 +32,7 @@ export class PaymentController {
     private readonly _paymentService: PaymentService,
     private readonly webhookService: WebhookService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   @Post('/create')
   @ApiDocs({ operation: 'Initialize Payment' })
@@ -68,7 +68,7 @@ export class PaymentController {
     const result = await this._paymentService.capturePayment(paymentId);
     console.log(`data from capture of paypal ${result}`);
 
-     if (result.success) {
+    if (result.success) {
       await this.webhookService.handlePaymentCompletion(
         paymentId,
         PaymentProvider.PAYPAL,
@@ -90,17 +90,16 @@ export class PaymentController {
   ): Promise<{ received: boolean }> {
     console.log('🟢 [Stripe Webhook] Incoming request');
 
-    const rawBody = req.rawBody;  
+    const rawBody = req.rawBody;
 
     if (!signature) throw new BadRequestException('Missing Stripe signature');
     if (!rawBody) throw new BadRequestException('Missing raw body');
-     try {
- 
-       await this.webhookService.handleStripeWebhook(rawBody, signature);
+    try {
+      await this.webhookService.handleStripeWebhook(rawBody, signature);
 
       return { received: true };
     } catch (err) {
-       throw new BadRequestException(
+      throw new BadRequestException(
         `Invalid Stripe webhook signature: ${err.message}`,
       );
     }

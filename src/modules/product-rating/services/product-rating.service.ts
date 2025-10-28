@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { UpdateResult, SelectQueryBuilder } from 'typeorm';
 import { ICreateOptions } from 'src/common/database/interfaces/createOption.interface';
 import { IDeleteOptions } from 'src/common/database/interfaces/deleteOption.interface';
@@ -58,19 +62,20 @@ export class ProductRatingService {
       rating: createData.rating,
     };
 
-    const newRating = await this._productRatingRepo._create(createRating, options);
+    const newRating = await this._productRatingRepo._create(
+      createRating,
+      options,
+    );
 
     const oldCount = product.ratingCount;
     const newCount = oldCount + 1;
     const newAverage =
       (product.averageRating * oldCount + createData.rating) / newCount;
 
-
     await this._productService.update(product.id, {
       averageRating: parseFloat(newAverage.toFixed(1)),
       ratingCount: newCount,
     });
-
 
     return newRating;
   }
@@ -131,9 +136,7 @@ export class ProductRatingService {
       const oldAverage = product.averageRating || 0;
       const newCount = Math.max(0, oldCount - 1);
       const newAverage =
-        newCount === 0
-          ? 0
-          : (oldAverage * oldCount - rating.rating) / newCount;
+        newCount === 0 ? 0 : (oldAverage * oldCount - rating.rating) / newCount;
       await this._productService.update(product.id, {
         averageRating: parseFloat(newAverage.toFixed(1)),
         ratingCount: newCount,
@@ -153,9 +156,7 @@ export class ProductRatingService {
       const oldAverage = product.averageRating || 0;
       const newCount = Math.max(0, oldCount - 1);
       const newAverage =
-        newCount === 0
-          ? 0
-          : (oldAverage * oldCount - rating.rating) / newCount;
+        newCount === 0 ? 0 : (oldAverage * oldCount - rating.rating) / newCount;
       await this._productService.update(product.id, {
         averageRating: parseFloat(newAverage.toFixed(1)),
         ratingCount: newCount,
@@ -179,7 +180,8 @@ export class ProductRatingService {
           const oldCount = product.ratingCount || 0;
           const oldAverage = product.averageRating || 0;
           const newCount = oldCount + 1;
-          const newAverage = (oldAverage * oldCount + restored.rating) / newCount;
+          const newAverage =
+            (oldAverage * oldCount + restored.rating) / newCount;
           await this._productService.update(product.id, {
             averageRating: parseFloat(newAverage.toFixed(1)),
             ratingCount: newCount,
@@ -212,7 +214,8 @@ export class ProductRatingService {
         const oldAverage = product.averageRating || 0;
         if (oldCount > 0) {
           const adjustedTotal = oldAverage * oldCount - existingRating.rating;
-          const newAverage = (adjustedTotal + (updateData.rating as number)) / oldCount;
+          const newAverage =
+            (adjustedTotal + (updateData.rating as number)) / oldCount;
           await this._productService.update(product.id, {
             averageRating: parseFloat(newAverage.toFixed(1)),
           });
@@ -251,7 +254,8 @@ export class ProductRatingService {
   // }
 
   async getAverageRating(productId: number): Promise<number> {
-    const result = await this._productRatingRepo.getRepo()
+    const result = await this._productRatingRepo
+      .getRepo()
       .createQueryBuilder('rating')
       .select('AVG(rating.rating)', 'average')
       .where('rating.productId = :productId', { productId })

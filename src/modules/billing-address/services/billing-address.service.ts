@@ -150,10 +150,9 @@ export class BillingAddressService {
     }
   }
   async getOne(
-      options: IFindOneOptions<BillingAddressEntity>,
-    ): Promise<BillingAddressEntity | null> {
-      const data = await this._billingAddressRepo._findOne(options);
-      return data;
-    }
-  
+    options: IFindOneOptions<BillingAddressEntity>,
+  ): Promise<BillingAddressEntity | null> {
+    const data = await this._billingAddressRepo._findOne(options);
+    return data;
+  }
 }

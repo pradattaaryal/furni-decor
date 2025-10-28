@@ -27,9 +27,7 @@ import { IdParamDto } from 'src/common/dto/id-param.dto';
 @Controller('home-page-banners')
 @ApiBearerAuth('accessToken')
 export class HomePageBannerAdminController {
-  constructor(
-    private readonly homePageBannerService: HomePageBannerService,
-  ) {}
+  constructor(private readonly homePageBannerService: HomePageBannerService) {}
 
   @Get('/list')
   @ApiDocs({ operation: 'List Home Page Banners' })
@@ -59,7 +57,8 @@ export class HomePageBannerAdminController {
     const createdBanner = await this.homePageBannerService.getById(banner.id, {
       options: { relations: ['image'] },
     });
-    if (!createdBanner) throw new NotFoundException('Cannot find Home Page Banner');
+    if (!createdBanner)
+      throw new NotFoundException('Cannot find Home Page Banner');
     return {
       data: {
         banner: createdBanner,
@@ -92,12 +91,9 @@ export class HomePageBannerAdminController {
   async updateById(
     @Param('id') id: number,
     @Body() updateBannerData: HomePageBannerUpdateDto,
-  ): Promise<
-    IResponse<{ banner: HomePageBannerEntity; message: string }>
-  > {
+  ): Promise<IResponse<{ banner: HomePageBannerEntity; message: string }>> {
     const found = await this.homePageBannerService.getById(id);
-    if (!found)
-      throw new NotFoundException('Cannot find Home Page Banner');
+    if (!found) throw new NotFoundException('Cannot find Home Page Banner');
     await this.homePageBannerService.update(found, updateBannerData);
     const banner = await this.homePageBannerService.getById(id, {
       options: { relations: ['image'] },
@@ -115,12 +111,9 @@ export class HomePageBannerAdminController {
   @ApiDocs({ operation: 'Soft delete Home Page Banner' })
   async softDeleteById(
     @Param('id') id: number,
-  ): Promise<
-    IResponse<{ banner: HomePageBannerEntity; message: string }>
-  > {
+  ): Promise<IResponse<{ banner: HomePageBannerEntity; message: string }>> {
     const found = await this.homePageBannerService.getById(id);
-    if (!found)
-      throw new NotFoundException('Cannot find Home Page Banner');
+    if (!found) throw new NotFoundException('Cannot find Home Page Banner');
 
     const banner = await this.homePageBannerService.softDelete(found);
     return {
@@ -135,15 +128,12 @@ export class HomePageBannerAdminController {
   @ApiDocs({ operation: 'Restore Home Page Banner' })
   async restoreById(
     @Param('id') id: number,
-  ): Promise<
-    IResponse<{ banner: HomePageBannerEntity; message: string }>
-  > {
+  ): Promise<IResponse<{ banner: HomePageBannerEntity; message: string }>> {
     await this.homePageBannerService.restore({ where: { id } });
     const banner = await this.homePageBannerService.getById(id, {
       options: { relations: ['image'] },
     });
-    if (!banner)
-      throw new NotFoundException('Cannot find Home Page Banner');
+    if (!banner) throw new NotFoundException('Cannot find Home Page Banner');
     return {
       data: {
         banner,
@@ -156,12 +146,9 @@ export class HomePageBannerAdminController {
   @ApiDocs({ operation: 'Hard delete Home Page Banner' })
   async deleteById(
     @Param('id') id: number,
-  ): Promise<
-    IResponse<{ banner: HomePageBannerEntity; message: string }>
-  > {
+  ): Promise<IResponse<{ banner: HomePageBannerEntity; message: string }>> {
     const found = await this.homePageBannerService.getById(id);
-    if (!found)
-      throw new NotFoundException('Cannot find Home Page Banner');
+    if (!found) throw new NotFoundException('Cannot find Home Page Banner');
 
     const banner = await this.homePageBannerService.delete(found);
     return {

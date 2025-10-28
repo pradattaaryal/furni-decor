@@ -26,7 +26,7 @@ import {
 } from 'src/common/response/interfaces/response.interface';
 import { ApiDocs } from 'src/common/doc/common-docs';
 import { CategoryService } from 'src/modules/category/services/category.service';
-import { Between, DataSource, IsNull, QueryRunner } from 'typeorm';
+import { Between, DataSource, IsNull, MoreThanOrEqual, QueryRunner } from 'typeorm';
 import { ProductResponseDto } from '../dto/product.response.dto';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
@@ -55,6 +55,12 @@ export class ProductAdminController {
         paginateQueryDto.maxPrice,
       );
     }
+
+
+    if (paginateQueryDto.rating !== undefined) {
+      where.averageRating = MoreThanOrEqual(paginateQueryDto.rating);
+    }
+
     if (paginateQueryDto.categoryId !== undefined) {
       where.category = { id: paginateQueryDto.categoryId };
     }
@@ -94,8 +100,6 @@ export class ProductAdminController {
 
     return data;
   }
-
-
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Product' })

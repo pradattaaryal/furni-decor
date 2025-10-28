@@ -25,8 +25,7 @@ import { ShippingAddressEntity } from '../shipping-address/entities/shipping-add
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity,WishlistEntity,    CartItemEntity
-]),
+    TypeOrmModule.forFeature([UserEntity, WishlistEntity, CartItemEntity]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -42,7 +41,7 @@ import { ShippingAddressEntity } from '../shipping-address/entities/shipping-add
     OtpModule,
     CartModule,
     ShippingAddressModule,
-    BillingAddressModule
+    BillingAddressModule,
   ],
   controllers: [],
   providers: [

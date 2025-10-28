@@ -21,7 +21,7 @@ async function bootstrap() {
       },
     }),
   );
- 
+
   app.use(json());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await swaggerInit(app);

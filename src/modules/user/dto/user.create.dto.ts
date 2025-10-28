@@ -37,7 +37,6 @@ export class UserCreateDto implements IUserCreateDto {
   )
   password: string;
 
-
   @ApiProperty({
     example: 'John',
     description: 'First name of the user',

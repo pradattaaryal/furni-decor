@@ -8,9 +8,8 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'subscribers' })
-@Index(['email'], { unique: true })  
-export class NewsletterEntity extends DatabaseBaseEntity{
-
+@Index(['email'], { unique: true })
+export class NewsletterEntity extends DatabaseBaseEntity {
   @Column({
     name: 'email',
     type: 'varchar',

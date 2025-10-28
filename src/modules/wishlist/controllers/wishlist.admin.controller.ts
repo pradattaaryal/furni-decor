@@ -30,7 +30,7 @@ import { UpdateWishlistDto } from '../dto/wishlist.update.dto';
 @ApiTags('Wishlist')
 @Controller('/wishlist')
 export class WishlistAdminController {
-  constructor(private readonly wishlistService: WishlistService) {}
+  constructor(private readonly wishlistService: WishlistService) { }
 
   @Post('/create')
   @ApiDocs({ operation: 'Create Wishlist Entry' })
@@ -82,4 +82,22 @@ export class WishlistAdminController {
       },
     };
   }
+
+  @Get()
+  @ApiDocs({ operation: 'Get Wishlist Count user ID' })
+  @UseGuards(JwtAuthGuard)
+  async getCount(
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<IResponse<{ count: number; message: string }>> {
+    const count = await this.wishlistService.getCount(user.sub);
+
+    return {
+      data: {
+        count: count,
+        message: 'Wishlist count retrieved successfully.'
+      }
+    }
+  }
+
+
 }

@@ -19,10 +19,10 @@ export const PRODUCT_VARIANT_DATABASE_TABLE_NAME = 'product_variants';
 @Entity({ name: PRODUCT_VARIANT_DATABASE_TABLE_NAME })
 @Index(['id'])
 export class ProductVariantEntity extends DatabaseBaseEntity {
-   @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
-   @Column({ name: 'product_id' })
+  @Column({ name: 'product_id' })
   productId: number;
 
   @ManyToOne(() => ProductEntity, (product) => product.variants, {

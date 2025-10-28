@@ -22,7 +22,7 @@ export const PAYPAL_CLIENT = 'PAYPAL_CLIENT';
 @Module({
   imports: [
     TypeOrmModule.forFeature([PaymentEntity]),
-    ConfigModule, 
+    ConfigModule,
     OrderModule,
     CartModule,
     CartItemModule,

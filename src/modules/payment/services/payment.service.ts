@@ -32,7 +32,7 @@ export class PaymentService {
     private readonly productRepo: ProductRepository,
     private readonly _userService: UserService,
     private readonly paypalAdapter: PayPalAdapter,
-  ) { }
+  ) {}
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
     const adapter = this.paymentAdapterFactory.getAdapter(dto.provider);
@@ -59,20 +59,18 @@ export class PaymentService {
 
       try {
         const result = await adapter.createPayment(user, payment, dto, cart);
-       
+
         if (!result.success) {
           payment.failureReason =
             result.errorMessage || 'Payment processing failed.';
-          payment.status = PaymentStatus.FAILED
-        }
-        else {
-          payment.status = PaymentStatus.PENDING
+          payment.status = PaymentStatus.FAILED;
+        } else {
+          payment.status = PaymentStatus.PENDING;
         }
         if (result.success) {
           payment.providerPaymentId = result.paymentId;
           payment.providerTransactionId = result.transactionId ?? '';
           payment.metadata = {
-             
             ...payment.metadata,
             ...result.metadata,
           };
@@ -104,8 +102,6 @@ export class PaymentService {
     });
   }
 
-  
-
   private async validateCart(cart: CartEntity): Promise<number> {
     if (!cart.isActive) throw new BadRequestException('Cart is inactive');
     if (!cart.items?.length) throw new BadRequestException('Cart is empty');
@@ -129,8 +125,6 @@ export class PaymentService {
 
       const itemTotal = price * item.quantity;
       total += itemTotal;
-
-
     }
     // Apply 5% shipping charge if item total is less than 500
 
@@ -213,7 +207,6 @@ export class PaymentService {
     };
   }
 
- 
   async capturePayment(paymentId: string): Promise<PaymentResult> {
     try {
       this.logger.log(`Capturing PayPal payment: ${paymentId}`);
@@ -246,5 +239,3 @@ export class PaymentService {
     }
   }
 }
-
- 

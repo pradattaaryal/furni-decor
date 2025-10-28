@@ -35,7 +35,7 @@ export class CartItemAdminController {
   constructor(
     private readonly cartItemService: CartItemService,
     private _connection: DataSource,
-  ) {}
+  ) { }
   @Post('/add-or-update')
   @UseGuards(JwtAuthGuard)
   @ApiDocs({ operation: 'Add product to cart or increase quantity if exists' })
@@ -330,4 +330,22 @@ export class CartItemAdminController {
       await queryRunner.release();
     }
   }
+  @Get()
+  @ApiDocs({ operation: 'Get cart item  Count user ID' })
+  @UseGuards(JwtAuthGuard)
+  async getCount(
+    @GetUser() user: AccessTokenPayload,
+  ): Promise<IResponse<{ count: number; message: string }>> {
+    const count = await this.cartItemService.getCount(user.sub);
+
+    return {
+      data: {
+        count: count,
+        message: 'cart item count retrieved successfully.'
+      }
+    }
+  }
+
+
+
 }

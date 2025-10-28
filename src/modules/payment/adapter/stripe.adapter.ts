@@ -198,7 +198,9 @@ export class StripeAdapter implements PaymentAdapterInterface {
 
   verifyWebhook(payload: Buffer, signature: string): Stripe.Event {
     try {
-        const endpointSecret =this.configService.get<string>('stripe.stripe_webhook_signiture');
+      const endpointSecret = this.configService.get<string>(
+        'stripe.stripe_webhook_signiture',
+      );
 
       if (!endpointSecret)
         throw new Error('Stripe webhook secret not configured');

@@ -167,6 +167,22 @@ export class CartItemService {
   ): Promise<CartItemEntity | null> {
     return await this._cartItemRepo._findOneById(id, options);
   }
+async getCount(
+  userId: number,
+  options?: IFindAllOptions<CartItemEntity>,
+): Promise<number> {
+  const cartData = await this._cartService.findByUserId(userId);
+
+  if (!cartData || !cartData) {
+    throw new BadRequestException('Cart not found or empty');
+  }
+
+  // Add all quantities together
+  const count = cartData.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  console.log(count);
+  return count;
+}
 
   async getAll(
     options?: IFindAllOptions<CartItemEntity>,

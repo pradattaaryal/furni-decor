@@ -170,6 +170,16 @@ export class PaginateQueryIsActiveWithSkipDto extends PaginateQueryWithSkipDto {
 }
 
 export class ProductPaginateQueryDto extends PaginateQueryDto {
+
+  @ApiPropertyOptional({
+    type: Number,
+    description: 'rating',
+  })
+  @CustomIsOptional()
+  @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
+  rating?: number;
+
+
   @ApiPropertyOptional({
     type: Number,
     description: 'Minimum price filter',

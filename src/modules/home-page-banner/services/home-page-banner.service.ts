@@ -20,9 +20,7 @@ import { HomePageBannerRepository } from '../repositories/home-page-banner.repos
 
 @Injectable()
 export class HomePageBannerService {
-  constructor(
-    private readonly _homePageBannerRepo: HomePageBannerRepository,
-  ) {}
+  constructor(private readonly _homePageBannerRepo: HomePageBannerRepository) {}
 
   async create(
     createDto: HomePageBannerCreateDto,
@@ -63,9 +61,7 @@ export class HomePageBannerService {
     return await this._homePageBannerRepo._findAll(options);
   }
 
-  getQueryBuilder(
-    name: string,
-  ): SelectQueryBuilder<HomePageBannerEntity> {
+  getQueryBuilder(name: string): SelectQueryBuilder<HomePageBannerEntity> {
     return this._homePageBannerRepo.getRepo().createQueryBuilder(name);
   }
 
