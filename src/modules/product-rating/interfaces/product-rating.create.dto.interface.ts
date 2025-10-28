@@ -1,9 +1,6 @@
-import { IProductEntity } from 'src/modules/products/interfaces/product.entity.interface';
-import { IUserEntity } from 'src/modules/user/interfaces/user.entity.interface';
+import { RATING_VALUE } from '../constants/product-rating.constant';
 
 export interface IProductRatingCreateDto {
   productId: number;
-  rating: number;
-  parent_id?: number | null;
-  comment?: string;
+  rating: RATING_VALUE;
 }

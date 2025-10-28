@@ -51,13 +51,20 @@ export class ProductService {
     createDto: ProductCreateDto,
     options?: ICreateOptions,
   ): Promise<ProductEntity> {
-    const { variants, images: imageIds, mainImageId, ...productData } = createDto;
+    const {
+      variants,
+      images: imageIds,
+      mainImageId,
+      ...productData
+    } = createDto;
 
     // Validate and fetch main image
     if (mainImageId) {
       const mainImage = await this._imageService.getById(mainImageId);
       if (!mainImage) {
-        throw new BadRequestException(`Main image with ID ${mainImageId} not found`);
+        throw new BadRequestException(
+          `Main image with ID ${mainImageId} not found`,
+        );
       }
     }
 
@@ -245,12 +252,17 @@ export class ProductService {
       }
 
       if (updateData.mainImageId) {
-        const mainImage = await this._imageService.getById(updateData.mainImageId, {
-          entityManager: queryRunner.manager,
-        });
+        const mainImage = await this._imageService.getById(
+          updateData.mainImageId,
+          {
+            entityManager: queryRunner.manager,
+          },
+        );
 
         if (!mainImage) {
-          throw new BadRequestException(`Main image with ID ${updateData.mainImageId} not found`);
+          throw new BadRequestException(
+            `Main image with ID ${updateData.mainImageId} not found`,
+          );
         }
 
         product.mainImageId = updateData.mainImageId;

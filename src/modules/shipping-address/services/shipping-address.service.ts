@@ -134,4 +134,10 @@ export class ShippingAddressService {
   ): Promise<ShippingAddressEntity> {
     return await this._shippingAddressRepo._softDelete(entity, options);
   }
+  async getOne(
+        options: IFindOneOptions<ShippingAddressEntity>,
+      ): Promise<ShippingAddressEntity | null> {
+        const data = await this._shippingAddressRepo._findOne(options);
+        return data;
+      }
 }

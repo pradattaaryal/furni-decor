@@ -77,6 +77,7 @@ export class ResponseDefaultInterceptor<T>
             _metadata: metadata,
             data,
             _pagination,
+            summary: (responseData as any)?.summary,
           };
         }),
       );

@@ -36,6 +36,8 @@ import { ColorModule } from 'src/modules/color/color.module';
 import { ColorAdminController } from 'src/modules/color/controllers/color.admin.controller';
 import { BillingAddressModule } from 'src/modules/billing-address/billing-address.module';
 import { BillingAddressAdminController } from 'src/modules/billing-address/controllers/billing-address.admin.controller';
+import { HomePageBannerModule } from 'src/modules/home-page-banner/home-page-banner.module';
+import { HomePageBannerAdminController } from 'src/modules/home-page-banner/controllers/home-page-banner.admin.controller';
 
 @Module({
   imports: [
@@ -58,6 +60,7 @@ import { BillingAddressAdminController } from 'src/modules/billing-address/contr
     BlogCategoryModule,
     ColorModule,
     BillingAddressModule,
+    HomePageBannerModule,
   ],
   controllers: [
     AdminUserController,
@@ -69,6 +72,7 @@ import { BillingAddressAdminController } from 'src/modules/billing-address/contr
     CartItemAdminController,
     CategoryAdminController,
     ColorAdminController,
+    HomePageBannerAdminController,
     ImageAdminController,
     OrderAdminController,
     OrderItemAdminController,

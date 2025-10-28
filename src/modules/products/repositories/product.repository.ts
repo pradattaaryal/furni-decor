@@ -18,7 +18,9 @@ export class ProductRepository extends BaseRepository<ProductEntity> {
     const product = this.productRepo.create({
       ...createProductDto,
       images: createProductDto.images.map((imageId) => ({ id: imageId })),
-      mainImage: createProductDto.mainImageId ? { id: createProductDto.mainImageId } : undefined,
+      mainImage: createProductDto.mainImageId
+        ? { id: createProductDto.mainImageId }
+        : undefined,
     });
     await this.productRepo.save(product);
     const productSlug = slugify(`${product.name}-${product.id}`, {

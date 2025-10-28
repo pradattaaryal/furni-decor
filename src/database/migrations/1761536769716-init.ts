@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1760525703840 implements MigrationInterface {
-    name = 'Init1760525703840'
+export class Init1761536769716 implements MigrationInterface {
+    name = 'Init1761536769716'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "categories" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "name" character varying(255) NOT NULL, "parent_id" integer, "slug" character varying(255) NOT NULL, "description" text, CONSTRAINT "UQ_8b0be371d28245da6e4f4b61878" UNIQUE ("name"), CONSTRAINT "UQ_420d9f679d41281f282f5bc7d09" UNIQUE ("slug"), CONSTRAINT "PK_24dbc6126a28ff948da33e97d3b" PRIMARY KEY ("id"))`);
@@ -24,16 +24,17 @@ export class Init1760525703840 implements MigrationInterface {
         await queryRunner.query(`CREATE INDEX "IDX_10bc9e2aa7c01881cd1f02ec16" ON "colors" ("id") WHERE "deleted_at" IS NULL`);
         await queryRunner.query(`CREATE INDEX "IDX_61fb9349aae5a0b689f94a8db3" ON "colors" ("id", "created_at") `);
         await queryRunner.query(`CREATE INDEX "IDX_cf12321fa0b7b9539e89c7dfeb" ON "colors" ("name") `);
-        await queryRunner.query(`CREATE TABLE "product_variants" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "color_id" integer, "image_id" integer, "product_id" integer, CONSTRAINT "REL_80810e665ba660ed25412c5b8a" UNIQUE ("image_id"), CONSTRAINT "PK_281e3f2c55652d6a22c0aa59fd7" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "product_variants" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "product_id" integer NOT NULL, "color_id" integer, "image_id" integer, CONSTRAINT "REL_80810e665ba660ed25412c5b8a" UNIQUE ("image_id"), CONSTRAINT "PK_281e3f2c55652d6a22c0aa59fd7" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_155c01468f41e508b5db2c5de1" ON "product_variants" ("id") WHERE "deleted_at" IS NULL`);
         await queryRunner.query(`CREATE INDEX "IDX_eaad245682e9f8a3eb0f030e1b" ON "product_variants" ("id", "created_at") `);
         await queryRunner.query(`CREATE INDEX "IDX_281e3f2c55652d6a22c0aa59fd" ON "product_variants" ("id") `);
-        await queryRunner.query(`CREATE TABLE "products" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "name" character varying(100) NOT NULL, "tag" character varying(100), "description" character varying(200) NOT NULL, "category_id" integer NOT NULL, "quantity" integer NOT NULL, "featured" boolean DEFAULT false, "dimensions" jsonb NOT NULL, "model_number" character varying(100), "secondary_material" character varying(100), "configuration" character varying(100), "upholstery_material" character varying(100), "upholstery_color" character varying(50), "filling_material" character varying(100), "finish_type" character varying(50), "adjustable_headrest" boolean, "max_load" integer, "sales_package" character varying(200), "origin_of_manufacture" character varying(30), "discountValue" numeric(10,2), "discount_start_date" TIMESTAMP, "discount_end_date" TIMESTAMP, "warranty_summary" text, "warranty_service_type" text, "covered_in_warranty" text, "not_covered_in_warranty" text, "domestic_warranty" text, "slug" character varying(255), "price" numeric(10,2), "name_tsv" tsvector, CONSTRAINT "UQ_464f927ae360106b783ed0b4106" UNIQUE ("slug"), CONSTRAINT "PK_0806c755e0aca124e67c0cf6d7d" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "products" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "name" character varying(100) NOT NULL, "tag" character varying(100), "description" character varying(200) NOT NULL, "category_id" integer NOT NULL, "quantity" integer NOT NULL, "featured" boolean DEFAULT false, "dimensions" jsonb NOT NULL, "averageRating" double precision NOT NULL DEFAULT '0', "ratingCount" integer NOT NULL DEFAULT '0', "model_number" character varying(100), "secondary_material" character varying(100), "configuration" character varying(100), "upholstery_material" character varying(100), "upholstery_color" character varying(50), "filling_material" character varying(100), "finish_type" character varying(50), "adjustable_headrest" boolean, "max_load" integer, "sales_package" character varying(200), "origin_of_manufacture" character varying(30), "discountValue" numeric(10,2), "discount_start_date" TIMESTAMP, "discount_end_date" TIMESTAMP, "warranty_summary" text, "warranty_service_type" text, "covered_in_warranty" text, "not_covered_in_warranty" text, "domestic_warranty" text, "slug" character varying(255), "price" numeric(10,2), "main_image_id" integer, "name_tsv" tsvector, CONSTRAINT "UQ_464f927ae360106b783ed0b4106" UNIQUE ("slug"), CONSTRAINT "PK_0806c755e0aca124e67c0cf6d7d" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_490cf2092412d5647d15316c9f" ON "products" ("id") WHERE "deleted_at" IS NULL`);
         await queryRunner.query(`CREATE INDEX "IDX_f534c8d1c88f519e8865c450fb" ON "products" ("id", "created_at") `);
-        await queryRunner.query(`CREATE TABLE "product_ratings" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "is_approved" boolean NOT NULL DEFAULT false, "rating" smallint NOT NULL, "comment" text, "product_id" integer, "user_id" integer, "parent_id" integer, CONSTRAINT "PK_f8bd94404fc1d160bdb075dc435" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "product_ratings" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "product_id" integer NOT NULL, "user_id" integer NOT NULL, "rating" integer NOT NULL, CONSTRAINT "unique_user_product_rating" UNIQUE ("product_id", "user_id"), CONSTRAINT "PK_f8bd94404fc1d160bdb075dc435" PRIMARY KEY ("id")); COMMENT ON COLUMN "product_ratings"."rating" IS 'Rating value from 1 to 5'`);
         await queryRunner.query(`CREATE INDEX "IDX_5eb1494ab71a00077f356139d8" ON "product_ratings" ("id") WHERE "deleted_at" IS NULL`);
         await queryRunner.query(`CREATE INDEX "IDX_ead0d94806e06b003b89f6ad77" ON "product_ratings" ("id", "created_at") `);
+        await queryRunner.query(`CREATE INDEX "IDX_728920c8530e2d53c70ae1f695" ON "product_ratings" ("product_id", "user_id") `);
         await queryRunner.query(`CREATE TABLE "cart_items" ("id" SERIAL NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "cart_id" integer NOT NULL, "product_id" integer NOT NULL, "variant_id" integer, "quantity" integer NOT NULL DEFAULT '1', CONSTRAINT "PK_6fccf5ec03c172d27a28a82928b" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_d20cbd6ab6361f48d4a7a3d1ce" ON "cart_items" ("id") WHERE "deleted_at" IS NULL`);
         await queryRunner.query(`CREATE INDEX "IDX_0bd9872d335ace815a51a1d29f" ON "cart_items" ("id", "created_at") `);
@@ -74,13 +75,13 @@ export class Init1760525703840 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "blogs" ADD CONSTRAINT "FK_1f073a9f9720fe731423f1064cc" FOREIGN KEY ("category_id") REFERENCES "blog_categories"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "blogs" ADD CONSTRAINT "FK_d9459c0593a5ded32e378b881e6" FOREIGN KEY ("image_id") REFERENCES "image"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "image" ADD CONSTRAINT "FK_e6a9e829e17fc47fc17d695af8e" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "product_variants" ADD CONSTRAINT "FK_6343513e20e2deab45edfce1316" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "product_variants" ADD CONSTRAINT "FK_8b91b27dcad5b2bdb13977a176d" FOREIGN KEY ("color_id") REFERENCES "colors"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "product_variants" ADD CONSTRAINT "FK_80810e665ba660ed25412c5b8a6" FOREIGN KEY ("image_id") REFERENCES "image"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "product_variants" ADD CONSTRAINT "FK_6343513e20e2deab45edfce1316" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "products" ADD CONSTRAINT "FK_8984eaad3b517d30bbdf01d8057" FOREIGN KEY ("main_image_id") REFERENCES "image"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "products" ADD CONSTRAINT "FK_9a5f6868c96e0069e699f33e124" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "product_ratings" ADD CONSTRAINT "FK_538c9489e98d4874e8db0c4cafd" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "product_ratings" ADD CONSTRAINT "FK_25a422fb6e1a8999db0d4854621" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "product_ratings" ADD CONSTRAINT "FK_a62bd35a869cdd9448865c06071" FOREIGN KEY ("parent_id") REFERENCES "product_ratings"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "cart_items" ADD CONSTRAINT "FK_6385a745d9e12a89b859bb25623" FOREIGN KEY ("cart_id") REFERENCES "cart"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "cart_items" ADD CONSTRAINT "FK_30e89257a105eab7648a35c7fce" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "cart_items" ADD CONSTRAINT "FK_ede780fc2b865d1d1323e598038" FOREIGN KEY ("variant_id") REFERENCES "product_variants"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
@@ -118,13 +119,13 @@ export class Init1760525703840 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "cart_items" DROP CONSTRAINT "FK_ede780fc2b865d1d1323e598038"`);
         await queryRunner.query(`ALTER TABLE "cart_items" DROP CONSTRAINT "FK_30e89257a105eab7648a35c7fce"`);
         await queryRunner.query(`ALTER TABLE "cart_items" DROP CONSTRAINT "FK_6385a745d9e12a89b859bb25623"`);
-        await queryRunner.query(`ALTER TABLE "product_ratings" DROP CONSTRAINT "FK_a62bd35a869cdd9448865c06071"`);
         await queryRunner.query(`ALTER TABLE "product_ratings" DROP CONSTRAINT "FK_25a422fb6e1a8999db0d4854621"`);
         await queryRunner.query(`ALTER TABLE "product_ratings" DROP CONSTRAINT "FK_538c9489e98d4874e8db0c4cafd"`);
         await queryRunner.query(`ALTER TABLE "products" DROP CONSTRAINT "FK_9a5f6868c96e0069e699f33e124"`);
-        await queryRunner.query(`ALTER TABLE "product_variants" DROP CONSTRAINT "FK_6343513e20e2deab45edfce1316"`);
+        await queryRunner.query(`ALTER TABLE "products" DROP CONSTRAINT "FK_8984eaad3b517d30bbdf01d8057"`);
         await queryRunner.query(`ALTER TABLE "product_variants" DROP CONSTRAINT "FK_80810e665ba660ed25412c5b8a6"`);
         await queryRunner.query(`ALTER TABLE "product_variants" DROP CONSTRAINT "FK_8b91b27dcad5b2bdb13977a176d"`);
+        await queryRunner.query(`ALTER TABLE "product_variants" DROP CONSTRAINT "FK_6343513e20e2deab45edfce1316"`);
         await queryRunner.query(`ALTER TABLE "image" DROP CONSTRAINT "FK_e6a9e829e17fc47fc17d695af8e"`);
         await queryRunner.query(`ALTER TABLE "blogs" DROP CONSTRAINT "FK_d9459c0593a5ded32e378b881e6"`);
         await queryRunner.query(`ALTER TABLE "blogs" DROP CONSTRAINT "FK_1f073a9f9720fe731423f1064cc"`);
@@ -165,6 +166,7 @@ export class Init1760525703840 implements MigrationInterface {
         await queryRunner.query(`DROP INDEX "public"."IDX_0bd9872d335ace815a51a1d29f"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_d20cbd6ab6361f48d4a7a3d1ce"`);
         await queryRunner.query(`DROP TABLE "cart_items"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_728920c8530e2d53c70ae1f695"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_ead0d94806e06b003b89f6ad77"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_5eb1494ab71a00077f356139d8"`);
         await queryRunner.query(`DROP TABLE "product_ratings"`);
