@@ -1,98 +1,107 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+APP_ENV=development
+APP_EMAIL=webexpertsnepal20@gmail.com
+HTTP_ENABLE=true
+HTTP_HOST=0.0.0.0
+HTTP_PORT=3001
+#psql -h localhost -p 5439 -U postgres -d furni_decor
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# //TRUNCATE TABLE categories CASCADE;
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+    # const key = this.configService
+    #   .get<string>('auth.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY')
+    #   ?.trim();
 
-## Project setup
 
-```bash
-$ pnpm install
-```
+# SELECT pg_terminate_backend(pid)
+# FROM pg_stat_activity
+# WHERE datname = 'furni_decor';
+# DROP DATABASE IF EXISTS furni_decor;
+#pm_1SMhHiFhrbYI1auhUwuO2Hym
+DATABASE_TYPE=postgres
+DATABASE_URL=
+DATABASE_HOST=localhost
+DATABASE_PORT=5439
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=root
+DATABASE_SYNCHRONIZE=false
+DATABASE_LOGGING=false
+DATABASE_REJECT_UNAUTHORIZED=false
+DATABASE_SSL_ENABLED=false
+DATABASE_MAX_CONNECTIONS=20
+DATABASE_NAME=furni_decorr
+DATABASE_CA=
+DATABASE_KEY=
+DATABASE_CERT=
 
-## Compile and run the project
+FRONTEND_CANCLE_URL=http://localhost:3000/cancle
+FRONTEND_SUCESS_URL=http://localhost:3000/sucess
 
-```bash
-# development
-$ pnpm run start
+#Image
+IMG_MAX_FILE_SIZE=5mb
+IMG_MAX_FILE=1
 
-# watch mode
-$ pnpm run start:dev
+# logger/debugger
+DEBUGGER_HTTP_WRITE_INTO_FILE=false
+DEBUGGER_HTTP_WRITE_INTO_CONSOLE=false
+DEBUGGER_SYSTEM_WRITE_INTO_FILE=true
+DEBUGGER_SYSTEM_WRITE_INTO_CONSOLE=false
 
-# production mode
-$ pnpm run start:prod
-```
+# limit for single api to hit (eg: 5 otp request in 60 seconds)
+MAX_REQUEST_HIT=5
+MAX_REQUEST_HIT_EXPIRATION_TIME_IN_MILLI_SECONDS=120
 
-## Run tests
+#Worker Pool
+WORKER_IDLE_TIMEOUT_MILLISECONDS=10000
+WORKER_MAX_THREADS=4
+WORKER_MIN_THREADS=1
 
-```bash
-# unit tests
-$ pnpm run test
+PASSWORD_MAX_REQUEST_LIMIT=10
 
-# e2e tests
-$ pnpm run test:e2e
+EMAIL_VERIFICATION_TOKEN_SECRET_KEY=sadgasgdjasgdjsagjsagjsagjasgjasgdj
+EMAIL_VERIFICATION_TOKEN_EXPIRED_IN_SECONDS=120
 
-# test coverage
-$ pnpm run test:cov
-```
+#Redis
+REDIS_HOST=localhost
+REDIS_PASSWORD=
+REDIS_PORT=6379 
 
-## Deployment
+#JWT
+AUTH_JWT_ACCESS_TOKEN_SECRET_KEY=shdkajshdkahdkashkdhaskdhksahdkashdkashdksahkjsahsahdjk
+#AUTH_JWT_REFRESH_TOKEN_SECRET_KEY=shdkajshdkahdkashkdhaskdhksahdkashdkashdksahkjsahsahdjk
+AUTH_JWT_ACCESS_TOKEN_EXPIRED=7d
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+FRONT_END_FORGOT_PASSWORD_LINK=http://localhost:3000/auth/reset-password/
+FRONT_END_BASE_URL=http://localhost:3000
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+MAX_FILE_COUNT=20
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+#STRIPE
+STRIPE_SECRET_KEY=sk_test_51PBbwFFhrbYI1auhiaETjFUJubDXricEdJkWZ2tXJfTWKlGn2C1WaUhQBvGcNigYQVVTMz9VCcL9ul8B2g6UizRF00KbD9kTAu
+STRIPE_WEB_HOOK_SECRET_KEY=we_1SI0rKFhrbYI1auhbdCslHrb
+STRIPE_PUBLISHABLE_KEY=pk_test_51PBbwFFhrbYI1auhDSTfqxWg5BXCwkadhGzozOn0O3KMpeCLSjXxEW7Wz3p8UcyjqSlF4t2z1YRsCc8ZFv2uYDLU00uXCF1PZI
+STRIPE_WEB_HOOK_SIGNITURE=whsec_74HR1P2pKTaupBHPTADlnlrzgU6XwYAO
+API_VERSION= 2025-08-27.basil,
+#stripesec=we_1SGX85FhrbYI1auhbPVaphsA,name,slug,image,quantity,price
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+GOOGLE_CLIENT_ID=329354452732-6e04ckpaagb7htdbmoeuq2s3fm1gqbvi.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=http://localhost:3001/backend/api/admin/auth/google/callback
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+PAYPAL_CLIENT_ID=AUruK_O0tmWfrhCIdLuID-Tu_li5U0LPOiPx8Vcpei_p-pmybogwNG5uItgHA3R3YkCJAI6IaOtd9kch
+PAYPAL_CLIENT_SECRET=EHR9poJ2AzVnCxXhHVDNxunGOzd8Re6F0mnvNIET5ykGdkPBk75OABs_4VN_HMQIae773pdpv6PQslvt
+PAYPAL_API_BASE=https://api-m.sandbox.paypal.com
+PAYPAL_MODE=sandbox
+PAYPAL_RETURN_URL=https://decor.wendevs.com/
+PAYPAL_CANCEL_URL=https://decor.wendevs.com/notfound
+ 
+ 
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=pradattaaryal2468@gmail.com
+MAIL_PASS=ynlp fuye kxoc zxmw
+MAIL_FROM=pradattaaryal2468@gmail.com
+MAIL_SERVICE=gmail
+AUTH_JWT_ACCESS_TOKEN_SECRET_KEY=cdhbjbscjhbdskcKLNcJKSDCNKDSJCNSDKJcnskdjchbdjbhds
